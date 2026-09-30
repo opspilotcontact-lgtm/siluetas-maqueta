@@ -21,7 +21,7 @@ for i,(x,y) in enumerate(pts):
 poly=L+R[::-1]
 d="M"+" L".join(f"{x:.1f} {y:.1f}" for x,y in poly)+"Z"
 mirror="M"+" L".join(f"{100-x:.1f} {y:.1f}" for x,y in poly)+"Z"
-svg=f'''<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 152"><path fill="#D93A7A" d="{d}"/><path fill="#1693C0" d="{mirror}"/></svg>'''
+svg=f'''<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 152"><path fill="#D93A7A" d="{d}"/><path fill="#16A39A" d="{mirror}"/></svg>'''
 open('../logo/silueta.svg','w').write(svg)
 open('../logo/paths.txt','w').write(d+"\n"+mirror)
 print(len(svg))
