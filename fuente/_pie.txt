@@ -4,6 +4,7 @@
       <a class="marca" href="#inicio"><img src="img/silueta.svg" alt="" width="22" height="33"><b><i>Siluetas</i> de Mujer</b></a>
       <p style="margin-top:1rem">Maderoterapia, masaje y entrenamiento para mujeres en Córdoba. Por Mari Carmen Figueras.</p>
     </div>
+    <div><p class="tit">Servicios</p><ul><li><a href="maderoterapia-cordoba/">Maderoterapia en Córdoba</a></li><li><a href="entrenamiento-personal-mujeres-cordoba/">Entrenadora personal</a></li><li><a href="masajes-cordoba/">Masajes</a></li></ul></div>
     <div><p class="tit">Qué te preocupa</p><ul><li><a href="#z-piernas">Piernas cansadas</a></li><li><a href="celulitis-cordoba/">Celulitis</a></li><li><a href="#z-abdomen">Abdomen y menopausia</a></li><li><a href="#z-brazos">Flacidez de brazos</a></li><li><a href="#z-espalda">Espalda y cuello</a></li></ul></div>
     <div><p class="tit">Dónde</p><ul><li>Sala: <span class="pend">pendiente</span></li><li>A domicilio en Córdoba</li><li><a href="zonas/brillante/">El Brillante y Arruzafa</a></li></ul></div>
     <div><p class="tit">Contacto</p><ul><li><a href="https://wa.me/34646437371">WhatsApp 646 437 371</a></li><li>Lunes a viernes, 10:00 a 20:00</li></ul></div>

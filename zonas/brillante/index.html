@@ -13,256 +13,8 @@
 <script type="application/ld+json">
 {"@context":"https://schema.org","@type":"Service","name":"Maderoterapia y entrenamiento a domicilio en El Brillante y la Arruzafa","provider":{"@type":"HealthAndBeautyBusiness","name":"Siluetas de Mujer","telephone":"+34646437371"},"areaServed":[{"@type":"Place","name":"El Brillante, Córdoba"},{"@type":"Place","name":"La Arruzafa, Córdoba"}]}
 </script>
+<link rel="stylesheet" href="css/sitio.css">
 <style>
-
-@font-face{font-family:'DM Serif Display';src:url(fonts/dmserif-400.woff2) format('woff2');font-weight:400;font-display:swap}
-@font-face{font-family:'DM Serif Display';src:url(fonts/dmserif-400i.woff2) format('woff2');font-weight:400;font-style:italic;font-display:swap}
-@font-face{font-family:Figtree;src:url(fonts/figtree-var.woff2) format('woff2');font-weight:300 900;font-display:swap}
-:root{
-  --arena:#F3EBE0; --arena-2:#EADFCF; --linea:#DBB685;
-  --tinta:#16323F; --tinta-2:#2A4755;
-  --rosa:#D93A7A; --rosa-t:#B8295F; --rosa-e:#F7E3EA;
-  --turq:#1693C0; --turq-t:#0B6E93; --turq-e:#DDEFF5;
-  --display:'DM Serif Display',Georgia,serif; --texto:Figtree,system-ui,sans-serif;
-  --ease:cubic-bezier(.22,.8,.26,1);
-}
-*{box-sizing:border-box}
-html{scroll-behavior:smooth;-webkit-text-size-adjust:100%}
-body{margin:0;background:var(--arena);color:var(--tinta);font:400 1.075rem/1.62 var(--texto)}
-img,svg{display:block;max-width:100%;height:auto}
-a{color:inherit}
-main{overflow-x:clip}
-.wrap{max-width:76rem;margin:0 auto;padding:0 clamp(1rem,4vw,2.5rem)}
-h1,h2,h3{font-family:var(--display);font-weight:400;line-height:1.02;margin:0;letter-spacing:-.01em}
-h2{font-size:clamp(2.2rem,5.4vw,3.9rem)}
-h3{font-size:clamp(1.5rem,2.6vw,1.95rem)}
-em{font-style:italic}
-p{margin:0 0 1em;max-width:62ch}
-.ante{font:700 .78rem/1.2 var(--texto);letter-spacing:.2em;text-transform:uppercase;margin:0 0 1rem;display:flex;align-items:center;gap:.6rem}
-.ante img{width:.9rem}
-.m{color:var(--rosa-t)} .v{color:var(--turq-t)}
-.btn{display:inline-flex;align-items:center;gap:.55rem;font:700 1rem/1 var(--texto);text-decoration:none;padding:1rem 1.35rem;border-radius:999px;background:var(--tinta);color:var(--arena);transition:transform .3s var(--ease)}
-.btn:hover{transform:translateY(-2px)}
-.btn.suave{background:transparent;color:var(--tinta);box-shadow:inset 0 0 0 2px var(--tinta)}
-.ico{width:1.15em;height:1.15em;fill:none;stroke:currentColor;stroke-width:2;stroke-linecap:round;stroke-linejoin:round;flex:none}
-.pend{display:inline-block;font:600 .72rem/1.3 var(--texto);letter-spacing:.04em;background:#fff6d9;color:#6b5200;border:1px dashed #c9a53a;border-radius:.4rem;padding:.12rem .45rem;vertical-align:middle}
-/* franja de propuesta */
-.franja{background:var(--tinta);color:var(--arena);font:500 .82rem/1.4 var(--texto);text-align:center;padding:.5rem 1rem}
-/* cabecera */
-.cab{position:sticky;top:0;z-index:40;background:rgb(243 235 224/.94);backdrop-filter:blur(8px);border-bottom:1px solid var(--arena-2)}
-.cab .wrap{display:flex;align-items:center;justify-content:space-between;gap:1rem;height:4.4rem}
-.marca{display:flex;align-items:center;gap:.6rem;text-decoration:none}
-.marca img{width:1.35rem}
-.marca b{font:400 1.45rem/.9 var(--display)}
-.marca b i{font-style:italic}
-.nav{display:flex;gap:1.6rem;font-weight:600;font-size:.95rem}
-.nav a{text-decoration:none}
-.nav a:hover{color:var(--rosa-t)}
-.cab .btn{padding:.7rem 1rem;font-size:.92rem}
-@media (max-width:900px){.nav{display:none}}
-@media (max-width:420px){.cab .btn span{display:none}.cab .btn{padding:.7rem}}
-
-/* PORTADA: la silueta monumental hace de «y» */
-.portada{padding:clamp(1.5rem,4vh,3rem) 0 clamp(2.5rem,6vh,4rem);display:grid;justify-items:center}
-.titular-h1{display:grid;grid-template-columns:1fr auto 1fr;align-items:center;gap:clamp(.8rem,2.4vw,2.4rem);width:100%;max-width:84rem;padding:0 clamp(1rem,3vw,2rem);font-size:clamp(3rem,6.6vw,6.6rem);line-height:.92}
-.lado-t{display:flex;flex-direction:column;gap:.1em}
-.lado-t em{white-space:nowrap}
-.m-lado{text-align:right;align-items:flex-end;color:var(--rosa-t)}
-.v-lado{text-align:left;align-items:flex-start;color:var(--turq-t);padding-top:1.6em}
-.lado-t .pre{color:var(--tinta);font-size:.62em}
-.lado-t small{font:700 clamp(.72rem,1vw,.85rem)/1.2 var(--texto);letter-spacing:.2em;text-transform:uppercase;margin-top:.9rem;display:flex;align-items:center;gap:.6rem}
-.m-lado small::after,.v-lado small::before{content:'';width:2.6rem;height:2px;background:currentColor}
-.sil-caja{position:relative;display:block;height:min(58svh,38rem);aspect-ratio:100/152;overflow:hidden}
-.sil-caja svg{width:100%;height:100%}
-.tapa{position:absolute;inset:-2% -5%;background:linear-gradient(to bottom,var(--arena) 86%,rgb(243 235 224/0))}
-@media (prefers-reduced-motion:no-preference){
-  .tapa{animation:drena 2.2s var(--ease) .2s both}
-  @keyframes drena{from{transform:translateY(0)}to{transform:translateY(-118%)}}
-}
-@media (prefers-reduced-motion:reduce){.tapa{display:none}}
-.bajo{text-align:center;max-width:40rem;padding:0 1rem;margin-top:clamp(1rem,3vh,2rem)}
-.sub{margin:0 auto 1.6rem;font-size:clamp(1.05rem,1.5vw,1.2rem)}
-.acciones{display:flex;flex-wrap:wrap;gap:.8rem;justify-content:center}
-.dato{margin:1.3rem auto 0;font-size:.9rem;font-weight:600;color:#2E4550}
-@media (max-width:760px){
-  .titular-h1{grid-template-columns:1fr;justify-items:center;text-align:center;font-size:clamp(2.7rem,13vw,4rem);gap:.6rem}
-  .lado-t,.m-lado,.v-lado{align-items:center;text-align:center;padding-top:0}
-  .m-lado small::after{display:none}.v-lado small::before{display:none}
-  .sil-caja{height:clamp(13rem,34svh,18rem)}
-}
-
-/* franja de hueco: nadie las junta */
-.junta{background:var(--tinta);color:var(--arena);padding:clamp(3rem,7vw,5rem) 0}
-.junta .wrap{display:grid;grid-template-columns:1.1fr 1fr;gap:clamp(2rem,5vw,4rem);align-items:center}
-.junta h2{font-size:clamp(2rem,4.4vw,3.2rem)}
-.junta h2 .m{color:#F28DB4} .junta h2 .v{color:#6CC6E6}
-.junta p{color:#D9D2C7}
-@media (max-width:800px){.junta .wrap{grid-template-columns:1fr}}
-
-/* EL MAPA DE LA SILUETA */
-.mapa{padding:clamp(4rem,9vw,7rem) 0}
-.mapa-cab{display:flex;justify-content:space-between;align-items:end;gap:2rem;flex-wrap:wrap;margin-bottom:2.5rem}
-.mapa-cab p{max-width:30rem;margin:0}
-.mapa-cuerpo{display:grid;grid-template-columns:minmax(14rem,19rem) 1fr;gap:clamp(1.5rem,4vw,4rem);align-items:start}
-.cuerpo{position:sticky;top:6rem}
-.cuerpo svg{width:100%}
-.cuerpo .z{cursor:pointer}
-.cuerpo .z circle{fill:var(--arena);stroke:var(--tinta);stroke-width:.7;transition:transform .35s var(--ease);transform-box:fill-box;transform-origin:center}
-.cuerpo .z text{font:700 5.2px var(--texto);fill:var(--tinta)}
-.cuerpo .z .n{font:400 6px var(--display);text-anchor:middle;dominant-baseline:central}
-.cuerpo .z.on circle,.cuerpo .z:hover circle{fill:var(--tinta);transform:scale(1.25)}
-.cuerpo .z.on .n,.cuerpo .z:hover .n{fill:var(--arena)}
-.zonas-lista{display:flex;flex-wrap:wrap;gap:.5rem;margin-bottom:1.4rem}
-.zonas-lista button{font:600 .92rem/1 var(--texto);border:2px solid var(--tinta);background:transparent;color:var(--tinta);padding:.6rem .9rem;border-radius:999px;cursor:pointer}
-.zonas-lista button[aria-selected=true]{background:var(--tinta);color:var(--arena)}
-.hoja{background:#FBF7F1;border-radius:1.4rem;padding:clamp(1.4rem,3.4vw,2.6rem);box-shadow:0 1px 0 var(--arena-2),0 24px 48px -32px rgb(22 50 63/.35)}
-.hoja + .hoja{margin-top:1.5rem}
-.js .hoja[hidden]{display:none}
-.hoja h3{margin-bottom:.9rem}
-.notas{font-size:1.1rem;border-left:3px solid var(--linea);padding-left:1rem;margin-bottom:1.6rem}
-.notas b{display:block;font:700 .74rem/1 var(--texto);letter-spacing:.18em;text-transform:uppercase;margin-bottom:.5rem;color:#7a5f36}
-.dos{display:grid;grid-template-columns:1fr 1fr;gap:1rem}
-.lado{border-radius:1rem;padding:1.2rem 1.25rem}
-.lado.m{background:var(--rosa-e)} .lado.v{background:var(--turq-e)}
-.lado b{display:flex;align-items:center;gap:.45rem;font:700 .76rem/1.2 var(--texto);letter-spacing:.14em;text-transform:uppercase;margin-bottom:.55rem}
-.lado p{color:var(--tinta);margin:0;font-size:1rem}
-.balanza{margin:1.4rem 0 .4rem;display:grid;grid-template-columns:auto 1fr auto;gap:.8rem;align-items:center;font:600 .82rem/1.2 var(--texto)}
-.barra{height:.55rem;border-radius:999px;background:linear-gradient(90deg,var(--rosa) 0 var(--p),var(--turq) var(--p) 100%);position:relative}
-.barra::after{content:'';position:absolute;left:var(--p);top:-.35rem;width:2px;height:1.25rem;background:var(--tinta);transform:translateX(-1px)}
-.balanza + small{display:block;font-size:.8rem;color:#44545B}
-.cuando{display:grid;grid-template-columns:1fr 1fr;gap:1rem;margin-top:1.3rem;padding-top:1.2rem;border-top:1px solid var(--arena-2);font-size:.95rem}
-.cuando b{display:block;font:italic 400 1.2rem/1.1 var(--display);margin-bottom:.2rem}
-.leer{display:inline-flex;align-items:center;gap:.4rem;margin-top:1.3rem;font-weight:700;text-decoration:none;border-bottom:2px solid var(--rosa)}
-.aviso{font-size:.88rem;margin-top:1rem;color:#44545B}
-@media (max-width:800px){.mapa-cuerpo{grid-template-columns:1fr}.cuerpo{position:static;max-width:13rem;margin:0 auto}.dos,.cuando{grid-template-columns:1fr}}
-
-/* LO QUE SE NOTA PRONTO Y LO QUE SE QUEDA */
-.tiempo{background:var(--arena-2);padding:clamp(4rem,9vw,7rem) 0}
-.tiempo h2{max-width:16ch}
-.carriles{margin-top:3rem;display:grid;gap:1.2rem}
-.escala{display:grid;grid-template-columns:9rem repeat(3,1fr);font:700 .76rem/1.2 var(--texto);letter-spacing:.12em;text-transform:uppercase;color:#7a5f36}
-.carril{display:grid;grid-template-columns:9rem 1fr;align-items:center;gap:0}
-.carril > b{font:italic 400 1.35rem/1 var(--display)}
-.carril > b.v{color:#095F80}.carril > b.m{color:#A8245A}
-.onda{height:3.4rem;border-radius:.6rem;position:relative;overflow:hidden;background:rgb(255 255 255/.45)}
-.onda svg{position:absolute;inset:0;width:100%;height:100%}
-.etapas{display:grid;grid-template-columns:repeat(3,1fr);gap:1.5rem;margin-top:2.2rem;margin-left:9rem}
-.etapa h3{font-size:1.45rem;margin-bottom:.5rem}
-.etapa p{font-size:.98rem}
-.compromiso{margin-top:3rem;background:var(--tinta);color:var(--arena);border-radius:1.4rem;padding:clamp(1.5rem,4vw,2.6rem);display:grid;grid-template-columns:auto 1fr;gap:1.6rem;align-items:center}
-.compromiso img{width:3.2rem}
-.compromiso p{margin:0;font-size:1.15rem;max-width:none}
-.compromiso strong{font:italic 400 1.6rem/1.15 var(--display);display:block;margin-bottom:.4rem;color:#fff}
-.esquema{font-size:.8rem;color:#4A5459;margin-top:.8rem}
-@media (max-width:800px){.escala{display:none}.carril{grid-template-columns:1fr;gap:.4rem}.etapas{grid-template-columns:1fr;margin-left:0}.compromiso{grid-template-columns:1fr}}
-
-/* LAS DOS PUERTAS */
-.puertas{display:grid;grid-template-columns:1fr 1fr}
-.pu{padding:clamp(3.5rem,8vw,6rem) clamp(1rem,5vw,4.5rem);position:relative;overflow:hidden}
-.pu.m{background:var(--rosa-e)} .pu.v{background:var(--turq-e)}
-.pu.m,.pu.v{color:var(--tinta)}
-.pu .traz{position:absolute;top:-3rem;height:120%;width:auto;opacity:.16;pointer-events:none}
-.pu.m .traz{right:-2rem} .pu.v .traz{left:-2rem}
-.pu h2{font-size:clamp(2.1rem,4.6vw,3.4rem);margin-bottom:1rem}
-.pu.m h2{color:var(--rosa-t)} .pu.v h2{color:var(--turq-t)}
-.servicios{list-style:none;padding:0;margin:2rem 0}
-.servicios li{padding:1rem 0;border-top:1px solid rgb(22 50 63/.14);display:grid;gap:.2rem}
-.servicios li b{font:400 1.35rem/1.15 var(--display)}
-.servicios li span{font-size:.97rem}
-.precio{display:flex;align-items:baseline;gap:.7rem;flex-wrap:wrap;margin-bottom:1.4rem}
-.precio b{font:400 2.6rem/1 var(--display)}
-.pu.m .btn{background:var(--rosa-t)} .pu.v .btn{background:var(--turq-t)}
-.pu .btn{color:#fff}
-.plan{background:var(--arena);padding:clamp(3rem,6vw,4.5rem) 0;text-align:center}
-.plan .sello{width:3rem;margin:0 auto 1rem}
-.plan h2{font-size:clamp(2rem,4.4vw,3.1rem);max-width:22ch;margin:0 auto 1rem}
-.plan p{margin:0 auto 1.4rem}
-@media (max-width:800px){.puertas{grid-template-columns:1fr}}
-
-/* NOTA HONESTA */
-.honesta{background:var(--tinta);color:var(--arena);padding:clamp(4rem,9vw,7rem) 0}
-.honesta h2 i{color:#F28DB4}
-.frases{margin-top:2.6rem;border-top:1px solid rgb(243 235 224/.2)}
-.frase{display:grid;grid-template-columns:1fr 1.4fr;gap:2rem;padding:1.5rem 0;border-bottom:1px solid rgb(243 235 224/.2);align-items:baseline}
-.frase s{font:italic 400 clamp(1.3rem,2.4vw,1.8rem)/1.15 var(--display);color:#9FB0B8;text-decoration-thickness:2px;text-decoration-color:#F28DB4}
-.frase p{margin:0;color:#EDE6DA}
-.frase p b{color:#fff}
-.honesta .firma{margin-top:2rem;font:italic 400 1.4rem/1.3 var(--display);color:#fff}
-@media (max-width:700px){.frase{grid-template-columns:1fr;gap:.5rem}}
-
-/* CASOS con permiso */
-.casos{padding:clamp(4rem,9vw,7rem) 0}
-.casos .fila{display:grid;grid-template-columns:repeat(3,1fr);gap:1.2rem;margin-top:2.4rem}
-.caso{border-radius:1.2rem;overflow:hidden;background:#FBF7F1;box-shadow:0 1px 0 var(--arena-2)}
-.caso .fotos{display:grid;grid-template-columns:1fr 1fr;gap:3px;background:var(--arena-2);aspect-ratio:4/3}
-.caso .fotos div{display:grid;place-items:center;background:repeating-linear-gradient(135deg,#efe5d6 0 8px,#e9dccb 8px 16px);font:700 .7rem/1.2 var(--texto);letter-spacing:.14em;text-transform:uppercase;color:#7a5f36}
-.caso-pie{padding:1rem 1.1rem;font-size:.92rem}
-.caso-pie b{display:block;font:400 1.15rem/1.2 var(--display)}
-.reglas{margin-top:1.6rem;display:flex;flex-wrap:wrap;gap:.5rem 1.4rem;font-size:.9rem;font-weight:600}
-.reglas span{display:inline-flex;align-items:center;gap:.4rem}
-@media (max-width:800px){.casos .fila{grid-template-columns:1fr}}
-
-/* SESIÓN */
-.sesion{background:var(--rosa-e);padding:clamp(4rem,9vw,7rem) 0}
-.sesion .wrap{display:grid;grid-template-columns:1fr 1.2fr;gap:clamp(2rem,6vw,5rem)}
-.pasos{list-style:none;margin:0;padding:0;position:relative}
-.pasos::before{content:'';position:absolute;left:1.35rem;top:.5rem;bottom:.5rem;width:2px;background:linear-gradient(var(--rosa),var(--turq))}
-.pasos li{position:relative;padding:0 0 2rem 4rem}
-.pasos li::before{content:counter(p);counter-increment:p;position:absolute;left:0;top:-.2rem;width:2.7rem;height:2.7rem;border-radius:50%;background:var(--arena);border:2px solid var(--tinta);display:grid;place-items:center;font:400 1.3rem/1 var(--display)}
-.pasos{counter-reset:p}
-.pasos b{font:400 1.45rem/1.15 var(--display);display:block;margin-bottom:.25rem}
-.quien{margin-top:2rem;display:grid;grid-template-columns:7rem 1fr;gap:1.2rem;align-items:center}
-.retrato{aspect-ratio:1;border-radius:50% 50% 46% 46%/58% 58% 42% 42%;background:repeating-linear-gradient(135deg,#f1d3de 0 8px,#ebc6d3 8px 16px);display:grid;place-items:center;text-align:center;font:700 .62rem/1.2 var(--texto);letter-spacing:.12em;text-transform:uppercase;color:var(--rosa-t);padding:.6rem}
-@media (max-width:800px){.sesion .wrap{grid-template-columns:1fr}}
-
-/* DÓNDE */
-.donde{padding:clamp(4rem,9vw,7rem) 0}
-.donde .wrap{display:grid;grid-template-columns:1fr 1.3fr;gap:clamp(2rem,6vw,5rem)}
-.dos-sitios{display:grid;gap:1rem;margin-top:1.6rem}
-.sitio{display:grid;grid-template-columns:2.6rem 1fr;gap:.9rem;align-items:start}
-.sitio .ico{width:2.6rem;height:2.6rem;padding:.6rem;border-radius:50%;background:var(--tinta);color:var(--arena)}
-.sitio b{font:400 1.35rem/1.2 var(--display);display:block}
-.distritos{columns:2;column-gap:2rem}
-.distrito{break-inside:avoid;padding:1rem 0;border-top:1px solid var(--arena-2)}
-.distrito h3{font-size:1.25rem;margin-bottom:.35rem}
-.distrito p{font-size:.95rem;margin:0}
-.distrito a{text-decoration:none;border-bottom:1px solid var(--linea)}
-.distrito a:hover{border-color:var(--rosa)}
-@media (max-width:800px){.donde .wrap{grid-template-columns:1fr}.distritos{columns:1}}
-
-/* PREGUNTAS */
-.preguntas{background:var(--turq-e);padding:clamp(4rem,9vw,7rem) 0}
-.preguntas .wrap{max-width:52rem}
-details{border-top:1px solid rgb(22 50 63/.18);padding:1.1rem 0}
-details:last-of-type{border-bottom:1px solid rgb(22 50 63/.18)}
-summary{cursor:pointer;list-style:none;font:400 clamp(1.25rem,2.2vw,1.5rem)/1.2 var(--display);display:flex;justify-content:space-between;gap:1rem}
-summary::-webkit-details-marker{display:none}
-summary::after{content:'+';font-family:var(--texto);font-weight:300;font-size:1.6rem;line-height:1;color:var(--turq-t)}
-details[open] summary::after{content:'–'}
-details p{margin:.8rem 0 0}
-
-/* CIERRE */
-.cierre{background:var(--tinta);color:var(--arena);padding:clamp(4.5rem,10vw,8rem) 0;position:relative;overflow:hidden;text-align:center}
-.cierre .grande{position:absolute;left:50%;top:50%;height:130%;width:auto;transform:translate(-50%,-50%);opacity:.22;pointer-events:none}
-.cierre h2{position:relative;max-width:18ch;margin:0 auto 1.4rem;color:#fff}
-.cierre p{position:relative;margin:0 auto 2rem;color:#D9D2C7}
-.cierre .btn{position:relative;background:var(--arena);color:var(--tinta)}
-/* PIE */
-.pie{background:#0F2530;color:#CFC8BC;padding:3rem 0 2rem;font-size:.92rem}
-.pie .wrap{display:grid;grid-template-columns:1.3fr 1fr 1fr 1fr;gap:2rem}
-.pie .tit{font:700 .75rem/1 var(--texto);letter-spacing:.18em;text-transform:uppercase;margin:0 0 .9rem;color:#fff}
-.pie a{text-decoration:none}
-.pie ul{list-style:none;margin:0;padding:0;display:grid;gap:.35rem}
-.pie .marca b{color:#fff}
-.legal{grid-column:1/-1;border-top:1px solid rgb(255 255 255/.12);padding-top:1.4rem;display:flex;flex-wrap:wrap;gap:1.2rem;justify-content:space-between}
-@media (max-width:800px){.pie .wrap{grid-template-columns:1fr 1fr}}
-@media (max-width:480px){.pie .wrap{grid-template-columns:1fr}}
-
-@media (prefers-reduced-motion:no-preference){@supports (animation-timeline:view()){
-  .revela{animation:sube linear both;animation-timeline:view();animation-range:entry 0% cover 24%}
-  @keyframes sube{from{opacity:0;transform:translateY(1.4rem)}to{opacity:1;transform:none}}}}
-.visually-hidden{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0);white-space:nowrap}
-
 .barrio{padding:clamp(3rem,7vw,5rem) 0}
 .miga{font-size:.88rem;font-weight:600;margin-bottom:1.6rem}
 .miga a{text-decoration:none;border-bottom:1px solid var(--linea)}
@@ -297,15 +49,15 @@ details p{margin:.8rem 0 0}
   <symbol id="i-ok" viewBox="0 0 24 24"><path d="M20 6 9 17l-5-5"/></symbol>
   <symbol id="i-reloj" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><path d="M12 6v6l4 2"/></symbol>
 </svg>
-<div class="franja">Propuesta de marca y web para Siluetas de Mujer, en revisión. Ejemplo de página de zona: se publica solo con datos reales de cobertura.</div>
+<div class="franja">Propuesta de web para Siluetas de Mujer, en revisión (v2). Ejemplo de página de zona: se publica solo con datos reales de cobertura.</div>
 <header class="cab">
   <div class="wrap">
     <a class="marca" href="#inicio" aria-label="Siluetas de Mujer, inicio"><img src="img/silueta.svg" alt="" width="22" height="33"><b><i>Siluetas</i> de Mujer</b></a>
     <nav class="nav" aria-label="Principal">
+      <a href="maderoterapia-cordoba/">Maderoterapia</a>
+      <a href="entrenamiento-personal-mujeres-cordoba/">Entrenamiento</a>
+      <a href="masajes-cordoba/">Masajes</a>
       <a href="#zonas">Qué te preocupa</a>
-      <a href="#manos">Manos</a>
-      <a href="#movimiento">Movimiento</a>
-      <a href="#honesta">Nota honesta</a>
       <a href="#donde">Dónde</a>
     </nav>
     <a class="btn" href="https://wa.me/34646437371?text=Hola%20Mari%20Carmen%2C%20te%20escribo%20desde%20la%20web%20de%20Siluetas%20de%20Mujer" aria-label="Escribir por WhatsApp"><svg class="ico"><use href="#i-wa"/></svg><span>WhatsApp</span></a>
@@ -316,7 +68,7 @@ details p{margin:.8rem 0 0}
   <div class="wrap">
     <p class="miga"><a href="index.html">Inicio</a> · <a href="index.html#donde">Dónde</a> · El Brillante y la Arruzafa</p>
     <p class="ante v"><svg class="ico"><use href="#i-casa"/></svg>A domicilio · Norte de Córdoba</p>
-    <h1>En El Brillante, <em>voy yo a tu casa.</em></h1>
+    <h1>En El Brillante, voy yo a tu casa.</h1>
     <div class="barrio-rej">
       <div>
         <p style="font-size:1.15rem">Maderoterapia, masaje y entrenamiento de fuerza para mujeres, sin que tengas que coger el coche ni buscar aparcamiento. Llevo la camilla y el material. Si tienes patio o jardín, entrenamos ahí; si no, basta con un salón despejado.</p>
@@ -342,7 +94,7 @@ details p{margin:.8rem 0 0}
 <section class="que-piden">
   <div class="wrap">
     <p class="ante">Por dónde empezar</p>
-    <h2 style="font-size:clamp(2rem,4vw,3rem)">Las dos zonas <em>que más se preguntan.</em></h2>
+    <h2 style="font-size:clamp(2rem,4vw,3rem)">Las dos zonas que más se preguntan.</h2>
     <div class="dos">
       <div class="lado m"><b class="m"><svg class="ico"><use href="#i-mano"/></svg>Piernas cargadas</b><p>Con el calor, las piernas pesan más. Manos para aliviar y movimiento para que aguanten. <a href="index.html#z-piernas">Ver piernas</a></p></div>
       <div class="lado v"><b class="v"><svg class="ico"><use href="#i-mov"/></svg>Espalda y fuerza</b><p>Fuerza y movilidad para mantenerte activa y sin dolores. <a href="index.html#z-espalda">Ver espalda</a></p></div>
@@ -363,6 +115,7 @@ details p{margin:.8rem 0 0}
       <a class="marca" href="#inicio"><img src="img/silueta.svg" alt="" width="22" height="33"><b><i>Siluetas</i> de Mujer</b></a>
       <p style="margin-top:1rem">Maderoterapia, masaje y entrenamiento para mujeres en Córdoba. Por Mari Carmen Figueras.</p>
     </div>
+    <div><p class="tit">Servicios</p><ul><li><a href="maderoterapia-cordoba/">Maderoterapia en Córdoba</a></li><li><a href="entrenamiento-personal-mujeres-cordoba/">Entrenadora personal</a></li><li><a href="masajes-cordoba/">Masajes</a></li></ul></div>
     <div><p class="tit">Qué te preocupa</p><ul><li><a href="#z-piernas">Piernas cansadas</a></li><li><a href="celulitis-cordoba/">Celulitis</a></li><li><a href="#z-abdomen">Abdomen y menopausia</a></li><li><a href="#z-brazos">Flacidez de brazos</a></li><li><a href="#z-espalda">Espalda y cuello</a></li></ul></div>
     <div><p class="tit">Dónde</p><ul><li>Sala: <span class="pend">pendiente</span></li><li>A domicilio en Córdoba</li><li><a href="zonas/brillante/">El Brillante y Arruzafa</a></li></ul></div>
     <div><p class="tit">Contacto</p><ul><li><a href="https://wa.me/34646437371">WhatsApp 646 437 371</a></li><li>Lunes a viernes, 10:00 a 20:00</li></ul></div>

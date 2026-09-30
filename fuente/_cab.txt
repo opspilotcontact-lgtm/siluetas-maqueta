@@ -2,10 +2,10 @@
   <div class="wrap">
     <a class="marca" href="#inicio" aria-label="Siluetas de Mujer, inicio"><img src="img/silueta.svg" alt="" width="22" height="33"><b><i>Siluetas</i> de Mujer</b></a>
     <nav class="nav" aria-label="Principal">
+      <a href="maderoterapia-cordoba/">Maderoterapia</a>
+      <a href="entrenamiento-personal-mujeres-cordoba/">Entrenamiento</a>
+      <a href="masajes-cordoba/">Masajes</a>
       <a href="#zonas">Qué te preocupa</a>
-      <a href="#manos">Manos</a>
-      <a href="#movimiento">Movimiento</a>
-      <a href="#honesta">Nota honesta</a>
       <a href="#donde">Dónde</a>
     </nav>
     <a class="btn" href="https://wa.me/34646437371?text=Hola%20Mari%20Carmen%2C%20te%20escribo%20desde%20la%20web%20de%20Siluetas%20de%20Mujer" aria-label="Escribir por WhatsApp"><svg class="ico"><use href="#i-wa"/></svg><span>WhatsApp</span></a>
