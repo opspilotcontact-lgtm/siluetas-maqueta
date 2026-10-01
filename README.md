@@ -1,7 +1,7 @@
 # Siluetas de Mujer · propuesta de marca y web
 
-Maqueta en revisión (noindex). Versión actual: **v4 «el camino, con forma»** en la raíz.
-Versiones anteriores: /v2/ y /v1/.
+Maqueta en revisión (noindex). Versión actual: **v5** en la raíz (v4 + correcciones de Carmen del 1-oct + «Elige tu día»).
+Versiones anteriores: /v4/, /v2/ y /v1/.
 
 ## Cómo se construye la versión actual
 

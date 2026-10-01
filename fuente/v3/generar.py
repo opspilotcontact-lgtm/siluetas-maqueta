@@ -1,4 +1,4 @@
-"""Siluetas de Mujer · v4 «el camino, con forma».
+"""Siluetas de Mujer · v5 (v4 «el camino, con forma» + audios de Carmen del 1-oct + la agenda).
 
 v3 dio el SISTEMA (una paleta, una letra, el camino, una plantilla) y el fundador
 lo aprobó; le faltaba personalidad: «texto y más texto». La v4 mantiene el sistema
@@ -95,7 +95,7 @@ def cabecera(base, actual=''):
     cur = ' aria-current="page"'
     enl = ''.join(f'<a href="{h}"{cur if u and u == actual else ""}>{t}</a>' for h, t, u in nav)
     return f'''<a class="salta" href="#contenido">Saltar al contenido</a>
-<div class="franja">Propuesta de web para Siluetas de Mujer, en revisión (v4). Las imágenes son ilustrativas, generadas con IA. <a href="{base}v2/">Ver la v2</a></div>
+<div class="franja">Propuesta de web para Siluetas de Mujer, en revisión (v5). Las imágenes son ilustrativas, generadas con IA. <a href="{base}v4/">Ver la v4</a></div>
 <header class="cab"><div class="wrap">
   <a class="marca" href="{base}" aria-label="Siluetas de Mujer, inicio"><img src="{base}img/silueta.svg" alt="" width="20" height="30"><span><i>Siluetas</i> de Mujer</span></a>
   <nav class="nav" aria-label="Principal">{enl}</nav>
@@ -129,6 +129,68 @@ def pasos(titulo='Tus 3 pasos para empezar', texto='Sin compromiso. La valoraci�
 </div></section>'''
 
 
+AGENDA_QUE = [('valoracion', 'Valoración gratis', 'mi valoración gratuita'), ('maderoterapia', 'Maderoterapia', 'una sesión de maderoterapia'),
+              ('masaje', 'Masaje', 'un masaje'), ('entreno', 'Entrenamiento', 'empezar a entrenar')]
+
+
+def agenda(que='valoracion', titulo='Elige tu día.', texto='Marca el día y la franja que te vienen bien y me llega por WhatsApp. Yo te confirmo la hora.'):
+    """El calendario de mesa: la clienta elige día y franja y sale un WhatsApp para «reservarlo».
+    Solo visual: no hay agenda detrás; Carmen confirma a mano."""
+    ques = ''.join(f'<button type="button" data-que="{k}" data-txt="{html.escape(t)}" aria-pressed="{str(k == que).lower()}">{n}</button>'
+                   for k, n, t in AGENDA_QUE)
+    dias = ''.join(f'<button type="button" class="hoja" data-d="{i}" disabled><span class="anilla" aria-hidden="true"></span>'
+                   f'<small>{d}</small><b>·</b><em></em></button>'
+                   for i, d in enumerate(['Lunes', 'Martes', 'Miércoles', 'Jueves', 'Viernes'] * 2))
+    return f'''<section class="seccion agenda-sec" id="reserva"><div class="wrap">
+  <div class="agenda">
+    <div class="agenda-txt">
+      <h2>{titulo}</h2>
+      <p>{texto}</p>
+      <p class="suave">De lunes a viernes, en mi sala o en tu casa, en Córdoba capital.</p>
+    </div>
+    <div class="agenda-cal">
+      <p class="agenda-paso"><b>1</b>¿Para qué?</p>
+      <div class="chips" role="group" aria-label="Para qué">{ques}</div>
+      <p class="agenda-paso"><b>2</b>Elige el día <span class="mes" aria-live="polite"></span></p>
+      <div class="hojas" role="group" aria-label="Días, de lunes a viernes">{dias}</div>
+      <p class="agenda-paso"><b>3</b>¿Mañana o tarde?</p>
+      <div class="chips" role="group" aria-label="Franja"><button type="button" data-f="por la mañana" aria-pressed="true">Mañana · 10 a 14</button><button type="button" data-f="por la tarde" aria-pressed="false">Tarde · 14 a 20</button></div>
+      <div class="agenda-res">
+        <p id="agenda-frase" aria-live="polite">Elige un día de lunes a viernes.</p>
+        <a class="btn" id="agenda-wa" href="{wa('Hola Mari Carmen, quiero reservar ' + dict((k, t) for k, _, t in AGENDA_QUE)[que] + '. ¿Qué día te viene bien?')}">Reservar por WhatsApp</a>
+        <small>Es una petición, no una cita cerrada: te contesto yo y cerramos la hora.</small>
+      </div>
+    </div>
+  </div>
+</div></section>'''
+
+
+AGENDA_JS = '''(function(){
+  var d=document,root=d.querySelector('.agenda');if(!root)return;
+  var hs=[].slice.call(root.querySelectorAll('.hoja')),qs=[].slice.call(root.querySelectorAll('[data-que]')),fs=[].slice.call(root.querySelectorAll('[data-f]'));
+  var fr=d.getElementById('agenda-frase'),wa=d.getElementById('agenda-wa'),mes=root.querySelector('.mes');
+  var M=['enero','febrero','marzo','abril','mayo','junio','julio','agosto','septiembre','octubre','noviembre','diciembre'];
+  var D=['domingo','lunes','martes','miércoles','jueves','viernes','sábado'];
+  var hoy=new Date();hoy.setHours(0,0,0,0);var t=new Date(hoy),wd=t.getDay();
+  t.setDate(t.getDate()-((wd+6)%7));if(wd===0||wd>=4)t.setDate(t.getDate()+7);var dias=[];
+  while(dias.length<10){if(t.getDay()>0&&t.getDay()<6)dias.push(new Date(t));t.setDate(t.getDate()+1)}
+  var sel=null,que=qs.filter(function(b){return b.getAttribute('aria-pressed')==='true'})[0]||qs[0],fra=fs[0];
+  hs.forEach(function(h,i){var f=dias[i];h.disabled=f<=hoy;if(h.disabled)h.classList.add('pasado');h.querySelector('small').textContent=D[f.getDay()].slice(0,3);
+    h.querySelector('b').textContent=f.getDate();h.querySelector('em').textContent=M[f.getMonth()].slice(0,3);
+    h.setAttribute('aria-label',D[f.getDay()]+' '+f.getDate()+' de '+M[f.getMonth()]+(h.disabled?' (ya pasado)':''));if(!h.disabled)h.setAttribute('aria-pressed','false');
+    h.onclick=function(){sel=i;pinta()}});
+  mes.textContent='· '+M[dias[0].getMonth()]+(dias[9].getMonth()!==dias[0].getMonth()?' y '+M[dias[9].getMonth()]:'');
+  function grupo(bs,cb){bs.forEach(function(b){b.onclick=function(){bs.forEach(function(x){x.setAttribute('aria-pressed',x===b)});cb(b);pinta()}})}
+  grupo(qs,function(b){que=b});grupo(fs,function(b){fra=b});
+  function pinta(){hs.forEach(function(h,i){if(!h.disabled)h.setAttribute('aria-pressed',i===sel)});
+    if(sel===null){fr.textContent='Elige un día de lunes a viernes.';return}
+    var f=dias[sel],dia=D[f.getDay()]+' '+f.getDate()+' de '+M[f.getMonth()];
+    fr.innerHTML='<b>'+que.textContent+'</b> el <b>'+dia+'</b>, '+fra.dataset.f+'.';
+    wa.textContent='Reservar el '+D[f.getDay()]+' '+f.getDate();
+    wa.href='https://wa.me/34646437371?text='+encodeURIComponent('Hola Mari Carmen, me gustaría reservar '+que.dataset.txt+' el '+dia+' '+fra.dataset.f+'. ¿Tienes hueco?')}
+})();'''
+
+
 def pagina(base, titulo, desc, cuerpo, actual='', extra_js='', ld=''):
     return f'''<!doctype html>
 <html lang="es">
@@ -157,6 +219,7 @@ def pagina(base, titulo, desc, cuerpo, actual='', extra_js='', ld=''):
   var io=new IntersectionObserver(function(es){{es.forEach(function(e){{if(e.isIntersecting){{e.target.classList.add('visto');io.unobserve(e.target)}}}})}},{{rootMargin:'0px 0px -12% 0px'}});
   els.forEach(function(e){{io.observe(e)}});
 }})();
+{AGENDA_JS}
 {extra_js}
 </script>
 </body>
@@ -183,7 +246,9 @@ def portada():
         else:
             extra += f'<button type="button" data-z="{u}"><i>{i}</i>No es una zona: quiero empezar a moverme</button>'
         paneles += (f'<div class="panel" id="p-{u}">{foto(f, b)}<div><p class="suave" style="margin:0">{i} · {ZONA.get(u, "Empezar")}</p>'
-                    f'<h3>«{t}»</h3><p class="lead">{g}</p><div class="ramas">{"".join(RAMA[r] for r in rr)}</div>'
+                    f'<h3 class="globo-h">{t}<small>Lo que me escribís</small></h3><p class="lead">{g}</p>'
+                    f'<div class="mini-bal" style="--p:{AYUDA[u]["p"]}%"><div class="barra"><i></i><i></i></div>'
+                    f'<p><span class="rama m">Manos {AYUDA[u]["p"]} %</span><span class="rama v">Movimiento {100 - AYUDA[u]["p"]} %</span></p></div>'
                     f'<a class="btn" href="{u}/">Ver cómo te ayudo</a></div></div>')
     extra += f'<a href="{wa("Hola Mari Carmen, no tengo claro por dónde empezar. ¿Me orientas?")}"><i>6</i>No lo tengo claro: oriéntame tú por WhatsApp</a>'
     cuerpo = f'''
@@ -204,7 +269,7 @@ def portada():
 </section>
 
 <section class="seccion"><div class="wrap">
-  <p class="frase-xl"><u class="m">Las manos</u>, para lo que notas pronto. <u class="v">El movimiento</u>, para lo que se queda.</p>
+  <p class="frase-xl"><span class="nw"><u class="m">Las manos</u><img class="en-linea" src="img/fotos/maderoterapia-mini.webp" alt="" width="160" height="160" loading="lazy"></span>, para lo que notas pronto. <span class="nw"><u class="v">El movimiento</u><img class="en-linea" src="img/fotos/grupo-mini.webp" alt="" width="160" height="160" loading="lazy"></span>, para lo que se queda.</p>
   <p>Lo que se deshincha con las manos vuelve si el cuerpo no se mueve. Por eso trabajo las dos cosas, con la misma persona siguiéndote.</p>
 </div></section>
 
@@ -221,8 +286,8 @@ def portada():
 <section class="ramas2" aria-label="Las dos maneras de trabajar">
   <a class="rama2" href="maderoterapia-cordoba/">{foto('descarga', b, sizes='(max-width: 760px) 100vw, 50vw')}
     <div class="dentro">{RAMA['m']}<h3>Por fuera, con las manos</h3>
-      <div class="tarifas"><div><span>Maderoterapia · 60 min</span><b>40 €</b></div><div><span>Masaje de descarga · 60 min</span><b>35 €</b></div><div><span>Masaje tailandés · 60 min</span><b>40 €</b></div></div>
-      <span class="ver">Bonos desde 32 € la sesión</span></div></a>
+      <div class="tarifas"><div><span>Maderoterapia · según zona</span><b>45–65 €</b></div><div><span>Masaje de descarga · 60 min</span><b>35 €</b></div><div><span>Masaje tailandés · 60 min</span><b>40 €</b></div></div>
+      <span class="ver">Con bono, desde 40 € la sesión</span></div></a>
   <a class="rama2" href="entrenamiento-personal-mujeres-cordoba/">{foto('entreno', b, sizes='(max-width: 760px) 100vw, 50vw')}
     <div class="dentro">{RAMA['v']}<h3>Por dentro, con el movimiento</h3>
       <div class="tarifas"><div><span>Grupos reducidos</span><b>hasta 5</b></div><div><span>Entrenamiento</span><b>1 a 1</b></div><div><span>En tu casa o en la sala</span><b>+ app</b></div></div>
@@ -244,27 +309,24 @@ def portada():
     <p>En Córdoba capital, de lunes a viernes de 10:00 a 20:00.</p>
     <ul class="lista">
       <li><span><b>En la sala</b><br>Un espacio cubierto y tranquilo, con grupos de hasta 5.</span></li>
-      <li><span><b>A domicilio</b><br>Llevo la camilla o el material. Solo necesitas un hueco de 2 o 3 metros.</span></li>
+      <li><span><b>A domicilio</b><br>Llevo la camilla o el material. Solo necesitas un hueco de 2 o 3 metros. En casa el precio cambia según la zona: pregúntame.</span></li>
     </ul>
     <p class="suave" style="margin:1.2rem 0 0">¿No sabes si llego a tu barrio? <a href="{wa('Hola Mari Carmen, ¿llegas a mi barrio?')}">Pregúntame</a>.</p>
   </div></div>
 </section>
 
 <section class="seccion"><div class="wrap dos-col">
-  <div class="tit-sec"><h2>Lo que me preguntáis antes de venir.</h2><p>Y si tu duda no está, escríbeme.</p></div>
+  <div class="tit-sec"><h2>Lo que me preguntáis antes de venir.</h2><p>Las cuatro dudas que más me llegan.</p>
+    <a class="duda" href="{wa('Hola Mari Carmen, tengo una duda: ')}"><span class="globo">¿Y si mi duda no está?</span><span class="globo yo">Escríbeme y te contesto yo, no un bot.<small>Carmen</small></span></a></div>
   <div class="faq">
     <details><summary>¿La valoración es gratis de verdad?</summary><p>Sí. Te miro, hablamos de lo que buscas y te hago tu plan en ese momento. Después decides.</p></details>
-    <details><summary>¿Duele la maderoterapia?</summary><p>No debería doler. Puedes notar presión en las zonas más cargadas, pero la intensidad se adapta a ti y me vas diciendo.</p></details>
+    <details><summary>¿Duele la maderoterapia?</summary><p>No debería doler. Puedes notar presión en las zonas más cargadas: uso la que requiere cada zona, ni más ni menos, y me vas diciendo.</p></details>
     <details><summary>¿Tengo que estar en forma para entrenar?</summary><p>No. Empezamos desde donde estás. En grupos de hasta 5 te puedo corregir a ti.</p></details>
     <details><summary>¿Puedo hacer solo masaje o solo entreno?</summary><p>Claro. Cada cosa funciona sola. Juntas se nota más, y te diré con honestidad cuándo te conviene una u otra.</p></details>
   </div>
 </div></section>
 
-<section class="seccion cierre"><div class="wrap">
-  {SIL}
-  <h2>Cuéntame qué notas. Te respondo yo.</h2>
-  <div class="acciones"><a class="btn" href="{wa('Hola Mari Carmen, te escribo desde la web de Siluetas de Mujer')}">Escribir a Carmen</a></div>
-</div></section>'''
+{agenda('valoracion', 'Elige tu día. Te contesto yo.', 'Marca para qué, el día y la franja, y me llega por WhatsApp. Yo te confirmo la hora: es una petición, no una cita cerrada.')}'''
     ld = ('<script type="application/ld+json">{"@context":"https://schema.org","@type":"HealthAndBeautyBusiness","name":"Siluetas de Mujer",'
           '"founder":{"@type":"Person","name":"Mari Carmen Figueras"},"description":"Masaje, maderoterapia y entrenamiento para mujeres en Córdoba, en sala o a domicilio.",'
           '"telephone":"+34646437371","areaServed":{"@type":"City","name":"Córdoba"},"address":{"@type":"PostalAddress","addressLocality":"Córdoba","addressCountry":"ES"},'
@@ -285,7 +347,7 @@ AYUDA = {
                 'Y los tobillos se me marcan con el calcetín. Con este calor, peor.',
                 'Trabajo muchas horas de pie. ¿Eso tiene arreglo?'],
         respuesta='Tiene mucho que ver. Con tantas horas de pie, al líquido le cuesta subir, y la pantorrilla, que hace de bomba, se mueve poco. <b>Primero lo aliviamos con las manos, y luego hacemos que la pierna se ayude sola.</b>',
-        manos='Maderoterapia y maniobras de drenaje, siempre de abajo arriba. Desaparece la retención y se nota pronto.',
+        manos='Maderoterapia y maniobras de drenaje linfático. Desaparece la retención y se nota pronto.',
         mov='Fuerza de piernas y rutinas cortas para que la pantorrilla trabaje y la circulación no dependa solo del masaje.',
         p=62, nota='Al principio pesan más las manos. Después, el movimiento lo sostiene.',
         tiempos=[('Pronto', 'Ligereza', 'Menos hinchazón en pocas sesiones.'),
@@ -302,7 +364,7 @@ AYUDA = {
                 'Me he gastado un dineral en cremas y nada.',
                 'A partir de los 45 se me marca más, y no he cambiado nada.'],
         respuesta='Te digo la verdad: <b>eliminarla, no te la elimina nadie.</b> La tiene casi todo el mundo, y con las hormonas se marca más. La madera mejora mucho cómo se ve y se siente la piel. Y si fortalecemos glúteo y pierna, cambia la forma de la zona.',
-        manos='Maderoterapia sobre piernas, glúteos y abdomen, en dirección al drenaje. Piel más suave y uniforme, y menos volumen si hay retención.',
+        manos='Maderoterapia sobre piernas, glúteos y abdomen, con drenaje antes de empezar. Piel más suave y uniforme, y menos volumen si hay retención.',
         mov='Un glúteo y una pierna más fuertes cambian la forma de la zona. Sentadillas, puentes y escalones, 2 o 3 días por semana.',
         p=50, nota='Aquí van a partes iguales.',
         tiempos=[('Pronto', 'Ligereza', 'Menos volumen si hay retención.'),
@@ -420,6 +482,7 @@ def ayuda(slug):
 </div></section>
 
 {pasos()}
+{agenda({'maderoterapia-cordoba': 'maderoterapia', 'masajes-cordoba': 'masaje'}.get(su, 'entreno'))}
 
 <section class="seccion"><div class="wrap">
   <div class="tit-sec"><h2 style="font-size:1.6rem">Otras cosas en las que te ayudo</h2></div>
@@ -430,12 +493,12 @@ def ayuda(slug):
 
 # ── Servicios ───────────────────────────────────────────────────────────────
 LAMINA = [
-    ('Rodillo de esferas', 'Muslo y glúteo. Rueda de abajo arriba para mover el tejido y ayudar al drenaje.',
-     '<g class="f"><circle cx="46" cy="46" r="13"/><circle cx="72" cy="46" r="13"/><circle cx="98" cy="46" r="13"/><circle cx="124" cy="46" r="13"/><circle cx="150" cy="46" r="13"/><circle cx="176" cy="46" r="13"/></g><g class="l"><circle cx="46" cy="46" r="13"/><circle cx="72" cy="46" r="13"/><circle cx="98" cy="46" r="13"/><circle cx="124" cy="46" r="13"/><circle cx="150" cy="46" r="13"/><circle cx="176" cy="46" r="13"/><path d="M30 46h-4v14q0 6 6 6h78v30"/><path d="M192 46h4v14q0 6-6 6h-78"/><rect x="102" y="96" width="16" height="34" rx="7"/></g><path class="r" d="M20 20h170"/><path class="ra" d="M190 14l6 6-6 6"/>'),
-    ('Copa sueca', 'Un efecto parecido a la ventosa sobre la piel de naranja de muslo y glúteo.',
-     '<path class="f" d="M100 16h20v14c0 6 5 9 5 15 0 14 30 34 30 62 0 8-5 13-12 13H77c-7 0-12-5-12-13 0-28 30-48 30-62 0-6 5-9 5-15z"/><path class="l" d="M100 16h20v14c0 6 5 9 5 15 0 14 30 34 30 62 0 8-5 13-12 13H77c-7 0-12-5-12-13 0-28 30-48 30-62 0-6 5-9 5-15z"/><path class="l" d="M68 106h84"/><ellipse class="l" cx="110" cy="16" rx="10" ry="3.5"/><path class="r" d="M175 120V32"/><path class="ra" d="M169 32l6-6 6 6"/>'),
-    ('Tabla moldeadora', 'Su perfil de ondas trabaja abdomen y costados, en pasadas largas.',
-     '<path class="f" d="M24 86c10-22 20-22 30 0s20 22 30 0 20-22 30 0 20 22 30 0 20-22 30 0 16 18 22 6v18H24z"/><path class="l" d="M24 86c10-22 20-22 30 0s20 22 30 0 20-22 30 0 20 22 30 0 20-22 30 0 16 18 22 6"/><path class="l" d="M24 86v18h172v-18"/><path class="l" d="M84 104v14q0 6 6 6h40q6 0 6-6v-14"/><path class="r" d="M24 34h160"/><path class="ra" d="M184 28l6 6-6 6"/>'),
+    ('Rodillo de esferas', 'La pieza más versátil: piernas, glúteos, abdomen o brazos, según lo que pida cada zona.',
+     '<g class="f"><circle cx="46" cy="46" r="13"/><circle cx="72" cy="46" r="13"/><circle cx="98" cy="46" r="13"/><circle cx="124" cy="46" r="13"/><circle cx="150" cy="46" r="13"/><circle cx="176" cy="46" r="13"/></g><g class="l"><circle cx="46" cy="46" r="13"/><circle cx="72" cy="46" r="13"/><circle cx="98" cy="46" r="13"/><circle cx="124" cy="46" r="13"/><circle cx="150" cy="46" r="13"/><circle cx="176" cy="46" r="13"/><path d="M30 46h-4v14q0 6 6 6h78v30"/><path d="M192 46h4v14q0 6-6 6h-78"/><rect x="102" y="96" width="16" height="34" rx="7"/></g>'),
+    ('Copa sueca', 'Un efecto de succión parecido al de la ventosa, para trabajar la piel de naranja.',
+     '<path class="f" d="M100 16h20v14c0 6 5 9 5 15 0 14 30 34 30 62 0 8-5 13-12 13H77c-7 0-12-5-12-13 0-28 30-48 30-62 0-6 5-9 5-15z"/><path class="l" d="M100 16h20v14c0 6 5 9 5 15 0 14 30 34 30 62 0 8-5 13-12 13H77c-7 0-12-5-12-13 0-28 30-48 30-62 0-6 5-9 5-15z"/><path class="l" d="M68 106h84"/><ellipse class="l" cx="110" cy="16" rx="10" ry="3.5"/>'),
+    ('Tabla moldeadora', 'Su perfil de ondas cubre zonas amplias, como el abdomen y los costados.',
+     '<path class="f" d="M24 86c10-22 20-22 30 0s20 22 30 0 20-22 30 0 20 22 30 0 20-22 30 0 16 18 22 6v18H24z"/><path class="l" d="M24 86c10-22 20-22 30 0s20 22 30 0 20-22 30 0 20 22 30 0 20-22 30 0 16 18 22 6"/><path class="l" d="M24 86v18h172v-18"/><path class="l" d="M84 104v14q0 6 6 6h40q6 0 6-6v-14"/>'),
 ]
 
 
@@ -451,15 +514,15 @@ def madero():
   <div>
     <p class="miga"><a href="{b}">Inicio</a> · Con las manos</p>
     <h1>Maderoterapia en Córdoba, explicada sin humo</h1>
-    <p class="lead">Una hora de trabajo manual con rodillo, copa y tabla de madera sobre piernas, glúteos y abdomen. Para aliviar la pesadez y mejorar el aspecto de la piel.</p>
-    <div class="cifras-xl"><div><b>Gratis</b><span>la valoración</span></div><div><b>40 €</b><span>sesión de 60 min</span></div><div><b>32 €</b><span>con bono de 10</span></div></div>
+    <p class="lead">Trabajo manual con piezas de madera sobre piernas, glúteos, abdomen y, si quieres, brazos. Para aliviar la pesadez y mejorar el aspecto de la piel.</p>
+    <div class="cifras-xl"><div><b>Gratis</b><span>la valoración</span></div><div><b>45–65 €</b><span>la sesión, según la zona</span></div><div><b>40 €</b><span>desde, con bono de 10</span></div></div>
     <div class="acciones" style="margin-top:1.8rem"><a class="btn" href="{wa('Hola Mari Carmen, quiero mi valoración gratuita de maderoterapia')}">Pedir mi valoración gratuita</a><a class="btn linea" href="#precios">Precios y bonos</a></div>
   </div>
   {foto('maderoterapia', b, carga='eager')}
 </div>
 
 <section class="seccion"><div class="wrap">
-  <div class="tit-sec"><h2>Tres maderas, tres maniobras.</h2><p>Manual y no invasiva: sin máquinas ni productos químicos. La flecha rosa marca hacia dónde va cada pasada: siempre hacia el drenaje.</p></div>
+  <div class="tit-sec"><h2>Tres maderas, tres maniobras.</h2><p>Manual y no invasiva: sin máquinas ni productos químicos. Son mis tres piezas principales, no las únicas: según la zona y lo que necesite, uso otras.</p></div>
   <div class="lamina">{lam}</div>
 </div></section>
 
@@ -480,16 +543,15 @@ def madero():
 </div></section>
 
 <section class="seccion"><div class="wrap">
-  <div class="tit-sec"><h2>Así son tus 60 minutos.</h2><p>Una hora completa sobre la camilla, en la sala o en tu casa.</p></div>
-  <div class="regla" style="--cols:5fr 5fr 30fr 12fr 8fr">
-    <div class="regla-barra" aria-hidden="true"><span style="background:#16323F">Hablamos</span><span style="background:#B8295F">Aceite</span><span style="background:#D93A7A">Trabajo por zonas</span><span style="background:#B8295F">Drenaje</span><span style="background:#16323F">Cierre</span></div>
-    <div class="regla-escala" aria-hidden="true"><span>0'</span><span>5'</span><span>10'</span><span>40'</span><span>52'</span></div>
+  <div class="tit-sec"><h2>Así es tu sesión.</h2><p>Siempre en este orden. Lo que dura depende de las zonas que trabajemos, en la sala o en tu casa.</p></div>
+  <div class="regla" style="--cols:5fr 9fr 4fr 30fr 6fr">
+    <div class="regla-barra" aria-hidden="true"><span style="background:#16323F">Hablamos</span><span style="background:#B8295F">Drenaje</span><span style="background:#16323F">Aceite</span><span style="background:#D93A7A">Trabajo por zonas</span><span style="background:#16323F">Cierre</span></div>
   </div>
   <div class="regla-pasos" style="--n:5">
     <div style="--c:#16323F"><h3>Hablamos</h3><p>Qué notas y cómo estás de salud.</p></div>
-    <div style="--c:#B8295F"><h3>Aceite</h3><p>Para que la madera deslice.</p></div>
-    <div style="--c:#D93A7A"><h3>Trabajo por zonas</h3><p>Cada madera en su zona, con la presión que toleres.</p></div>
-    <div style="--c:#B8295F"><h3>Drenaje</h3><p>Maniobras largas hacia arriba.</p></div>
+    <div style="--c:#B8295F"><h3>Drenaje</h3><p>Maniobras para activar los ganglios linfáticos. Preparan el cuerpo antes de la madera.</p></div>
+    <div style="--c:#16323F"><h3>Aceite</h3><p>Para que la madera deslice.</p></div>
+    <div style="--c:#D93A7A"><h3>Trabajo por zonas</h3><p>Cada madera en su zona, con la presión que requiere.</p></div>
     <div style="--c:#16323F"><h3>Cierre</h3><p>Qué te recomiendo hasta la próxima.</p></div>
   </div>
 </div></section>
@@ -504,11 +566,12 @@ def madero():
   <div class="tit-sec"><h2>Cuánto cuesta.</h2><p>Cuantas más sesiones, menos te cuesta cada una.</p></div>
   <div class="precios-col">
     <div class="recibo">
-      <div class="cab-r"><span>Maderoterapia · 60 min</span><img src="{b}img/silueta.svg" alt="" width="16" height="24"></div>
-      <div class="linea-r"><b>Valoración y tu plan</b><span class="p">Gratis</span><small>Te miro y te hago el plan en el momento</small></div>
-      <div class="linea-r"><b>Sesión suelta</b><span class="p">40 €</span><small>Para probar o para mantenimiento</small></div>
-      <div class="linea-r"><b>Bono 5 sesiones</b><span class="p">180 €</span><small>36 € la sesión · válido 3 meses</small></div>
-      <div class="linea-r"><b>Bono 10 sesiones</b><span class="p">320 €</span><small>32 € la sesión · válido 6 meses</small></div>
+      <div class="cab-r"><span>Maderoterapia · por sesión</span><img src="{b}img/silueta.svg" alt="" width="16" height="24"></div>
+      <div class="linea-r"><b>Valoración y tu plan</b><span class="p">Gratis</span><small>Te miro, te digo qué zonas y cuánto cuesta, y te hago el plan</small></div>
+      <div class="linea-r"><b>Sesión suelta</b><span class="p">45–65 €</span><small>Según la zona y el tiempo que necesite</small></div>
+      <div class="linea-r"><b>Bono 5 sesiones</b><span class="p">desde 42 €</span><small>3 € menos cada sesión · válido 3 meses</small></div>
+      <div class="linea-r"><b>Bono 10 sesiones</b><span class="p">desde 40 €</span><small>5 € menos cada sesión · válido 6 meses</small></div>
+      <div class="linea-r"><b>A domicilio</b><span class="p">Pregúntame</span><small>Cambia según la zona de Córdoba</small></div>
     </div>
     <div class="calc-osc">
       <h3>¿Qué te sale mejor?</h3>
@@ -516,6 +579,7 @@ def madero():
       <output id="n-val">6</output>
       <input id="n-ses" type="range" min="1" max="20" value="6" style="width:100%;margin:1rem 0">
       <p class="res" id="res" aria-live="polite"></p>
+      <p class="suave-osc">Calculado con el precio más bajo y el más alto. El tuyo te lo digo en la valoración.</p>
       <a class="btn" id="calc-wa" href="{wa('Hola Mari Carmen, quiero información de los bonos de maderoterapia')}">Pedírselo a Carmen</a>
     </div>
   </div>
@@ -530,28 +594,33 @@ def madero():
 <section class="seccion"><div class="wrap dos-col">
   <div class="tit-sec"><h2>Lo que me preguntáis.</h2></div>
   <div class="faq">
-    <details><summary>¿Duele?</summary><p>No debería. Puedes notar presión en las zonas más cargadas, pero la intensidad se adapta a ti. Tiene que sentirse como un trabajo profundo, no como un castigo.</p></details>
+    <details><summary>¿Duele?</summary><p>No debería. Puedes notar presión en las zonas más cargadas. Uso la presión que requiere cada zona: aunque aguantes más, no la subo si no es efectivo. Tiene que sentirse como un trabajo profundo, no como un castigo.</p></details>
+    <details><summary>¿Cuánto dura una sesión?</summary><p>Depende de las zonas: por eso el precio va de 45 a 65 €. En la valoración te digo cuánto dura la tuya y cuánto cuesta, antes de empezar.</p></details>
     <details><summary>¿Puedo combinarla con ejercicio?</summary><p>Es lo ideal. La madera trabaja la piel y la retención; el músculo de debajo, que es lo que da forma, lo construye el movimiento. El entrenamiento también lo llevo yo.</p></details>
     <details><summary>¿Tengo que hacer algo antes o después?</summary><p>Antes, bebe agua y ven con la piel limpia, sin cremas. Después, sigue hidratándote y, si puedes, camina un rato.</p></details>
-    <details><summary>¿Vienes a casa?</summary><p>Sí, en Córdoba capital. Llevo la camilla y el material; solo necesitas un hueco de unos 2 o 3 metros.</p></details>
+    <details><summary>¿Vienes a casa?</summary><p>Sí, en Córdoba capital. Llevo la camilla y el material; solo necesitas un hueco de unos 2 o 3 metros. A domicilio el precio es otro, porque depende mucho de la zona: pregúntame.</p></details>
   </div>
 </div></section>
-{pasos()}'''
+{pasos()}
+{agenda('maderoterapia')}'''
     js = '''(function(){
   var r=document.getElementById('n-ses'),v=document.getElementById('n-val'),o=document.getElementById('res'),wa=document.getElementById('calc-wa');if(!r)return;
-  function mejor(n){var best=null;for(var b10=0;b10<=2;b10++)for(var b5=0;b5<=4;b5++){var s=b10*10+b5*5,su=Math.max(0,n-s),e=b10*320+b5*180+su*40,t=s+su;
-    if(!best||e<best.e||(e===best.e&&t<best.t))best={b10:b10,b5:b5,su:su,e:e,t:t}}return best}
-  function eur(x){return x.toFixed(2).replace('.',',').replace(',00','')+' €'}
+  function coste(b10,b5,su,P){return b10*10*(P-5)+b5*5*(P-3)+su*P}
+  function mejor(n){var best=null;for(var b10=0;b10<=2;b10++)for(var b5=0;b5<=4;b5++){var s=b10*10+b5*5,su=Math.max(0,n-s),e=coste(b10,b5,su,45),t=s+su;
+    if(!best||e<best.e||(e===best.e&&t<best.t))best={b10:b10,b5:b5,su:su,e:e,t:t}}best.x=coste(best.b10,best.b5,best.su,65);return best}
   function pinta(){var n=+r.value,b=mejor(n),p=[];if(b.b10)p.push((b.b10>1?b.b10+' × ':'')+'bono 10');if(b.b5)p.push((b.b5>1?b.b5+' × ':'')+'bono 5');
     if(b.su)p.push(b.su+(b.su>1?' sesiones sueltas':' sesión suelta'));var t=p.join(' + ');t=t.charAt(0).toUpperCase()+t.slice(1);v.textContent=n;var sobra=b.t-n;
-    o.innerHTML='<b>'+t+' · '+b.e+' €</b><span>'+b.t+' sesiones a '+eur(b.e/b.t)+' cada una.'+(sobra?' Te sobra'+(sobra>1?'n '+sobra:' una')+', y sale más barato que ir justa.':'')+' La valoración, gratis.</span>';
-    wa.href='https://wa.me/34646437371?text='+encodeURIComponent('Hola Mari Carmen, quiero hacer '+n+' sesiones de maderoterapia: '+t.toLowerCase()+' ('+b.e+' €).')}
+    o.innerHTML='<b>'+t+'</b><span>Entre '+b.e+' y '+b.x+' €, según la zona: de '+Math.round(b.e/b.t)+' a '+Math.round(b.x/b.t)+' € la sesión.'+(sobra?' Te sobra'+(sobra>1?'n '+sobra:' una')+', y sale más barato que ir justa.':'')+' La valoración, gratis.</span>';
+    wa.href='https://wa.me/34646437371?text='+encodeURIComponent('Hola Mari Carmen, quiero hacer '+n+' sesiones de maderoterapia: '+t.toLowerCase()+'. ¿Cuánto me saldría en mi zona?')}
   r.addEventListener('input',pinta);pinta()})();'''
     ld = ('<script type="application/ld+json">{"@context":"https://schema.org","@type":"Service","name":"Maderoterapia en Córdoba","provider":{"@type":"HealthAndBeautyBusiness","name":"Siluetas de Mujer","telephone":"+34646437371"},'
-          '"areaServed":{"@type":"City","name":"Córdoba"},"offers":[{"@type":"Offer","name":"Sesión suelta","price":"40","priceCurrency":"EUR"},{"@type":"Offer","name":"Bono 5 sesiones","price":"180","priceCurrency":"EUR"},{"@type":"Offer","name":"Bono 10 sesiones","price":"320","priceCurrency":"EUR"}]}</script>')
+          '"areaServed":{"@type":"City","name":"Córdoba"},"offers":[{"@type":"AggregateOffer","name":"Sesión de maderoterapia","lowPrice":"45","highPrice":"65","priceCurrency":"EUR"},{"@type":"Offer","name":"Valoración","price":"0","priceCurrency":"EUR"}]}</script>')
     return pagina(b, 'Maderoterapia en Córdoba · precios y bonos · Siluetas de Mujer',
-                  'Maderoterapia en Córdoba: 60 minutos con rodillo, copa y tabla de madera. Sesión 40 €, bono 5 180 €, bono 10 320 €. Valoración gratis.',
+                  'Maderoterapia en Córdoba con rodillo, copa sueca y tabla. Sesión de 45 a 65 € según la zona; con bono, desde 40 € la sesión. Valoración gratis.',
                   cuerpo, 'maderoterapia-cordoba', js, ld)
+
+
+GENTE = '<i></i>'
 
 
 def entreno():
@@ -582,9 +651,9 @@ def entreno():
 <section class="seccion" id="formatos"><div class="wrap">
   <div class="tit-sec"><h2>Tres formas de entrenar conmigo.</h2><p>La misma forma de trabajar y la misma app. Cambia cuánta atención tienes y dónde entrenas.</p></div>
   <div class="formatos">
-    <div class="formato"><span class="big">Hasta 5</span><h3>Grupo reducido, en la sala</h3><p>Si te motiva entrenar con otras y quieres una rutina fija. Te corrijo a ti, no a una fila.</p></div>
-    <div class="formato"><span class="big">1 a 1</span><h3>Solo tú, en la sala</h3><p>Si empiezas con una lesión o quieres ir a tu ritmo.</p></div>
-    <div class="formato"><span class="big">En casa</span><h3>Voy yo</h3><p>Sola o con una amiga. El material lo llevo yo.</p></div>
+    <div class="formato"><span class="gente" aria-hidden="true">{GENTE * 5}</span><span class="big">Hasta 5</span><h3>Grupo reducido, en la sala</h3><p>Si te motiva entrenar con otras y quieres una rutina fija. Te corrijo a ti, no a una fila.</p></div>
+    <div class="formato"><span class="gente" aria-hidden="true"><i class="yo"></i>{GENTE}</span><span class="big">1 a 1</span><h3>Solo tú, en la sala</h3><p>Si empiezas con una lesión o quieres ir a tu ritmo.</p></div>
+    <div class="formato"><span class="gente casa" aria-hidden="true"><svg viewBox="0 0 40 34"><path d="M4 16 20 3l16 13M9 13v18h22V13"/><path d="M17 31v-9h6v9"/></svg>{GENTE}</span><span class="big">En casa</span><h3>Voy yo</h3><p>Sola o con una amiga. El material lo llevo yo. En casa el precio es otro, según la zona: pregúntame.</p></div>
   </div>
 </div></section>
 
@@ -639,7 +708,8 @@ def entreno():
     <details><summary>¿Qué tengo que llevar?</summary><p>Ropa cómoda, zapatillas y agua. El material lo pongo yo, también en tu casa.</p></details>
   </div>
 </div></section>
-{pasos()}'''
+{pasos()}
+{agenda('entreno')}'''
     return pagina(b, 'Entrenadora personal para mujeres en Córdoba · Siluetas de Mujer',
                   'Entrenamiento de fuerza para mujeres a partir de los 40 en Córdoba: grupos de hasta 5, 1 a 1 o en tu casa. Valoración gratis y app con tus medidas.',
                   cuerpo, 'entrenamiento-personal-mujeres-cordoba')
@@ -656,7 +726,7 @@ def masajes():
   <div>
     <p class="miga"><a href="{b}">Inicio</a> · Con las manos</p>
     <h1>Masajes en Córdoba para la tensión que se acumula</h1>
-    <p class="lead">Dos masajes de 60 minutos, muy distintos entre sí. Uno en camilla y con aceite; el otro en colchoneta y vestida.</p>
+    <p class="lead">Dos masajes de 60 minutos, muy distintos entre sí. Uno en camilla y con aceite; el otro en colchoneta y vestida. En la sala o en tu casa (a domicilio, pregúntame el precio).</p>
     <div class="cifras-xl"><div><b>35 €</b><span>descarga · 60 min</span></div><div><b>40 €</b><span>tailandés · 60 min</span></div></div>
     <div class="acciones" style="margin-top:1.8rem"><a class="btn" href="{wa('Hola Mari Carmen, quiero reservar un masaje')}">Reservar un masaje</a><a class="btn linea" href="#elijo">¿Cuál elijo?</a></div>
   </div>
@@ -689,9 +759,10 @@ def masajes():
     <div class="otras"><a class="enlace" href="{b}espalda-cuello-cargados-cordoba/">Espalda y cuello cargados</a><a class="enlace" href="{b}entrenamiento-personal-mujeres-cordoba/">El entrenamiento</a></div>
   </div></div>
 </section>
-{pasos()}'''
+{pasos()}
+{agenda('masaje')}'''
     return pagina(b, 'Masajes en Córdoba: descarga y tailandés · Siluetas de Mujer',
-                  'Masaje de descarga (35 €) y masaje tailandés (40 €) en Córdoba, en sala o a domicilio. 60 minutos.',
+                  'Masaje de descarga (35 €) y masaje tailandés (40 €) en Córdoba, 60 minutos, en sala. También a domicilio, con precio según la zona.',
                   cuerpo, 'masajes-cordoba')
 
 
