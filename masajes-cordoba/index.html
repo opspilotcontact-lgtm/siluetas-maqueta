@@ -73,7 +73,7 @@
       <h2>Arma tus 4 semanas.</h2>
       <p>Elige cómo quieres entrenar y mira cómo quedan tus cuatro semanas. Mueve las sesiones, añade o quita, y verás cuánto te sale. Luego lo hablamos.</p>
       <p class="semana-paso"><b>1</b>¿Cómo quieres entrenar?</p>
-      <div class="planes" role="group" aria-label="Cómo entrenar"><button type="button" data-plan="indiv" data-g="2" data-m="2" aria-pressed="true"><span><b>Entreno individual</b><em>Solo tú y yo. Eliges los días.</em></span><small>desde 90 €/sem.</small></button><button type="button" data-plan="grupo" data-g="2" data-m="2" aria-pressed="false"><span><b>Entreno en grupo</b><em>De 3 a 5 mujeres, en días fijos.</em></span><small>desde 50 €/sem.</small></button><button type="button" data-plan="cuenta" data-g="0" data-m="0" aria-pressed="false"><span><b>Por tu cuenta</b><em>La app y el gimnasio, con mi seguimiento.</em></span><small>desde 12,50 €/sem.</small></button></div>
+      <div class="planes" role="group" aria-label="Cómo entrenar"><button type="button" data-plan="indiv" data-g="2" data-m="2" aria-pressed="true"><span><b>Entreno individual</b><em>Solo tú y yo. Eliges los días.</em></span><small>360 € / 4 sem.</small></button><button type="button" data-plan="grupo" data-g="2" data-m="2" aria-pressed="false"><span><b>Entreno en grupo</b><em>De 3 a 5 mujeres, en días fijos.</em></span><small>200 € / 4 sem.</small></button><button type="button" data-plan="cuenta" data-g="0" data-m="0" aria-pressed="false"><span><b>Por tu cuenta</b><em>La app y el gimnasio, con mi seguimiento.</em></span><small>50 € / 4 sem.</small></button></div>
       <p class="gym"><b>Gimnasio incluido.</b> En todos los planes puedes ir a entrenar por libre cuando quieras, además de los días de entreno conmigo. La cuota va dentro del precio.</p>
       <p class="suave por-separado">¿Solo una cosa? También puedes hacer cada una por separado: <a href="../maderoterapia-cordoba/">maderoterapia</a>, <a href="../masajes-cordoba/">masajes</a> o <a href="../entrenamiento-personal-mujeres-cordoba/">entrenamiento</a>.</p>
     </div>
@@ -84,11 +84,11 @@
       <div class="ley-sem"><span class="rama v">Entreno</span><span class="rama m">Masaje o maderoterapia</span><span class="app-ley">Gimnasio libre y app</span></div>
       <p class="semana-paso"><b>3</b>¿Quieres más o menos?</p>
       <div class="mas">
-        <div class="cont"><span class="rama v">Entrenos a la semana</span><button type="button" data-menos="g" aria-label="Un entreno menos a la semana">−</button><output data-n="g">2</output><button type="button" data-mas="g" aria-label="Un entreno más a la semana">+</button></div>
-        <div class="cont"><span class="rama m">Masajes en 4 semanas</span><button type="button" data-menos="m" aria-label="Un masaje menos">−</button><output data-n="m">2</output><button type="button" data-mas="m" aria-label="Un masaje más">+</button></div>
+        <div class="cont"><span class="et"><span class="rama v">Entrenos a la semana</span><small data-cada="g"></small></span><button type="button" data-menos="g" aria-label="Un entreno menos a la semana">−</button><output data-n="g">2</output><button type="button" data-mas="g" aria-label="Un entreno más a la semana">+</button></div>
+        <div class="cont"><span class="et"><span class="rama m">Masajes en 4 semanas</span><small data-cada="m"></small></span><button type="button" data-menos="m" aria-label="Un masaje menos">−</button><output data-n="m">2</output><button type="button" data-mas="m" aria-label="Un masaje más">+</button></div>
       </div>
       <div class="cuenta">
-        <div class="total"><span>Te saldría por unos</span><b><output id="sem-precio">82,50</output> €</b><span>a la semana · <output id="sem-4">330</output> € cada 4 semanas, y pagas cada semana</span></div>
+        <div class="total"><span>Te saldría por unos</span><b><output id="sem-4">360</output> €</b><span>cada 4 semanas · pagas <output id="sem-precio">90</output> € a la semana</span></div>
         <ul id="sem-desglose"></ul>
         <a class="btn" id="sem-wa" href="https://wa.me/34646437371?text=Hola%20Mari%20Carmen%2C%20quiero%20empezar%20el%20programa%20de%20Siluetas%20de%20Mujer.%20%C2%BFLo%20vemos%20en%20la%20valoraci%C3%B3n%3F">Hablar con Carmen</a>
         <small>Precio aproximado, para orientarte. Tu plan exacto lo cerramos en la valoración, que es gratis.</small>
@@ -157,7 +157,9 @@
     cabs.forEach(function(c,i){c.classList.toggle('destino',!!sel&&sel.t==='g'&&dias.indexOf(i)<0)});
     pista.textContent=!sel?(modo==='grupo'?'Los entrenos de grupo van en días fijos. El masaje lo puedes mover: tócalo y elige otro día.':'Toca una sesión y después el día al que quieres llevarla.'):
       (sel.t==='g'?'Ahora toca el día de la semana (arriba) al que quieres pasar ese entreno.':'Ahora toca el día al que quieres llevar el masaje.');
-    var t4=P.lugar*4+(g?0:P.app*4)+g*4*ent+m*P.manos;root.querySelector('#sem-precio').textContent=eur(t4/4);root.querySelector('#sem-4').textContent=eur(t4);
+    var t4=P.lugar*4+(g?0:P.app*4)+g*4*ent+m*P.manos;
+    root.querySelector('[data-cada="g"]').textContent='Uno más a la semana: 4 entrenos, +'+eur(4*ent)+' €';
+    root.querySelector('[data-cada="m"]').textContent='Cada uno: +'+eur(P.manos)+' €';root.querySelector('#sem-precio').textContent=eur(t4/4);root.querySelector('#sem-4').textContent=eur(t4);
     var li=[];
     if(g)li.push('<li><span>'+g*4+' entrenos '+(modo==='grupo'?'en grupo':'individuales')+' ('+g+' a la semana × '+eur(ent)+' €)</span><b>'+eur(g*4*ent)+' €</b></li>');
     if(m)li.push('<li><span>'+m+' masaje'+(m>1?'s':'')+' o maderoterapia (× '+eur(P.manos)+' €)</span><b>'+eur(m*P.manos)+' €</b></li>');

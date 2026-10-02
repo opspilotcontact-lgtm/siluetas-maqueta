@@ -160,7 +160,7 @@ def semana(base, plan='indiv', titulo='Arma tus 4 semanas.', texto='Elige cómo 
     """El planificador: modo → 4 semanas con sus sesiones → mover / añadir → precio semanal y cada 4 semanas → WhatsApp.
     Solo visual: no reserva nada; el plan exacto se cierra con Carmen en la valoración gratis."""
     modos = ''.join(f'<button type="button" data-plan="{k}" data-g="{g}" data-m="{m}" aria-pressed="{str(k == plan).lower()}">'
-                    f'<span><b>{n}</b><em>{d}</em></span><small>desde {eur(semana_4(k, g, m)[0])} €/sem.</small></button>'
+                    f'<span><b>{n}</b><em>{d}</em></span><small>{eur(semana_4(k, g, m)[1])} € / 4 sem.</small></button>'
                     for k, n, d, g, m in MODOS)
     cab = ''.join(f'<button type="button" class="dia-cab" data-mover="{i}" aria-label="Mover el entreno elegido a los {d.lower()}">'
                   f'<span class="anilla" aria-hidden="true"></span><small>{d[:3]}</small></button>' for i, d in enumerate(SEM_DIAS))
@@ -184,11 +184,11 @@ def semana(base, plan='indiv', titulo='Arma tus 4 semanas.', texto='Elige cómo 
       <div class="ley-sem"><span class="rama v">Entreno</span><span class="rama m">Masaje o maderoterapia</span><span class="app-ley">Gimnasio libre y app</span></div>
       <p class="semana-paso"><b>3</b>¿Quieres más o menos?</p>
       <div class="mas">
-        <div class="cont"><span class="rama v">Entrenos a la semana</span><button type="button" data-menos="g" aria-label="Un entreno menos a la semana">−</button><output data-n="g">2</output><button type="button" data-mas="g" aria-label="Un entreno más a la semana">+</button></div>
-        <div class="cont"><span class="rama m">Masajes en 4 semanas</span><button type="button" data-menos="m" aria-label="Un masaje menos">−</button><output data-n="m">2</output><button type="button" data-mas="m" aria-label="Un masaje más">+</button></div>
+        <div class="cont"><span class="et"><span class="rama v">Entrenos a la semana</span><small data-cada="g"></small></span><button type="button" data-menos="g" aria-label="Un entreno menos a la semana">−</button><output data-n="g">2</output><button type="button" data-mas="g" aria-label="Un entreno más a la semana">+</button></div>
+        <div class="cont"><span class="et"><span class="rama m">Masajes en 4 semanas</span><small data-cada="m"></small></span><button type="button" data-menos="m" aria-label="Un masaje menos">−</button><output data-n="m">2</output><button type="button" data-mas="m" aria-label="Un masaje más">+</button></div>
       </div>
       <div class="cuenta">
-        <div class="total"><span>Te saldría por unos</span><b><output id="sem-precio">82,50</output> €</b><span>a la semana · <output id="sem-4">330</output> € cada 4 semanas, y pagas cada semana</span></div>
+        <div class="total"><span>Te saldría por unos</span><b><output id="sem-4">360</output> €</b><span>cada 4 semanas · pagas <output id="sem-precio">90</output> € a la semana</span></div>
         <ul id="sem-desglose"></ul>
         <a class="btn" id="sem-wa" href="{wa('Hola Mari Carmen, quiero empezar el programa de Siluetas de Mujer. ¿Lo vemos en la valoración?')}">Hablar con Carmen</a>
         <small>Precio aproximado, para orientarte. Tu plan exacto lo cerramos en la valoración, que es gratis.</small>
@@ -242,7 +242,9 @@ SEMANA_JS = '''(function(){
     cabs.forEach(function(c,i){c.classList.toggle('destino',!!sel&&sel.t==='g'&&dias.indexOf(i)<0)});
     pista.textContent=!sel?(modo==='grupo'?'Los entrenos de grupo van en días fijos. El masaje lo puedes mover: tócalo y elige otro día.':'Toca una sesión y después el día al que quieres llevarla.'):
       (sel.t==='g'?'Ahora toca el día de la semana (arriba) al que quieres pasar ese entreno.':'Ahora toca el día al que quieres llevar el masaje.');
-    var t4=P.lugar*4+(g?0:P.app*4)+g*4*ent+m*P.manos;root.querySelector('#sem-precio').textContent=eur(t4/4);root.querySelector('#sem-4').textContent=eur(t4);
+    var t4=P.lugar*4+(g?0:P.app*4)+g*4*ent+m*P.manos;
+    root.querySelector('[data-cada="g"]').textContent='Uno más a la semana: 4 entrenos, +'+eur(4*ent)+' €';
+    root.querySelector('[data-cada="m"]').textContent='Cada uno: +'+eur(P.manos)+' €';root.querySelector('#sem-precio').textContent=eur(t4/4);root.querySelector('#sem-4').textContent=eur(t4);
     var li=[];
     if(g)li.push('<li><span>'+g*4+' entrenos '+(modo==='grupo'?'en grupo':'individuales')+' ('+g+' a la semana × '+eur(ent)+' €)</span><b>'+eur(g*4*ent)+' €</b></li>');
     if(m)li.push('<li><span>'+m+' masaje'+(m>1?'s':'')+' o maderoterapia (× '+eur(P.manos)+' €)</span><b>'+eur(m*P.manos)+' €</b></li>');
