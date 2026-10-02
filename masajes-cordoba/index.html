@@ -73,7 +73,7 @@
       <h2>Arma tus 4 semanas.</h2>
       <p>Elige cómo quieres entrenar y mira cómo quedan tus cuatro semanas. Mueve las sesiones, añade o quita, y verás cuánto te sale. Luego lo hablamos.</p>
       <p class="semana-paso"><b>1</b>¿Cómo quieres entrenar?</p>
-      <div class="planes" role="group" aria-label="Cómo entrenar"><button type="button" data-plan="indiv" data-g="2" data-m="2" aria-pressed="true"><span><b>Entreno individual</b><em>Solo tú y yo. Eliges los días.</em></span><small>desde 82,50 €/sem.</small></button><button type="button" data-plan="grupo" data-g="2" data-m="2" aria-pressed="false"><span><b>Entreno en grupo</b><em>De 4 a 5 mujeres (mínimo 4), en días fijos.</em></span><small>desde 50 €/sem.</small></button><button type="button" data-plan="cuenta" data-g="0" data-m="0" aria-pressed="false"><span><b>Por tu cuenta</b><em>La app y el gimnasio, con mi seguimiento.</em></span><small>desde 12,50 €/sem.</small></button></div>
+      <div class="planes" role="group" aria-label="Cómo entrenar"><button type="button" data-plan="indiv" data-g="2" data-m="2" aria-pressed="true"><span><b>Entreno individual</b><em>Solo tú y yo. Eliges los días.</em></span><small>desde 90 €/sem.</small></button><button type="button" data-plan="grupo" data-g="2" data-m="2" aria-pressed="false"><span><b>Entreno en grupo</b><em>De 3 a 5 mujeres, en días fijos.</em></span><small>desde 50 €/sem.</small></button><button type="button" data-plan="cuenta" data-g="0" data-m="0" aria-pressed="false"><span><b>Por tu cuenta</b><em>La app y el gimnasio, con mi seguimiento.</em></span><small>desde 12,50 €/sem.</small></button></div>
       <p class="gym"><b>Gimnasio incluido.</b> En todos los planes puedes ir a entrenar por libre cuando quieras, además de los días de entreno conmigo. La cuota va dentro del precio.</p>
       <p class="suave por-separado">¿Solo una cosa? También puedes hacer cada una por separado: <a href="../maderoterapia-cordoba/">maderoterapia</a>, <a href="../masajes-cordoba/">masajes</a> o <a href="../entrenamiento-personal-mujeres-cordoba/">entrenamiento</a>.</p>
     </div>
@@ -115,7 +115,7 @@
 })();
 (function(){
   var d=document,root=d.querySelector('.semana');if(!root)return;
-  var P={"cuenta":12.5,"indiv":23.75,"grupo":7.5,"manos":45},D=['lunes','martes','miércoles','jueves','viernes'],M=['ene','feb','mar','abr','may','jun','jul','ago','sep','oct','nov','dic'];
+  var P={"lugar":7.5,"app":5,"indiv":30,"grupo":10,"manos":45},D=['lunes','martes','miércoles','jueves','viernes'],M=['ene','feb','mar','abr','may','jun','jul','ago','sep','oct','nov','dic'];
   var FIJOS=[1,3,0],ORDEN_I=[0,2,4,1,3],ORDEN_M=[[0,4],[2,4],[1,4],[3,4]],MAXG=4,MAXM=8;
   var planes=[].slice.call(root.querySelectorAll('[data-plan]')),celdas=[].slice.call(root.querySelectorAll('.celda')),cabs=[].slice.call(root.querySelectorAll('[data-mover]'));
   var modo='indiv',dias=[],manos=[],sel=null,pista=root.querySelector('.pista');
@@ -157,10 +157,12 @@
     cabs.forEach(function(c,i){c.classList.toggle('destino',!!sel&&sel.t==='g'&&dias.indexOf(i)<0)});
     pista.textContent=!sel?(modo==='grupo'?'Los entrenos de grupo van en días fijos. El masaje lo puedes mover: tócalo y elige otro día.':'Toca una sesión y después el día al que quieres llevarla.'):
       (sel.t==='g'?'Ahora toca el día de la semana (arriba) al que quieres pasar ese entreno.':'Ahora toca el día al que quieres llevar el masaje.');
-    var t4=P.cuenta*4+g*4*ent+m*P.manos;root.querySelector('#sem-precio').textContent=eur(t4/4);root.querySelector('#sem-4').textContent=eur(t4);
-    var li=['<li><span>App, gimnasio y mi seguimiento</span><b>'+eur(P.cuenta*4)+' €</b></li>'];
-    if(g)li.push('<li><span>'+g*4+' entrenos '+(modo==='grupo'?'en grupo':'individuales')+' ('+g+' a la semana)</span><b>'+eur(g*4*ent)+' €</b></li>');
+    var t4=P.lugar*4+(g?0:P.app*4)+g*4*ent+m*P.manos;root.querySelector('#sem-precio').textContent=eur(t4/4);root.querySelector('#sem-4').textContent=eur(t4);
+    var li=[];
+    if(g)li.push('<li><span>'+g*4+' entrenos '+(modo==='grupo'?'en grupo':'individuales')+' ('+g+' a la semana × '+eur(ent)+' €)</span><b>'+eur(g*4*ent)+' €</b></li>');
     if(m)li.push('<li><span>'+m+' masaje'+(m>1?'s':'')+' o maderoterapia (× '+eur(P.manos)+' €)</span><b>'+eur(m*P.manos)+' €</b></li>');
+    li.push('<li><span>El gimnasio, para ir cuando quieras</span><b>'+eur(P.lugar*4)+' €</b></li>');
+    li.push(g?'<li><span>App y mi seguimiento</span><b>incluidos</b></li>':'<li><span>App y mi seguimiento</span><b>'+eur(P.app*4)+' €</b></li>');
     li.push('<li class="mes-eq"><span>Cada 4 semanas</span><b>'+eur(t4)+' €</b></li>');
     root.querySelector('#sem-desglose').innerHTML=li.join('');
     var ds=dias.slice().sort().map(function(i){return D[i]}),ms=manos.slice().sort(function(a,b){return a.w-b.w||a.d-b.d}).map(function(s){return 'semana '+(s.w+1)+' el '+D[s.d]});

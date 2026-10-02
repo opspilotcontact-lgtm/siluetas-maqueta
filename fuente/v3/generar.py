@@ -1,4 +1,4 @@
-"""Siluetas de Mujer · v6 (v4 «el camino, con forma» + audios de Carmen del 1-oct + «Arma tus 4 semanas», precios de Carmen del 2-oct).
+"""Siluetas de Mujer · v6 (v4 «el camino, con forma» + audios de Carmen del 1-oct + «Arma tus 4 semanas», precios cerrados por Carmen el 2-oct).
 
 v3 dio el SISTEMA (una paleta, una letra, el camino, una plantilla) y el fundador
 lo aprobó; le faltaba personalidad: «texto y más texto». La v4 mantiene el sistema
@@ -136,12 +136,13 @@ def pasos(titulo='Tus 3 pasos para empezar', texto='Sin compromiso. La valoraci�
 # En grupo los días son fijos; lo individual y las manos se mueven.
 # Carmen (2-oct 09:44) da los números: individual = 2 entrenos/sem a 30 € + 2 maderoterapias cada 4 semanas a 45 €
 # = 330 € / 4 sem; grupo (mínimo 4) = 50 €/sem = 200 € / 4 sem con lo mismo.
-# Modelo: base SIEMPRE (app + gimnasio + seguimiento, 50 € / 4 sem, la cifra del fundador) + entrenos + masajes.
-# Cuadre: individual 50 + 8×23,75 + 2×45 = 330 · grupo 50 + 8×7,50 + 2×45 = 200. Así quitar piezas nunca baja de la base.
-# OJO: el fundador dijo maderoterapia combinada a 35 €; Carmen la cuenta a 45 € (con 45 cuadran sus totales).
-PRECIO = {'cuenta': 12.5, 'indiv': 23.75, 'grupo': 7.5, 'manos': 45}   # €/sem · €/sesión · €/sesión · €/sesión
+# Carmen (2-oct, por escrito) cierra el desglose cada 4 semanas:
+#   grupo (mínimo 3): 8 entrenos × 10 € + 2 maderoterapias × 45 € + el lugar 30 € = 200 € (50 €/sem)
+#   individual: igual pero 8 × 30 € = 240 → 360 € (90 €/sem)
+# «Por tu cuenta» (sin entrenos): el lugar 30 + app y seguimiento 20 = 50 € / 4 sem (cifra del fundador).
+PRECIO = {'lugar': 7.5, 'app': 5, 'indiv': 30, 'grupo': 10, 'manos': 45}   # €/sem · €/sem (solo sin entrenos) · €/sesión ×3
 MODOS = [('indiv', 'Entreno individual', 'Solo tú y yo. Eliges los días.', 2, 2),
-         ('grupo', 'Entreno en grupo', 'De 4 a 5 mujeres (mínimo 4), en días fijos.', 2, 2),
+         ('grupo', 'Entreno en grupo', 'De 3 a 5 mujeres, en días fijos.', 2, 2),
          ('cuenta', 'Por tu cuenta', 'La app y el gimnasio, con mi seguimiento.', 0, 0)]
 SEM_DIAS = ['Lunes', 'Martes', 'Miércoles', 'Jueves', 'Viernes']
 
@@ -151,7 +152,7 @@ def eur(x):
 
 
 def semana_4(modo, g, m):
-    s = PRECIO['cuenta'] * 4 + g * 4 * PRECIO['grupo' if modo == 'grupo' else 'indiv'] + m * PRECIO['manos']
+    s = PRECIO['lugar'] * 4 + (0 if g else PRECIO['app'] * 4) + g * 4 * PRECIO['grupo' if modo == 'grupo' else 'indiv'] + m * PRECIO['manos']
     return s / 4, s
 
 
@@ -241,10 +242,12 @@ SEMANA_JS = '''(function(){
     cabs.forEach(function(c,i){c.classList.toggle('destino',!!sel&&sel.t==='g'&&dias.indexOf(i)<0)});
     pista.textContent=!sel?(modo==='grupo'?'Los entrenos de grupo van en días fijos. El masaje lo puedes mover: tócalo y elige otro día.':'Toca una sesión y después el día al que quieres llevarla.'):
       (sel.t==='g'?'Ahora toca el día de la semana (arriba) al que quieres pasar ese entreno.':'Ahora toca el día al que quieres llevar el masaje.');
-    var t4=P.cuenta*4+g*4*ent+m*P.manos;root.querySelector('#sem-precio').textContent=eur(t4/4);root.querySelector('#sem-4').textContent=eur(t4);
-    var li=['<li><span>App, gimnasio y mi seguimiento</span><b>'+eur(P.cuenta*4)+' €</b></li>'];
-    if(g)li.push('<li><span>'+g*4+' entrenos '+(modo==='grupo'?'en grupo':'individuales')+' ('+g+' a la semana)</span><b>'+eur(g*4*ent)+' €</b></li>');
+    var t4=P.lugar*4+(g?0:P.app*4)+g*4*ent+m*P.manos;root.querySelector('#sem-precio').textContent=eur(t4/4);root.querySelector('#sem-4').textContent=eur(t4);
+    var li=[];
+    if(g)li.push('<li><span>'+g*4+' entrenos '+(modo==='grupo'?'en grupo':'individuales')+' ('+g+' a la semana × '+eur(ent)+' €)</span><b>'+eur(g*4*ent)+' €</b></li>');
     if(m)li.push('<li><span>'+m+' masaje'+(m>1?'s':'')+' o maderoterapia (× '+eur(P.manos)+' €)</span><b>'+eur(m*P.manos)+' €</b></li>');
+    li.push('<li><span>El gimnasio, para ir cuando quieras</span><b>'+eur(P.lugar*4)+' €</b></li>');
+    li.push(g?'<li><span>App y mi seguimiento</span><b>incluidos</b></li>':'<li><span>App y mi seguimiento</span><b>'+eur(P.app*4)+' €</b></li>');
     li.push('<li class="mes-eq"><span>Cada 4 semanas</span><b>'+eur(t4)+' €</b></li>');
     root.querySelector('#sem-desglose').innerHTML=li.join('');
     var ds=dias.slice().sort().map(function(i){return D[i]}),ms=manos.slice().sort(function(a,b){return a.w-b.w||a.d-b.d}).map(function(s){return 'semana '+(s.w+1)+' el '+D[s.d]});
@@ -253,7 +256,7 @@ SEMANA_JS = '''(function(){
       'Me sale por unos '+eur(t4/4)+' € a la semana ('+eur(t4)+' € cada 4 semanas). ¿Lo vemos en la valoración?';
     root.querySelector('#sem-wa').href='https://wa.me/34646437371?text='+encodeURIComponent(txt)}
   plan(planes.filter(function(b){return b.getAttribute('aria-pressed')==='true'})[0]||planes[0]);
-})();''' % ('{"cuenta":%s,"indiv":%s,"grupo":%s,"manos":%s}' % (PRECIO['cuenta'], PRECIO['indiv'], PRECIO['grupo'], PRECIO['manos']))
+})();''' % ('{"lugar":%s,"app":%s,"indiv":%s,"grupo":%s,"manos":%s}' % (PRECIO['lugar'], PRECIO['app'], PRECIO['indiv'], PRECIO['grupo'], PRECIO['manos']))
 
 
 def pagina(base, titulo, desc, cuerpo, actual='', extra_js='', ld=''):
