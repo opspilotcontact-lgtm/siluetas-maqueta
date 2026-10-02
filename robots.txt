@@ -1,2 +1,7 @@
 User-agent: *
-Disallow: /
+Allow: /
+Disallow: /fuente/
+Disallow: /logo/
+Disallow: /README.md
+
+Sitemap: https://siluetasdemujer.es/sitemap.xml

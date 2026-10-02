@@ -415,3 +415,7 @@
 .banda-regalo .wrap{display:flex;flex-wrap:wrap;align-items:center;justify-content:space-between;gap:1rem 2rem}
 .banda-regalo p{margin:0;font-size:1.1rem;max-width:44rem}
 .banda-regalo .btn{background:#fff;color:var(--rosa-t);border-color:#fff}
+.legal-pag{max-width:46rem;padding-top:clamp(2rem,5vw,4rem);padding-bottom:clamp(3rem,6vw,5rem)}
+.legal-pag h1{margin-bottom:1.5rem}
+.legal-pag h2{font-size:1.25rem;margin:2rem 0 .6rem}
+.pie .legal a{color:inherit}

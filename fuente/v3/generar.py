@@ -12,6 +12,7 @@ Datos reales: Figueras Wellness (precios), audios de Carmen del 30-sep
 Fotos: generadas con Gemini el 1-oct, provisionales e «ilustrativas».
 """
 import html
+import re
 import pathlib
 import shutil
 import sys
@@ -95,7 +96,6 @@ def cabecera(base, actual=''):
     cur = ' aria-current="page"'
     enl = ''.join(f'<a href="{h}"{cur if u and u == actual else ""}>{t}</a>' for h, t, u in nav)
     return f'''<a class="salta" href="#contenido">Saltar al contenido</a>
-<div class="franja">Propuesta de web para Siluetas de Mujer, en revisión (v7). Las imágenes son ilustrativas, generadas con IA. <a href="{base}v6/">Ver la v6</a></div>
 <header class="cab"><div class="wrap">
   <a class="marca" href="{base}" aria-label="Siluetas de Mujer, inicio"><img src="{base}img/silueta.svg" alt="" width="20" height="30"><span><i>Siluetas</i> de Mujer</span></a>
   <nav class="nav" aria-label="Principal">{enl}</nav>
@@ -112,7 +112,7 @@ def pie(base):
   <div><h2>Te ayudo con</h2><ul>{ay}</ul></div>
   <div><h2>Servicios</h2><ul>{se}</ul></div>
   <div><h2>Contacto</h2><ul><li><a href="{wa('Hola Mari Carmen')}">WhatsApp {TEL}</a></li><li>Lunes a viernes, de 10:00 a 20:00</li><li>En mi sala o en tu casa, en Córdoba capital</li></ul></div>
-  <div class="legal"><span>© 2026 Siluetas de Mujer</span><span>Aviso legal · Privacidad · Cookies</span></div>
+  <div class="legal"><span>© 2026 Siluetas de Mujer</span><span><a href="{base}aviso-legal/">Aviso legal y cookies</a> · <a href="{base}privacidad/">Privacidad</a></span></div>
 </div></footer>'''
 
 
@@ -275,7 +275,7 @@ def pagina(base, titulo, desc, cuerpo, actual='', extra_js='', ld=''):
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<meta name="robots" content="noindex, nofollow">
+<meta name="robots" content="index, follow">
 <title>{titulo}</title>
 <meta name="description" content="{html.escape(desc)}">
 <link rel="icon" href="{base}img/silueta.svg" type="image/svg+xml">
@@ -409,7 +409,7 @@ def portada():
 {semana(b, 'indiv', 'Arma tus 4 semanas conmigo.')}'''
     ld = ('<script type="application/ld+json">{"@context":"https://schema.org","@type":"HealthAndBeautyBusiness","name":"Siluetas de Mujer",'
           '"founder":{"@type":"Person","name":"Mari Carmen Figueras"},"description":"Masaje, maderoterapia y entrenamiento para mujeres en Córdoba, en sala o a domicilio.",'
-          '"telephone":"+34646437371","areaServed":{"@type":"City","name":"Córdoba"},"address":{"@type":"PostalAddress","addressLocality":"Córdoba","addressCountry":"ES"},'
+          '"url":"https://siluetasdemujer.es/","image":"https://siluetasdemujer.es/img/fotos/maderoterapia-1200.webp","priceRange":"35-65 €","telephone":"+34646437371","areaServed":{"@type":"City","name":"Córdoba"},"address":{"@type":"PostalAddress","addressLocality":"Córdoba","addressCountry":"ES"},'
           '"openingHoursSpecification":[{"@type":"OpeningHoursSpecification","dayOfWeek":["Monday","Tuesday","Wednesday","Thursday","Friday"],"opens":"10:00","closes":"20:00"}]}</script>')
     return pagina('', 'Siluetas de Mujer · Masaje, maderoterapia y entrenamiento para mujeres en Córdoba',
                   'Mari Carmen Figueras: masaje, maderoterapia y entrenamiento para mujeres en Córdoba, en su sala o a domicilio. Valoración gratis y un plan hecho para ti.',
@@ -539,7 +539,7 @@ def ayuda(slug):
 </section>
 
 <section class="seccion"><div class="wrap charla">
-  <div class="tit-sec"><h2>Lo que me contáis, y lo que os digo.</h2><p>Así empiezan casi todas las conversaciones por WhatsApp. Y así respondo.</p></div>
+  <div class="tit-sec"><h2>Lo que me contáis, y lo que os digo.</h2><p>Una conversación de ejemplo, como las que me llegan por WhatsApp. Y así respondo.</p></div>
   <div class="hilo"><p class="quien">Hoy</p>{hilo}</div>
 </div></section>
 
@@ -965,6 +965,67 @@ def regalo():
                   cuerpo, 'tarjeta-regalo', js, ld)
 
 
+# ── Páginas legales (con lo que hay: el NIF se añade en cuanto Carmen lo pase) ──
+NIF = ''   # ← poner aquí el NIF de Carmen y regenerar
+
+
+def legal():
+    b = '../'
+    nif = f'NIF: {NIF}.' if NIF else 'NIF: se incorporará en breve.'
+    contacto = f'WhatsApp <a href="{wa("Hola Mari Carmen")}">+34 {TEL}</a>'
+    aviso = f"""
+<div class="wrap legal-pag">
+  <p class="miga"><a href="{b}">Inicio</a> · Aviso legal</p>
+  <h1>Aviso legal y cookies</h1>
+  <h2>Quién está detrás de esta web</h2>
+  <p>Siluetas de Mujer es la actividad de Mari Carmen Figueras, entrenadora personal certificada y masajista, en Córdoba. {nif}</p>
+  <p>Contacto: {contacto}. Horario de atención: de lunes a viernes, de 10:00 a 20:00.</p>
+  <h2>Qué ofrece</h2>
+  <p>Información sobre masaje, maderoterapia y entrenamiento personal para mujeres en Córdoba, y la forma de contactar para pedir cita. Los precios de la web son orientativos: el precio final se confirma siempre antes de empezar. Nada de lo que se cuenta aquí sustituye el consejo de tu médico.</p>
+  <h2>Uso de la web</h2>
+  <p>Los textos, la marca y el diseño son de Siluetas de Mujer. Algunas imágenes son ilustrativas y están marcadas así. Puedes enlazar la web libremente.</p>
+  <h2>Cookies</h2>
+  <p>Esta web no usa cookies ni herramientas de analítica o publicidad. Las letras y las imágenes se sirven desde la propia web. El alojamiento (GitHub Pages) puede registrar datos técnicos de la visita, como la dirección IP, por seguridad.</p>
+</div>"""
+    priv = f"""
+<div class="wrap legal-pag">
+  <p class="miga"><a href="{b}">Inicio</a> · Privacidad</p>
+  <h1>Privacidad</h1>
+  <h2>Quién trata tus datos</h2>
+  <p>Mari Carmen Figueras (Siluetas de Mujer), Córdoba. {nif} Contacto: {contacto}.</p>
+  <h2>Qué datos y para qué</h2>
+  <p>Esta web no tiene formularios que envíen tus datos. Cuando me escribes por WhatsApp (para pedir cita, la valoración, tu plan o una tarjeta regalo), uso lo que me cuentas solo para responderte, organizar tus sesiones y llevar tu seguimiento. Si me hablas de tu salud, lo uso únicamente para adaptar el masaje o el entrenamiento a ti.</p>
+  <p>El planificador y la tarjeta regalo funcionan dentro de tu navegador: no se guarda ni se envía nada hasta que tú decides escribirme por WhatsApp.</p>
+  <h2>Base y conservación</h2>
+  <p>Tu consentimiento al escribirme y, si eres clienta, la relación que tenemos. Guardo tus datos mientras sigamos trabajando juntas y el tiempo que obligue la ley; después los borro.</p>
+  <h2>Con quién se comparten</h2>
+  <p>Con nadie más. La conversación pasa por WhatsApp (de Meta), con sus propias condiciones de privacidad.</p>
+  <h2>Tus derechos</h2>
+  <p>Puedes pedirme en cualquier momento ver, corregir o borrar tus datos, o que deje de usarlos, escribiéndome por WhatsApp. Si crees que no lo hago bien, puedes reclamar ante la Agencia Española de Protección de Datos (aepd.es).</p>
+</div>"""
+    return {'aviso-legal/index.html': pagina(b, 'Aviso legal y cookies · Siluetas de Mujer', 'Aviso legal y política de cookies de Siluetas de Mujer, Córdoba.', aviso),
+            'privacidad/index.html': pagina(b, 'Privacidad · Siluetas de Mujer', 'Cómo trata Siluetas de Mujer los datos de quien le escribe.', priv)}
+
+
+SITIO = 'https://siluetasdemujer.es/'
+
+
+def sello_seo(ruta, txt):
+    """Canónica, etiquetas para compartir y, en las legales, noindex."""
+    url = SITIO + ruta.replace('index.html', '')
+    m = re.search(r'<title>(.*?)</title>', txt)
+    t = m.group(1) if m else 'Siluetas de Mujer'
+    m = re.search(r'<meta name="description" content="(.*?)">', txt)
+    d = m.group(1) if m else ''
+    extra = (f'<link rel="canonical" href="{url}">\n<meta property="og:type" content="website">\n<meta property="og:locale" content="es_ES">\n'
+             f'<meta property="og:site_name" content="Siluetas de Mujer">\n<meta property="og:url" content="{url}">\n<meta property="og:title" content="{t}">\n'
+             f'<meta property="og:description" content="{d}">\n<meta property="og:image" content="{SITIO}img/fotos/maderoterapia-1200.webp">\n<meta name="twitter:card" content="summary_large_image">')
+    if ruta.startswith(('aviso-legal', 'privacidad')):
+        txt = txt.replace('<meta name="robots" content="index, follow">', '<meta name="robots" content="noindex, follow">')
+    return txt.replace('<link rel="icon"', extra + '\n<link rel="icon"', 1)
+
+
+
 def main():
     SALIDA.mkdir(parents=True, exist_ok=True)
     for h in SALIDA.iterdir():  # vaciar sin borrar la carpeta (puede estar servida)
@@ -982,12 +1043,19 @@ def main():
             'tarjeta-regalo/index.html': regalo()}
     for slug in AYUDA:
         pags[f'{slug}/index.html'] = ayuda(slug)
+    pags.update(legal())
     for ruta, txt in pags.items():
         d = SALIDA / ruta
         d.parent.mkdir(parents=True, exist_ok=True)
-        d.write_text(txt, encoding='utf-8')
+        d.write_text(sello_seo(ruta, txt), encoding='utf-8')
         print('ok', ruta)
-    (SALIDA / 'robots.txt').write_text('User-agent: *\nDisallow: /\n', encoding='utf-8')
+    # Google: todo abierto (las versiones anteriores llevan noindex y la web nueva no las enlaza)
+    (SALIDA / 'robots.txt').write_text('User-agent: *\nAllow: /\nDisallow: /fuente/\nDisallow: /logo/\nDisallow: /README.md\n\nSitemap: ' + SITIO + 'sitemap.xml\n', encoding='utf-8')
+    hoy = __import__('datetime').date.today().isoformat()
+    urls = [r for r in pags if not r.startswith(('aviso-legal', 'privacidad'))]
+    prio = lambda r: '1.0' if r == 'index.html' else ('0.9' if r.split('/')[0] in ('maderoterapia-cordoba', 'entrenamiento-personal-mujeres-cordoba', 'masajes-cordoba') else '0.7')
+    xml = ''.join(f'<url><loc>{SITIO}{r.replace("index.html", "")}</loc><lastmod>{hoy}</lastmod><priority>{prio(r)}</priority></url>' for r in urls)
+    (SALIDA / 'sitemap.xml').write_text('<?xml version="1.0" encoding="UTF-8"?>\n<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">' + xml + '</urlset>\n', encoding='utf-8')
 
 
 if __name__ == '__main__':
