@@ -91,7 +91,7 @@ RAMA = {'m': '<span class="rama m">Con las manos</span>', 'v': '<span class="ram
 
 # ── Componentes compartidos ─────────────────────────────────────────────────
 def cabecera(base, actual=''):
-    nav = [(f'{base}#empieza', 'Empieza aquí', '')] + [(f'{base}{u}/', t, u) for u, t in SERVICIOS] + [(f'{base}#donde', 'Dónde', '')]
+    nav = [(f'{base}#empieza', 'Empieza aquí', '')] + [(f'{base}{u}/', t, u) for u, t in SERVICIOS] + [(f'{base}tarjeta-regalo/', 'Regalar', 'tarjeta-regalo'), (f'{base}#donde', 'Dónde', '')]
     cur = ' aria-current="page"'
     enl = ''.join(f'<a href="{h}"{cur if u and u == actual else ""}>{t}</a>' for h, t, u in nav)
     return f'''<a class="salta" href="#contenido">Saltar al contenido</a>
@@ -105,7 +105,7 @@ def cabecera(base, actual=''):
 
 def pie(base):
     ay = ''.join(f'<li><a href="{base}{u}/">{t}</a></li>' for u, t, *_ in AYUDAS)
-    se = ''.join(f'<li><a href="{base}{u}/">{t}</a></li>' for u, t in SERVICIOS)
+    se = ''.join(f'<li><a href="{base}{u}/">{t}</a></li>' for u, t in SERVICIOS) + f'<li><a href="{base}tarjeta-regalo/">Tarjeta regalo</a></li>'
     return f'''<footer class="pie"><div class="wrap">
   <div><a class="marca" href="{base}"><img src="{base}img/silueta-arena.svg" alt="" width="20" height="30"><span><i>Siluetas</i> de Mujer</span></a>
     <p style="margin-top:1rem">Masaje, maderoterapia y entrenamiento para mujeres en Córdoba. Por Mari Carmen Figueras, entrenadora personal certificada y masajista.</p></div>
@@ -116,15 +116,15 @@ def pie(base):
 </div></footer>'''
 
 
-def pasos(titulo='Tus 3 pasos para empezar', texto='Sin compromiso. La valoración es gratis y el plan lo decides tú.', msg='Hola Mari Carmen, quiero mi valoración gratuita'):
+def pasos(titulo='Tus 3 pasos para empezar', texto='Sin compromiso y sin prisas. La valoración es gratis y el plan lo decidimos juntas.', msg='Hola Mari Carmen, quiero mi valoración gratuita'):
     """El bloque común: los 3 pasos sobre los dos trazos del logo. Cierra TODAS las páginas."""
     return f'''<section class="seccion" id="pasos"><div class="wrap">
   <div class="pasos-cab"><div class="tit-sec"><h2>{titulo}</h2><p>{texto}</p></div>
     <a class="btn" href="{wa(msg)}">Pedir mi valoración gratuita</a></div>
   <ol class="pasos-h">
-    <li><div><h3>Me escribes</h3><p>Por WhatsApp, con tus palabras: qué notas y desde cuándo. Te respondo yo.</p></div></li>
-    <li><div><h3>Valoración gratis</h3><p>Te mido, hablamos de tu salud y de lo que quieres conseguir. Sin prisas.</p></div></li>
-    <li><div><h3>Tu plan</h3><p>Manos, movimiento o las dos cosas. Tú decides, y cada pocas semanas lo revisamos juntas.</p></div></li>
+    <li><div><h3>Me escribes</h3><p>Por WhatsApp, como se lo contarías a una amiga: qué notas y desde cuándo. Te contesto yo, no un robot.</p></div></li>
+    <li><div><h3>Valoración gratis</h3><p>Nos sentamos tranquilas: me cuentas cómo estás, te mido y vemos qué te gustaría cambiar.</p></div></li>
+    <li><div><h3>Tu plan</h3><p>Manos, movimiento o las dos cosas. Tú decides, y cada pocas semanas vemos juntas cómo vas.</p></div></li>
   </ol>
 </div></section>'''
 
@@ -156,7 +156,7 @@ def semana_4(modo, g, m):
     return s / 4, s
 
 
-def semana(base, plan='indiv', titulo='Arma tus 4 semanas.', texto='Elige cómo quieres entrenar y mira cómo quedan tus cuatro semanas. Mueve las sesiones, añade o quita, y verás cuánto te sale. Luego lo hablamos.'):
+def semana(base, plan='indiv', titulo='Arma tus 4 semanas.', texto='Juega con tus cuatro semanas: elige cómo te apetece entrenar, mueve las sesiones a los días que te vengan bien y mira cuánto te sale. Luego lo hablamos tranquilamente.'):
     """El planificador: modo → 4 semanas con sus sesiones → mover / añadir → precio semanal y cada 4 semanas → WhatsApp.
     Solo visual: no reserva nada; el plan exacto se cierra con Carmen en la valoración gratis."""
     modos = ''.join(f'<button type="button" data-plan="{k}" data-g="{g}" data-m="{m}" aria-pressed="{str(k == plan).lower()}">'
@@ -261,6 +261,14 @@ SEMANA_JS = '''(function(){
 })();''' % ('{"lugar":%s,"app":%s,"indiv":%s,"grupo":%s,"manos":%s}' % (PRECIO['lugar'], PRECIO['app'], PRECIO['indiv'], PRECIO['grupo'], PRECIO['manos']))
 
 
+
+def banda_regalo(base):
+    return f'''<section class="banda-regalo"><div class="wrap">
+  <p><b>¿Es para regalar?</b> Crea una tarjeta con su nombre y unas palabras tuyas, y se la das hoy mismo.</p>
+  <a class="btn" href="{base}tarjeta-regalo/">Crear una tarjeta regalo</a>
+</div></section>'''
+
+
 def pagina(base, titulo, desc, cuerpo, actual='', extra_js='', ld=''):
     return f'''<!doctype html>
 <html lang="es">
@@ -331,7 +339,7 @@ def portada():
     </h1>
   </div>
   <div class="bajo">
-    <p class="lead">Soy Mari Carmen Figueras. Masaje, maderoterapia y entrenamiento para mujeres en Córdoba, en mi sala o en tu casa.</p>
+    <p class="lead">Soy Mari Carmen. Hago masaje, maderoterapia y entrenamiento para mujeres en Córdoba, en mi sala o en tu casa. Y antes de nada, te escucho.</p>
     <div class="acciones"><a class="btn" href="#empieza">Empieza por aquí</a><a class="btn linea" href="{wa('Hola Mari Carmen, quiero mi valoración gratuita')}">Pedir valoración gratis</a></div>
     <p class="dato">Lunes a viernes, de 10:00 a 20:00 · Córdoba capital</p>
   </div>
@@ -340,11 +348,11 @@ def portada():
 
 <section class="seccion"><div class="wrap">
   <p class="frase-xl"><span class="nw"><u class="m">Las manos</u><img class="en-linea" src="img/fotos/maderoterapia-mini.webp" alt="" width="160" height="160" loading="lazy"></span>, para lo que notas pronto. <span class="nw"><u class="v">El movimiento</u><img class="en-linea" src="img/fotos/grupo-mini.webp" alt="" width="160" height="160" loading="lazy"></span>, para lo que se queda.</p>
-  <p>Lo que alivian las manos, la retención y la tensión, vuelve si el cuerpo no se mueve. Por eso trabajo las dos cosas, con la misma persona siguiéndote.</p>
+  <p>Lo que alivian las manos, la retención y la tensión, vuelve si el cuerpo no se mueve. Por eso trabajo las dos cosas, y siempre soy yo la que te acompaña.</p>
 </div></section>
 
 <section class="seccion" id="empieza"><div class="wrap">
-  <div class="tit-sec"><h2>Señálame dónde lo notas.</h2><p>No hace falta que sepas cómo se llama el tratamiento. Toca la zona y te cuento qué haría.</p></div>
+  <div class="tit-sec"><h2>Señálame dónde lo notas.</h2><p>No hace falta que sepas cómo se llama nada. Toca donde te molesta y te cuento lo que haría, como te lo contaría en persona.</p></div>
   <div class="mapa">
     <div><div class="mapa-sil">{SIL}{zonas}</div><div class="mapa-extra">{extra}</div></div>
     <div>{paneles}</div>
@@ -385,14 +393,16 @@ def portada():
   </div></div>
 </section>
 
+{banda_regalo(b)}
+
 <section class="seccion"><div class="wrap dos-col">
   <div class="tit-sec"><h2>Lo que me preguntáis antes de venir.</h2><p>Las cuatro dudas que más me llegan.</p>
     <a class="duda" href="{wa('Hola Mari Carmen, tengo una duda: ')}"><span class="globo">¿Y si mi duda no está?</span><span class="globo yo">Escríbeme y te contesto yo, no un bot.<small>Carmen</small></span></a></div>
   <div class="faq">
-    <details><summary>¿La valoración es gratis de verdad?</summary><p>Sí. Te miro, hablamos de lo que buscas y te hago tu plan en ese momento. Después decides.</p></details>
+    <details><summary>¿La valoración es gratis de verdad?</summary><p>Sí, de verdad. Me cuentas, te miro y te hago tu plan en ese momento. Luego decides tú, sin ninguna presión.</p></details>
     <details><summary>¿Duele la maderoterapia?</summary><p>No debería doler. Puedes notar presión en las zonas más cargadas: uso la que requiere cada zona, ni más ni menos, y me vas diciendo.</p></details>
-    <details><summary>¿Tengo que estar en forma para entrenar?</summary><p>No. Empezamos desde donde estás. En grupos de hasta 5 te puedo corregir a ti.</p></details>
-    <details><summary>¿Puedo hacer solo masaje o solo entreno?</summary><p>Claro. Cada cosa funciona sola. Juntas se nota más, y te diré con honestidad cuándo te conviene una u otra.</p></details>
+    <details><summary>¿Tengo que estar en forma para entrenar?</summary><p>Para nada. Empezamos desde donde estás hoy. En grupos tan pequeños te veo y te corrijo a ti.</p></details>
+    <details><summary>¿Puedo hacer solo masaje o solo entreno?</summary><p>Claro que sí. Cada cosa funciona sola. Juntas se nota más, y te diré con sinceridad cuándo te conviene una u otra, aunque sea la más barata.</p></details>
   </div>
 </div></section>
 
@@ -584,7 +594,7 @@ def madero():
   <div>
     <p class="miga"><a href="{b}">Inicio</a> · Con las manos</p>
     <h1>Maderoterapia en Córdoba, explicada sin humo</h1>
-    <p class="lead">Trabajo manual con piezas de madera sobre piernas, glúteos, abdomen y, si quieres, brazos. Para aliviar la pesadez y mejorar el aspecto de la piel.</p>
+    <p class="lead">Trabajo con mis manos y mis maderas sobre piernas, glúteos, abdomen y, si quieres, brazos. Para que te notes ligera y mejore el aspecto de tu piel, sin promesas raras.</p>
     <div class="cifras-xl"><div><b>Gratis</b><span>la valoración</span></div><div><b>45–65 €</b><span>la sesión, según la zona</span></div><div><b>40 €</b><span>desde, con bono de 10</span></div></div>
     <div class="acciones" style="margin-top:1.8rem"><a class="btn" href="{wa('Hola Mari Carmen, quiero mi valoración gratuita de maderoterapia')}">Pedir mi valoración gratuita</a><a class="btn linea" href="#precios">Precios y bonos</a></div>
   </div>
@@ -656,6 +666,8 @@ def madero():
   </div>
 </div></section>
 
+{banda_regalo(b)}
+
 <section class="seccion"><div class="wrap dos-col">
   <div class="tit-sec"><h2>Para quién no es.</h2><p>Antes de empezar siempre te pregunto por tu salud. Si tienes dudas, consúltalo con tu médico.</p></div>
   <ul class="notas"><li>Si estás embarazada.</li><li>Si tienes cáncer activo o estás en tratamiento.</li><li>Si tienes varices severas o has tenido una trombosis.</li>
@@ -668,7 +680,7 @@ def madero():
     <details><summary>¿Duele?</summary><p>No debería. Puedes notar presión en las zonas más cargadas. Uso la presión que requiere cada zona: aunque aguantes más, no la subo si no es efectivo. Tiene que sentirse como un trabajo profundo, no como un castigo.</p></details>
     <details><summary>¿Cuánto dura una sesión?</summary><p>Depende de las zonas: por eso el precio va de 45 a 65 €. En la valoración te digo cuánto dura la tuya y cuánto cuesta, antes de empezar.</p></details>
     <details><summary>¿Puedo combinarla con ejercicio?</summary><p>Es lo ideal. La madera trabaja la piel y la retención; el músculo de debajo, que es lo que da forma, lo construye el movimiento. El entrenamiento también lo llevo yo.</p></details>
-    <details><summary>¿Tengo que hacer algo antes o después?</summary><p>Antes, bebe agua y ven con la piel limpia, sin cremas. Después, sigue hidratándote y, si puedes, camina un rato.</p></details>
+    <details><summary>¿Tengo que hacer algo antes o después?</summary><p>Antes, bebe agua y ven con la piel limpia, sin cremas. Después, sigue hidratándote y, si puedes, date un paseíto.</p></details>
     <details><summary>¿Vienes a casa?</summary><p>Sí, en Córdoba capital. Llevo la camilla y el material; solo necesitas un hueco de unos 2 o 3 metros. A domicilio el precio es otro, porque depende mucho de la zona: pregúntame.</p></details>
   </div>
 </div></section>
@@ -701,7 +713,7 @@ def entreno():
   <div>
     <p class="miga"><a href="{b}">Inicio</a> · Con el movimiento</p>
     <h1>Entrenadora personal para mujeres en Córdoba</h1>
-    <p class="lead">Fuerza pensada para el cuerpo de una mujer a partir de los 40, en grupos pequeños, uno a uno o en tu casa.</p>
+    <p class="lead">Entreno a mujeres que quieren sentirse fuertes, sobre todo a partir de los 40: en grupos pequeños, a solas conmigo o en tu propia casa.</p>
     <div class="cifras-xl"><div><b>5</b><span>mujeres como máximo</span></div><div><b>2</b><span>días de fuerza a la semana</span></div><div><b>0 €</b><span>la valoración</span></div></div>
     <div class="acciones" style="margin-top:1.8rem"><a class="btn" href="{wa('Hola Mari Carmen, quiero mi valoración gratuita para entrenar')}">Pedir mi valoración gratuita</a><a class="btn linea" href="#formatos">Grupo, 1 a 1 o en casa</a></div>
   </div>
@@ -772,11 +784,11 @@ def entreno():
 <section class="seccion"><div class="wrap dos-col">
   <div class="tit-sec"><h2>Lo que me preguntáis.</h2></div>
   <div class="faq">
-    <details><summary>¿Tengo que estar en forma para empezar?</summary><p>No. El primer día te mido y ajusto cada ejercicio a lo que puedes hacer hoy.</p></details>
+    <details><summary>¿Tengo que estar en forma para empezar?</summary><p>No, tranquila. El primer día te mido y ajusto cada ejercicio a lo que puedes hacer hoy, no a lo que hacías hace años.</p></details>
     <details><summary>Tengo artrosis, osteoporosis o dolor de espalda. ¿Puedo?</summary><p>En la mayoría de casos, la fuerza bien adaptada ayuda. Lo hablamos en la valoración y, si hace falta, con tu médico o tu fisio.</p></details>
     <details><summary>¿Me voy a poner «grande»?</summary><p>No. Lo que vas a notar es firmeza, fuerza y que la ropa te cae distinta.</p></details>
     <details><summary>¿Sirve si estoy en la menopausia?</summary><p>Es justo cuando más sirve: la fuerza es lo que mejor frena la pérdida de músculo y hueso. Y cuidamos el suelo pélvico en cada sesión.</p></details>
-    <details><summary>¿Qué tengo que llevar?</summary><p>Ropa cómoda, zapatillas y agua. El material lo pongo yo, también en tu casa.</p></details>
+    <details><summary>¿Qué tengo que llevar?</summary><p>Ropa cómoda, zapatillas y agua. Lo demás lo pongo yo, también si entrenamos en tu casa.</p></details>
   </div>
 </div></section>
 {pasos()}
@@ -797,7 +809,7 @@ def masajes():
   <div>
     <p class="miga"><a href="{b}">Inicio</a> · Con las manos</p>
     <h1>Masajes en Córdoba para la tensión que se acumula</h1>
-    <p class="lead">Dos masajes de 60 minutos, muy distintos entre sí. Uno en camilla y con aceite; el otro en colchoneta y vestida. En la sala o en tu casa (a domicilio, pregúntame el precio).</p>
+    <p class="lead">Dos masajes de 60 minutos, muy distintos entre sí: uno en camilla y con aceite, el otro en colchoneta y vestida. Si dudas cuál es el tuyo, te ayudo a elegir. En la sala o en tu casa (a domicilio, pregúntame el precio).</p>
     <div class="cifras-xl"><div><b>35 €</b><span>descarga · 60 min</span></div><div><b>40 €</b><span>tailandés · 60 min</span></div></div>
     <div class="acciones" style="margin-top:1.8rem"><a class="btn" href="{wa('Hola Mari Carmen, quiero reservar un masaje')}">Reservar un masaje</a><a class="btn linea" href="#elijo">¿Cuál elijo?</a></div>
   </div>
@@ -823,6 +835,8 @@ def masajes():
   <table class="matriz"><thead><tr><th>Si buscas…</th><th>Tailandés</th><th>Descarga</th><th>Madero­terapia</th></tr></thead><tbody>{tabla}</tbody></table>
 </div></section>
 
+{banda_regalo(b)}
+
 <section class="sobre-foto">{foto('entreno', b, sizes='100vw')}
   <div class="wrap"><div class="tarjeta">
     <h2>Si la tensión vuelve cada semana.</h2>
@@ -835,6 +849,120 @@ def masajes():
     return pagina(b, 'Masajes en Córdoba: descarga y tailandés · Siluetas de Mujer',
                   'Masaje de descarga (35 €) y masaje tailandés (40 €) en Córdoba, 60 minutos, en sala. También a domicilio, con precio según la zona.',
                   cuerpo, 'masajes-cordoba')
+
+
+# ── Tarjeta regalo ──────────────────────────────────────────────────────────
+# El fundador (2-oct): que quien regala elija sesión o bono del masaje que quiera, y se genere la tarjeta.
+# El pago y la agenda se configuran más adelante: hoy la tarjeta se pide a Carmen por WhatsApp, ella cobra
+# y la activa con su código. Solo precios que ha dado Carmen (los masajes no tienen bono: no hay precio).
+REGALOS = [  # clave, servicio, formato, precio para quien regala, línea de la tarjeta, validez en la tarjeta
+    ('madero-1', 'Maderoterapia', 'Una sesión', 'desde 45 €', 'Una sesión de maderoterapia', ''),
+    ('madero-5', 'Maderoterapia', 'Bono de 5 sesiones', 'desde 210 €', 'Un bono de 5 sesiones de maderoterapia', 'Válido 3 meses desde que se active'),
+    ('madero-10', 'Maderoterapia', 'Bono de 10 sesiones', 'desde 400 €', 'Un bono de 10 sesiones de maderoterapia', 'Válido 6 meses desde que se active'),
+    ('descarga', 'Masaje de descarga', 'Una sesión de 60 minutos', '35 €', 'Un masaje de descarga de 60 minutos', ''),
+    ('tailandes', 'Masaje tailandés', 'Una sesión de 60 minutos', '40 €', 'Un masaje tailandés de 60 minutos', ''),
+]
+
+
+def regalo():
+    b = '../'
+    opciones = ''.join(f'<label class="opcion"><input type="radio" name="regalo" value="{k}" data-linea="{html.escape(l)}" data-valido="{html.escape(v)}" data-precio="{html.escape(pr)}"{" checked" if i == 0 else ""}>'
+                       f'<span><b>{sv}</b><small>{fm}</small></span><em>{pr}</em></label>'
+                       for i, (k, sv, fm, pr, l, v) in enumerate(REGALOS))
+    cuerpo = f'''
+<div class="wrap cabeza regalo-cab">
+  <div>
+    <p class="miga"><a href="{b}">Inicio</a> · Regalar</p>
+    <h1>Tarjeta regalo de masaje y maderoterapia en Córdoba</h1>
+    <p class="lead">¿Conoces a alguien que se merece parar un rato? Elige el masaje, ponle su nombre y unas palabras tuyas, y te llevas la tarjeta lista para dársela.</p>
+  </div>
+</div>
+
+<section class="seccion regalo-sec"><div class="wrap">
+  <div class="regalo">
+    <form class="regalo-form" onsubmit="return false">
+      <p class="semana-paso"><b>1</b>¿Qué le regalas?</p>
+      <div class="opciones-regalo" role="radiogroup" aria-label="Qué regalas">{opciones}</div>
+      <p class="semana-paso"><b>2</b>¿Para quién es?</p>
+      <label class="campo-r">Su nombre<input id="r-para" maxlength="28" autocomplete="off" placeholder="Lucía"></label>
+      <label class="campo-r">De parte de<input id="r-de" maxlength="28" autocomplete="off" placeholder="Ana y Pepe"></label>
+      <label class="campo-r">Unas palabras tuyas <small>(opcional)</small><textarea id="r-msg" maxlength="140" rows="3" placeholder="Para que pares un rato, que te lo has ganado."></textarea></label>
+    </form>
+    <div class="regalo-ver">
+      <p class="semana-paso"><b>3</b>Así queda tu tarjeta</p>
+      <canvas id="tarjeta" width="1200" height="760" role="img" aria-label="Vista previa de la tarjeta regalo"></canvas>
+      <div class="acciones">
+        <a class="btn" id="r-wa" href="{wa('Hola Mari Carmen, quiero regalar una tarjeta de Siluetas de Mujer.')}">Pedírsela a Carmen</a>
+        <button type="button" class="btn linea" id="r-bajar">Descargar la tarjeta</button>
+        <button type="button" class="btn linea" id="r-compartir" hidden>Compartir</button>
+      </div>
+      <p class="suave nota-r">La tarjeta se activa cuando Carmen confirma el pago. Ella te dice cómo pagar por WhatsApp.</p>
+    </div>
+  </div>
+</div></section>
+
+<section class="seccion"><div class="wrap">
+  <div class="tit-sec"><h2>Así funciona.</h2><p>Sin complicaciones, y hablando siempre conmigo.</p></div>
+  <ol class="pasos-h">
+    <li><div><h3>La creas aquí</h3><p>Eliges el masaje, pones su nombre y tus palabras. La tarjeta lleva un código solo suyo.</p></div></li>
+    <li><div><h3>Me la pides</h3><p>Me escribes por WhatsApp con el código, te digo cómo pagar y la dejo activada.</p></div></li>
+    <li><div><h3>Ella reserva</h3><p>Me escribe con su código y buscamos juntas el día que mejor le venga.</p></div></li>
+  </ol>
+</div></section>
+
+<section class="seccion"><div class="wrap dos-col">
+  <div class="tit-sec"><h2>Lo que me preguntáis.</h2></div>
+  <div class="faq">
+    <details><summary>¿Cómo reserva la persona que la recibe?</summary><p>Me escribe por WhatsApp al {TEL} con el código de la tarjeta y buscamos el día juntas, en mi sala o en su casa.</p></details>
+    <details><summary>¿La maderoterapia vale para cualquier zona?</summary><p>El precio depende de la zona que se trabaje. Cuando me la pidas, me cuentas qué quieres regalar y te digo el precio exacto.</p></details>
+    <details><summary>¿Y si no sé qué masaje regalar?</summary><p>Escríbeme y te ayudo a elegir. Si dudas, el de descarga casi nunca falla.</p></details>
+    <details><summary>¿Puede cambiarlo por otro servicio?</summary><p>Lo hablamos. Si prefiere otra cosa, buscamos la manera.</p></details>
+  </div>
+</div></section>'''
+    js = '''(function(){
+  var d=document,cv=d.getElementById('tarjeta');if(!cv||!cv.getContext)return;var x=cv.getContext('2d');
+  var PL=new Path2D(%s),PR=new Path2D(%s),A='ABCDEFGHJKLMNPQRSTUVWXYZ23456789',cod='SIL-';
+  for(var i=0;i<6;i++){cod+=A[Math.floor(Math.random()*A.length)];if(i===2)cod+='-'}
+  var para=d.getElementById('r-para'),de=d.getElementById('r-de'),msg=d.getElementById('r-msg'),wa=d.getElementById('r-wa');
+  function sel(){return d.querySelector('input[name=regalo]:checked')}
+  function lineas(t,max){var p=t.split(/\\s+/),o=[],l='';p.forEach(function(w){var n=l?l+' '+w:w;if(x.measureText(n).width>max&&l){o.push(l);l=w}else l=n});if(l)o.push(l);return o}
+  function pinta(){
+    var W=1200,H=760,r=sel();x.clearRect(0,0,W,H);
+    x.fillStyle='#F3EBE0';x.fillRect(0,0,W,H);
+    x.fillStyle='#16323F';x.fillRect(0,0,380,H);
+    x.save();x.translate(95,150);x.scale(1.9,1.9);x.fillStyle='#D93A7A';x.fill(PL);x.fillStyle='#16A39A';x.fill(PR);x.restore();
+    x.fillStyle='#F3EBE0';x.font='italic 400 44px "DM Serif Display", serif';x.fillText('Siluetas',70,640);
+    x.font='400 30px "DM Serif Display", serif';x.fillText('de Mujer',70,684);
+    x.fillStyle='#B8295F';x.font='700 24px Figtree, sans-serif';x.fillText('TARJETA REGALO',440,110);
+    x.fillStyle='#16323F';x.font='800 64px Figtree, sans-serif';
+    var n=(para.value.trim()||'Para ti');lineas('Para '+n.replace(/^para\\s+/i,''),700).slice(0,2).forEach(function(l,k){x.fillText(l,440,200+k*72)});
+    var y=para.value.trim().length>16?330:270;
+    x.font='600 34px Figtree, sans-serif';lineas(r.dataset.linea,700).slice(0,2).forEach(function(l,k){x.fillText(l,440,y+k*44)});y+=r.dataset.linea.length>34?100:60;
+    if(msg.value.trim()){x.fillStyle='#4A5459';x.font='italic 400 28px Figtree, sans-serif';lineas('«'+msg.value.trim()+'»',700).slice(0,3).forEach(function(l,k){x.fillText(l,440,y+20+k*38)});}
+    x.fillStyle='#16323F';x.font='600 26px Figtree, sans-serif';if(de.value.trim())x.fillText('De parte de '+de.value.trim(),440,575);
+    x.strokeStyle='#D93A7A';x.lineWidth=4;x.beginPath();x.moveTo(440,610);x.lineTo(1130,610);x.stroke();
+    x.strokeStyle='#16A39A';x.beginPath();x.moveTo(440,620);x.lineTo(1130,620);x.stroke();
+    x.fillStyle='#16323F';x.font='800 30px Figtree, sans-serif';x.fillText(cod,440,672);
+    x.font='400 22px Figtree, sans-serif';x.fillStyle='#4A5459';
+    x.fillText('Reserva por WhatsApp al 646 437 371 con este código.',440,710);
+    x.fillText((r.dataset.valido?r.dataset.valido+' · ':'')+'Se activa al confirmar el pago.',440,740);
+    var t='Hola Mari Carmen, quiero regalar una tarjeta de Siluetas de Mujer:\\n'+r.dataset.linea+' ('+r.dataset.precio+')'+
+      (para.value.trim()?'\\nPara: '+para.value.trim():'')+(de.value.trim()?'\\nDe parte de: '+de.value.trim():'')+'\\nCódigo: '+cod+'\\n¿Cómo te lo pago?';
+    wa.href='https://wa.me/34646437371?text='+encodeURIComponent(t)}
+  function png(cb){cv.toBlob(function(b){cb(b)},'image/png')}
+  function nombre(){return 'tarjeta-regalo-siluetas-'+cod.toLowerCase()+'.png'}
+  d.getElementById('r-bajar').onclick=function(){png(function(b){var a=d.createElement('a');a.href=URL.createObjectURL(b);a.download=nombre();d.body.appendChild(a);a.click();setTimeout(function(){URL.revokeObjectURL(a.href);a.remove()},500)})};
+  var sh=d.getElementById('r-compartir');
+  if(navigator.canShare&&window.File){try{if(navigator.canShare({files:[new File([''],'t.png',{type:'image/png'})]})){sh.hidden=false;
+    sh.onclick=function(){png(function(b){navigator.share({files:[new File([b],nombre(),{type:'image/png'})],title:'Tarjeta regalo · Siluetas de Mujer'}).catch(function(){})})}}}catch(e){}}
+  [].forEach.call(d.querySelectorAll('.regalo-form input,.regalo-form textarea'),function(e){e.addEventListener('input',pinta);e.addEventListener('change',pinta)});
+  (d.fonts&&d.fonts.load?Promise.all([d.fonts.load('800 64px Figtree'),d.fonts.load('italic 400 44px "DM Serif Display"'),d.fonts.load('400 30px "DM Serif Display"')]):Promise.resolve()).then(pinta,pinta);pinta();
+})();''' % (repr(PL), repr(PR))
+    ld = ('<script type="application/ld+json">{"@context":"https://schema.org","@type":"Product","name":"Tarjeta regalo de masaje y maderoterapia · Siluetas de Mujer",'
+          '"brand":{"@type":"Brand","name":"Siluetas de Mujer"},"offers":{"@type":"AggregateOffer","lowPrice":"35","highPrice":"400","priceCurrency":"EUR"}}</script>')
+    return pagina(b, 'Tarjeta regalo de masaje y maderoterapia en Córdoba · Siluetas de Mujer',
+                  'Regala un masaje o maderoterapia en Córdoba: elige sesión o bono, ponle su nombre y unas palabras, y llévate la tarjeta lista. La activa Carmen por WhatsApp.',
+                  cuerpo, 'tarjeta-regalo', js, ld)
 
 
 def main():
@@ -850,7 +978,8 @@ def main():
         shutil.copy(RAIZ / 'img' / f, SALIDA / 'img' / f)
     preparar_fotos()
     pags = {'index.html': portada(), 'maderoterapia-cordoba/index.html': madero(),
-            'entrenamiento-personal-mujeres-cordoba/index.html': entreno(), 'masajes-cordoba/index.html': masajes()}
+            'entrenamiento-personal-mujeres-cordoba/index.html': entreno(), 'masajes-cordoba/index.html': masajes(),
+            'tarjeta-regalo/index.html': regalo()}
     for slug in AYUDA:
         pags[f'{slug}/index.html'] = ayuda(slug)
     for ruta, txt in pags.items():

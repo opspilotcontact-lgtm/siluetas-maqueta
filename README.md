@@ -1,6 +1,6 @@
 # Siluetas de Mujer · propuesta de marca y web
 
-Maqueta en revisión (noindex). Versión actual: **v7** en la raíz («Arma tus 4 semanas» con los precios de Carmen del 2-oct: individual 360 € y grupo 200 € cada 4 semanas, gimnasio incluido).
+Maqueta en revisión (noindex). Versión actual: **v7** en la raíz («Arma tus 4 semanas» con los precios de Carmen del 2-oct: individual 360 € y grupo 200 € cada 4 semanas, gimnasio incluido) + tarjeta regalo en /tarjeta-regalo/. Dominio: siluetasdemujer.es (archivo CNAME, no borrar).
 Versiones anteriores: /v6/, /v5/, /v4/, /v2/ y /v1/.
 
 ## Cómo se construye la versión actual
