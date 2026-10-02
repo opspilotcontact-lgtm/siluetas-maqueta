@@ -1,7 +1,7 @@
 # Siluetas de Mujer · propuesta de marca y web
 
-Maqueta en revisión (noindex). Versión actual: **v6** en la raíz (v5 + «Arma tu semana»: el programa por niveles con precio semanal, provisional).
-Versiones anteriores: /v5/, /v4/, /v2/ y /v1/.
+Maqueta en revisión (noindex). Versión actual: **v7** en la raíz («Arma tus 4 semanas» con los precios de Carmen del 2-oct: individual 330 € y grupo 200 € cada 4 semanas, gimnasio incluido).
+Versiones anteriores: /v6/, /v5/, /v4/, /v2/ y /v1/.
 
 ## Cómo se construye la versión actual
 

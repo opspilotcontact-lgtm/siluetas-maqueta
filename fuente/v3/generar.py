@@ -1,4 +1,4 @@
-"""Siluetas de Mujer · v6 (v4 «el camino, con forma» + audios de Carmen del 1-oct + «Arma tu semana»).
+"""Siluetas de Mujer · v6 (v4 «el camino, con forma» + audios de Carmen del 1-oct + «Arma tus 4 semanas», precios de Carmen del 2-oct).
 
 v3 dio el SISTEMA (una paleta, una letra, el camino, una plantilla) y el fundador
 lo aprobó; le faltaba personalidad: «texto y más texto». La v4 mantiene el sistema
@@ -95,7 +95,7 @@ def cabecera(base, actual=''):
     cur = ' aria-current="page"'
     enl = ''.join(f'<a href="{h}"{cur if u and u == actual else ""}>{t}</a>' for h, t, u in nav)
     return f'''<a class="salta" href="#contenido">Saltar al contenido</a>
-<div class="franja">Propuesta de web para Siluetas de Mujer, en revisión (v6). Las imágenes son ilustrativas, generadas con IA. <a href="{base}v5/">Ver la v5</a></div>
+<div class="franja">Propuesta de web para Siluetas de Mujer, en revisión (v7). Las imágenes son ilustrativas, generadas con IA. <a href="{base}v6/">Ver la v6</a></div>
 <header class="cab"><div class="wrap">
   <a class="marca" href="{base}" aria-label="Siluetas de Mujer, inicio"><img src="{base}img/silueta.svg" alt="" width="20" height="30"><span><i>Siluetas</i> de Mujer</span></a>
   <nav class="nav" aria-label="Principal">{enl}</nav>
@@ -129,45 +129,65 @@ def pasos(titulo='Tus 3 pasos para empezar', texto='Sin compromiso. La valoraci�
 </div></section>'''
 
 
-# ── «Tu semana con Carmen»: el programa como un calendario que se arma ────
-# Carmen (audio 1-oct 18:44): lo que vende es el PROGRAMA (movimiento + manos), no piezas
-# sueltas, y quiere el precio POR SEMANA. El fundador (2-oct): niveles que se suman.
-# PRECIOS PROVISIONALES (fundador 2-oct, pasados de mes a semana) · A VALIDAR CON CARMEN.
-PRECIO = {'base': 12, 'grupo': 9, 'manos': 28}   # €/semana: app y seguimiento · cada entreno en grupo · cada sesión de manos
-PLANES = [('casa', 'En casa, con la app', 0, 0), ('deporte', 'Deporte', 2, 0), ('manos', 'Deporte y manos', 2, 1)]
+# ── «Tus 4 semanas con Carmen»: el programa como un calendario que se arma ─
+# Carmen (audios 1-oct 18:44 y 2-oct 09:30-09:39): lo que vende es el PROGRAMA (movimiento + manos);
+# se cobra CADA 4 SEMANAS y se paga POR SEMANA. Individual: 330 € cada 4 semanas con 2 entrenos a la
+# semana, un masaje cada 2 semanas y la sala libre. En grupo (4-5) el entreno sale más barato.
+# En grupo los días son fijos; lo individual y las manos se mueven.
+# Carmen (2-oct 09:44) da los números: individual = 2 entrenos/sem a 30 € + 2 maderoterapias cada 4 semanas a 45 €
+# = 330 € / 4 sem; grupo (mínimo 4) = 50 €/sem = 200 € / 4 sem con lo mismo.
+# Modelo: base SIEMPRE (app + gimnasio + seguimiento, 50 € / 4 sem, la cifra del fundador) + entrenos + masajes.
+# Cuadre: individual 50 + 8×23,75 + 2×45 = 330 · grupo 50 + 8×7,50 + 2×45 = 200. Así quitar piezas nunca baja de la base.
+# OJO: el fundador dijo maderoterapia combinada a 35 €; Carmen la cuenta a 45 € (con 45 cuadran sus totales).
+PRECIO = {'cuenta': 12.5, 'indiv': 23.75, 'grupo': 7.5, 'manos': 45}   # €/sem · €/sesión · €/sesión · €/sesión
+MODOS = [('indiv', 'Entreno individual', 'Solo tú y yo. Eliges los días.', 2, 2),
+         ('grupo', 'Entreno en grupo', 'De 4 a 5 mujeres (mínimo 4), en días fijos.', 2, 2),
+         ('cuenta', 'Por tu cuenta', 'La app y el gimnasio, con mi seguimiento.', 0, 0)]
 SEM_DIAS = ['Lunes', 'Martes', 'Miércoles', 'Jueves', 'Viernes']
 
 
-def semana(base, plan='manos', titulo='Arma tu semana.', texto='Elige cómo quieres empezar y mira cómo queda tu semana. Mueve las sesiones al día que te venga mejor, añade o quita, y verás cuánto te sale. Luego lo hablamos.'):
-    """El planificador: plan → semana tipo con sus sesiones → mover / añadir → precio semanal → WhatsApp.
+def eur(x):
+    return (f'{x:.2f}'.replace('.', ',')).replace(',00', '')
+
+
+def semana_4(modo, g, m):
+    s = PRECIO['cuenta'] * 4 + g * 4 * PRECIO['grupo' if modo == 'grupo' else 'indiv'] + m * PRECIO['manos']
+    return s / 4, s
+
+
+def semana(base, plan='indiv', titulo='Arma tus 4 semanas.', texto='Elige cómo quieres entrenar y mira cómo quedan tus cuatro semanas. Mueve las sesiones, añade o quita, y verás cuánto te sale. Luego lo hablamos.'):
+    """El planificador: modo → 4 semanas con sus sesiones → mover / añadir → precio semanal y cada 4 semanas → WhatsApp.
     Solo visual: no reserva nada; el plan exacto se cierra con Carmen en la valoración gratis."""
-    planes = ''.join(f'<button type="button" data-plan="{k}" data-g="{g}" data-m="{m}" aria-pressed="{str(k == plan).lower()}">'
-                     f'<b>{n}</b><small>desde {PRECIO["base"] + g * PRECIO["grupo"] + m * PRECIO["manos"]} €/sem.</small></button>'
-                     for k, n, g, m in PLANES)
-    dias = ''.join(f'<div class="dia" data-d="{i}"><button type="button" class="dia-cab" data-mover="{i}" aria-label="Mover la sesión elegida al {d.lower()}">'
-                   f'<span class="anilla" aria-hidden="true"></span><small>{d[:3]}</small><b></b></button><div class="huecos"></div></div>'
-                   for i, d in enumerate(SEM_DIAS))
+    modos = ''.join(f'<button type="button" data-plan="{k}" data-g="{g}" data-m="{m}" aria-pressed="{str(k == plan).lower()}">'
+                    f'<span><b>{n}</b><em>{d}</em></span><small>desde {eur(semana_4(k, g, m)[0])} €/sem.</small></button>'
+                    for k, n, d, g, m in MODOS)
+    cab = ''.join(f'<button type="button" class="dia-cab" data-mover="{i}" aria-label="Mover el entreno elegido a los {d.lower()}">'
+                  f'<span class="anilla" aria-hidden="true"></span><small>{d[:3]}</small></button>' for i, d in enumerate(SEM_DIAS))
+    filas = ''.join(f'<div class="fila"><span class="n-sem">S{w + 1}<small></small></span>' +
+                    ''.join(f'<button type="button" class="celda" data-w="{w}" data-d="{i}" aria-label="Semana {w + 1}, {d.lower()}"></button>' for i, d in enumerate(SEM_DIAS)) +
+                    '</div>' for w in range(4))
     return f'''<section class="seccion semana-sec" id="reserva"><div class="wrap">
   <div class="semana">
     <div class="semana-txt">
       <h2>{titulo}</h2>
       <p>{texto}</p>
-      <p class="semana-paso"><b>1</b>¿Cómo quieres empezar?</p>
-      <div class="planes" role="group" aria-label="Plan">{planes}</div>
+      <p class="semana-paso"><b>1</b>¿Cómo quieres entrenar?</p>
+      <div class="planes" role="group" aria-label="Cómo entrenar">{modos}</div>
+      <p class="gym"><b>Gimnasio incluido.</b> En todos los planes puedes ir a entrenar por libre cuando quieras, además de los días de entreno conmigo. La cuota va dentro del precio.</p>
+      <p class="suave por-separado">¿Solo una cosa? También puedes hacer cada una por separado: <a href="{base}maderoterapia-cordoba/">maderoterapia</a>, <a href="{base}masajes-cordoba/">masajes</a> o <a href="{base}entrenamiento-personal-mujeres-cordoba/">entrenamiento</a>.</p>
     </div>
     <div class="semana-cal">
-      <p class="semana-paso"><b>2</b>Tu semana <span class="mes" aria-live="polite"></span></p>
-      <div class="dias">{dias}</div>
-      <p class="pista" aria-live="polite">Toca una sesión y después el día al que quieres moverla.</p>
-      <div class="ley-sem"><span class="rama v">Entreno en grupo</span><span class="rama m">Masaje o maderoterapia</span><span class="app-ley">App: tu entreno en casa</span></div>
-      <p class="semana-paso"><b>3</b>¿Quieres más?</p>
+      <p class="semana-paso"><b>2</b>Tus 4 semanas <span class="mes" aria-live="polite"></span></p>
+      <div class="cuatro"><div class="fila cab"><span></span>{cab}</div>{filas}</div>
+      <p class="pista" aria-live="polite"></p>
+      <div class="ley-sem"><span class="rama v">Entreno</span><span class="rama m">Masaje o maderoterapia</span><span class="app-ley">Gimnasio libre y app</span></div>
+      <p class="semana-paso"><b>3</b>¿Quieres más o menos?</p>
       <div class="mas">
-        <div class="cont" data-t="g"><span class="rama v">Entrenos en grupo</span><button type="button" data-menos="g" aria-label="Un entreno menos">−</button><output data-n="g">2</output><button type="button" data-mas="g" aria-label="Un entreno más">+</button></div>
-        <div class="cont" data-t="m"><span class="rama m">Sesiones de manos</span><button type="button" data-menos="m" aria-label="Una sesión de manos menos">−</button><output data-n="m">1</output><button type="button" data-mas="m" aria-label="Una sesión de manos más">+</button></div>
+        <div class="cont"><span class="rama v">Entrenos a la semana</span><button type="button" data-menos="g" aria-label="Un entreno menos a la semana">−</button><output data-n="g">2</output><button type="button" data-mas="g" aria-label="Un entreno más a la semana">+</button></div>
+        <div class="cont"><span class="rama m">Masajes en 4 semanas</span><button type="button" data-menos="m" aria-label="Un masaje menos">−</button><output data-n="m">2</output><button type="button" data-mas="m" aria-label="Un masaje más">+</button></div>
       </div>
-      <p class="suave por-separado">¿Solo una cosa? También puedes hacer cada una por separado: <a href="{base}maderoterapia-cordoba/">maderoterapia</a>, <a href="{base}masajes-cordoba/">masajes</a> o <a href="{base}entrenamiento-personal-mujeres-cordoba/">entrenamiento</a>.</p>
       <div class="cuenta">
-        <div class="total"><span>Te saldría por unos</span><b><output id="sem-precio">58</output> €</b><span>a la semana</span></div>
+        <div class="total"><span>Te saldría por unos</span><b><output id="sem-precio">82,50</output> €</b><span>a la semana · <output id="sem-4">330</output> € cada 4 semanas, y pagas cada semana</span></div>
         <ul id="sem-desglose"></ul>
         <a class="btn" id="sem-wa" href="{wa('Hola Mari Carmen, quiero empezar el programa de Siluetas de Mujer. ¿Lo vemos en la valoración?')}">Hablar con Carmen</a>
         <small>Precio aproximado, para orientarte. Tu plan exacto lo cerramos en la valoración, que es gratis.</small>
@@ -179,47 +199,61 @@ def semana(base, plan='manos', titulo='Arma tu semana.', texto='Elige cómo quie
 
 SEMANA_JS = '''(function(){
   var d=document,root=d.querySelector('.semana');if(!root)return;
-  var P=%s,D=['lunes','martes','miércoles','jueves','viernes'],M=['enero','febrero','marzo','abril','mayo','junio','julio','agosto','septiembre','octubre','noviembre','diciembre'];
-  var ORDEN={g:[1,3,0,2,4],m:[4,2,0,1,3]},MAX={g:5,m:3},N={g:'Entreno en grupo',m:'Masaje o maderoterapia'};
-  var cols=[].slice.call(root.querySelectorAll('.dia')),planes=[].slice.call(root.querySelectorAll('[data-plan]'));
-  var ses=[],sel=null,pista=root.querySelector('.pista');
+  var P=%s,D=['lunes','martes','miércoles','jueves','viernes'],M=['ene','feb','mar','abr','may','jun','jul','ago','sep','oct','nov','dic'];
+  var FIJOS=[1,3,0],ORDEN_I=[0,2,4,1,3],ORDEN_M=[[0,4],[2,4],[1,4],[3,4]],MAXG=4,MAXM=8;
+  var planes=[].slice.call(root.querySelectorAll('[data-plan]')),celdas=[].slice.call(root.querySelectorAll('.celda')),cabs=[].slice.call(root.querySelectorAll('[data-mover]'));
+  var modo='indiv',dias=[],manos=[],sel=null,pista=root.querySelector('.pista');
   var hoy=new Date();hoy.setHours(0,0,0,0);var lun=new Date(hoy);lun.setDate(lun.getDate()-((hoy.getDay()+6)%%7)+7);
-  cols.forEach(function(c,i){var f=new Date(lun);f.setDate(lun.getDate()+i);c.querySelector('.dia-cab b').textContent=f.getDate()});
-  root.querySelector('.mes').textContent='· semana del '+lun.getDate()+' de '+M[lun.getMonth()];
-  function cuenta(t){return ses.filter(function(s){return s.t===t}).length}
-  function enDia(i){return ses.filter(function(s){return s.d===i}).length}
-  function libre(t){var o=ORDEN[t];for(var k=0;k<2;k++)for(var j=0;j<o.length;j++)if(enDia(o[j])<=k&&!ses.some(function(s){return s.d===o[j]&&s.t===t}))return o[j];for(j=0;j<5;j++)if(enDia(j)<2)return j;return -1}
-  function poner(t,n){while(cuenta(t)<n){var x=libre(t);if(x<0)break;ses.push({t:t,d:x})}while(cuenta(t)>n){for(var i=ses.length-1;i>=0;i--)if(ses[i].t===t){ses.splice(i,1);break}}}
-  function plan(b){ses=[];sel=null;poner('g',+b.dataset.g);poner('m',+b.dataset.m);pinta()}
+  [].forEach.call(root.querySelectorAll('.n-sem small'),function(s,w){var f=new Date(lun);f.setDate(lun.getDate()+7*w);s.textContent=f.getDate()+' '+M[f.getMonth()]});
+  root.querySelector('.mes').textContent='· desde el lunes '+lun.getDate()+' de '+['enero','febrero','marzo','abril','mayo','junio','julio','agosto','septiembre','octubre','noviembre','diciembre'][lun.getMonth()];
+  function eur(x){return (Math.round(x*100)/100).toFixed(2).replace('.',',').replace(',00','')}
+  function enCelda(w,i){return (dias.indexOf(i)>=0?1:0)+manos.filter(function(s){return s.w===w&&s.d===i}).length}
+  function ponerG(n){if(modo==='cuenta')n=0;
+    while(dias.length>n)dias.pop();
+    var o=modo==='grupo'?FIJOS.concat([2,4]):ORDEN_I;for(var j=0;j<o.length&&dias.length<n;j++)if(dias.indexOf(o[j])<0)dias.push(o[j])}
+  function ponerM(n){while(manos.length>n)manos.pop();
+    for(var k=0;manos.length<n&&k<40;k++){var w=[0,2,1,3][manos.length%%4],cand=[4,2,0,1,3];
+      for(var c=0;c<cand.length;c++){if(enCelda(w,cand[c])<2&&!manos.some(function(s){return s.w===w&&s.d===cand[c]})){manos.push({w:w,d:cand[c]});break}}}}
+  function plan(b){modo=b.dataset.plan;dias=[];manos=[];sel=null;ponerG(+b.dataset.g);ponerM(+b.dataset.m);pinta()}
   planes.forEach(function(b){b.onclick=function(){plan(b)}});
-  [].forEach.call(root.querySelectorAll('[data-mas],[data-menos]'),function(b){b.onclick=function(){var t=b.dataset.mas||b.dataset.menos,n=cuenta(t)+(b.dataset.mas?1:-1);
-    poner(t,Math.max(0,Math.min(MAX[t],n)));sel=null;pinta()}});
-  cols.forEach(function(c,i){c.querySelector('[data-mover]').onclick=function(){if(sel===null)return;if(enDia(i)>=2&&ses[sel].d!==i){pista.textContent='Ese día ya tiene dos sesiones. Elige otro.';return}
-    ses[sel].d=i;sel=null;pinta()}});
+  [].forEach.call(root.querySelectorAll('[data-mas],[data-menos]'),function(b){b.onclick=function(){var t=b.dataset.mas||b.dataset.menos,s=b.dataset.mas?1:-1;sel=null;
+    if(t==='g'){if(modo==='cuenta')modo='indiv';ponerG(Math.max(0,Math.min(MAXG,dias.length+s)))}else ponerM(Math.max(0,Math.min(MAXM,manos.length+s)));pinta()}});
+  cabs.forEach(function(c,i){c.onclick=function(){if(!sel||sel.t!=='g')return;
+    if(dias.indexOf(i)>=0){pista.textContent='Ya entrenas los '+D[i]+'. Elige otro día.';return}dias[sel.k]=i;sel=null;pinta()}});
+  celdas.forEach(function(c){c.onclick=function(e){var w=+c.dataset.w,i=+c.dataset.d,ch=e.target.closest('.ses');
+    if(ch){var t=ch.dataset.t,k=+ch.dataset.k;
+      if(t==='g'&&modo==='grupo'){pista.textContent='En grupo los días son fijos: es el horario del grupo.';return}
+      sel=(sel&&sel.t===t&&sel.k===k)?null:{t:t,k:k};pinta();return}
+    if(sel&&sel.t==='m'){if(enCelda(w,i)>=2){pista.textContent='Ese día ya tiene dos sesiones. Elige otro.';return}manos[sel.k]={w:w,d:i};sel=null;pinta();return}
+    if(sel&&sel.t==='g'){cabs[i].onclick();}}});
   function pinta(){
-    var g=cuenta('g'),m=cuenta('m');
-    planes.forEach(function(b){b.setAttribute('aria-pressed',+b.dataset.g===g&&+b.dataset.m===m)});
+    var g=dias.length,m=manos.length,ent=modo==='grupo'?P.grupo:P.indiv;
+    planes.forEach(function(b){var mia=b.dataset.plan===modo;b.setAttribute('aria-pressed',mia);
+      var std=+b.dataset.g===g&&+b.dataset.m===m;b.classList.toggle('medida',mia&&!std)});
     root.querySelector('[data-n="g"]').textContent=g;root.querySelector('[data-n="m"]').textContent=m;
-    cols.forEach(function(c,i){var h=c.querySelector('.huecos');h.innerHTML='';
-      ses.forEach(function(s,k){if(s.d!==i)return;var b=d.createElement('button');b.type='button';b.className='ses '+s.t;b.setAttribute('aria-pressed',sel===k);
-        b.innerHTML='<span>'+(s.t==='g'?'Entreno':'Manos')+'</span>';b.setAttribute('aria-label',N[s.t]+' el '+D[i]+'. Tocar para moverla');
-        b.onclick=function(){sel=sel===k?null:k;pinta()};h.appendChild(b)});
-      if(!enDia(i)){var a=d.createElement('span');a.className='app';a.textContent='app';h.appendChild(a)}
-      c.classList.toggle('destino',sel!==null&&ses[sel].d!==i&&enDia(i)<2)});
-    pista.textContent=sel===null?'Toca una sesión y después el día al que quieres moverla.':'Ahora toca el día al que la quieres llevar.';
-    var e=P.base+g*P.grupo+m*P.manos;root.querySelector('#sem-precio').textContent=e;
-    var li=['<li><span>App, entrenos en casa y mi seguimiento</span><b>'+P.base+' €</b></li>'];
-    if(g)li.push('<li><span>'+g+' entreno'+(g>1?'s':'')+' en grupo</span><b>'+g*P.grupo+' €</b></li>');
-    if(m)li.push('<li><span>'+m+' sesión'+(m>1?'es':'')+' de manos</span><b>'+m*P.manos+' €</b></li>');
-    li.push('<li class="mes-eq"><span>Más o menos al mes</span><b>'+Math.round(e*52/12/5)*5+' €</b></li>');
+    celdas.forEach(function(c){var w=+c.dataset.w,i=+c.dataset.d,h='';
+      var k=dias.indexOf(i);if(k>=0)h+='<span class="ses g'+(modo==='grupo'?' fijo':'')+((sel&&sel.t==='g'&&sel.k===k)?' sel':'')+'" data-t="g" data-k="'+k+'">'+(modo==='grupo'?'Grupo':'Entreno')+'</span>';
+      manos.forEach(function(s,j){if(s.w===w&&s.d===i)h+='<span class="ses m'+((sel&&sel.t==='m'&&sel.k===j)?' sel':'')+'" data-t="m" data-k="'+j+'">Masaje</span>'});
+      var txt=(k>=0?(modo==='grupo'?'entreno en grupo':'entreno'):'')+(manos.some(function(s){return s.w===w&&s.d===i})?(k>=0?' y ':'')+'masaje':'');
+      c.setAttribute('aria-label','Semana '+(w+1)+', '+D[i]+': '+(txt||'libre'));
+      if(!h)h='<span class="app" aria-hidden="true"></span>';c.innerHTML=h;
+      c.classList.toggle('destino',!!sel&&sel.t==='m'&&enCelda(w,i)<2)});
+    cabs.forEach(function(c,i){c.classList.toggle('destino',!!sel&&sel.t==='g'&&dias.indexOf(i)<0)});
+    pista.textContent=!sel?(modo==='grupo'?'Los entrenos de grupo van en días fijos. El masaje lo puedes mover: tócalo y elige otro día.':'Toca una sesión y después el día al que quieres llevarla.'):
+      (sel.t==='g'?'Ahora toca el día de la semana (arriba) al que quieres pasar ese entreno.':'Ahora toca el día al que quieres llevar el masaje.');
+    var t4=P.cuenta*4+g*4*ent+m*P.manos;root.querySelector('#sem-precio').textContent=eur(t4/4);root.querySelector('#sem-4').textContent=eur(t4);
+    var li=['<li><span>App, gimnasio y mi seguimiento</span><b>'+eur(P.cuenta*4)+' €</b></li>'];
+    if(g)li.push('<li><span>'+g*4+' entrenos '+(modo==='grupo'?'en grupo':'individuales')+' ('+g+' a la semana)</span><b>'+eur(g*4*ent)+' €</b></li>');
+    if(m)li.push('<li><span>'+m+' masaje'+(m>1?'s':'')+' o maderoterapia (× '+eur(P.manos)+' €)</span><b>'+eur(m*P.manos)+' €</b></li>');
+    li.push('<li class="mes-eq"><span>Cada 4 semanas</span><b>'+eur(t4)+' €</b></li>');
     root.querySelector('#sem-desglose').innerHTML=li.join('');
-    var dias=[];ses.slice().sort(function(a,b){return a.d-b.d}).forEach(function(s){dias.push(D[s.d]+': '+(s.t==='g'?'entreno en grupo':'masaje o maderoterapia'))});
-    var p=planes.filter(function(b){return b.getAttribute('aria-pressed')==='true'})[0];
-    var txt='Hola Mari Carmen, he montado mi semana en la web de Siluetas de Mujer'+(p?' ('+p.querySelector('b').textContent+')':'')+':\\n'+
-      (dias.length?dias.join('\\n'):'solo la app, entrenando en casa')+'\\nMe sale por unos '+e+' € a la semana. ¿Lo vemos en la valoración?';
+    var ds=dias.slice().sort().map(function(i){return D[i]}),ms=manos.slice().sort(function(a,b){return a.w-b.w||a.d-b.d}).map(function(s){return 'semana '+(s.w+1)+' el '+D[s.d]});
+    var txt='Hola Mari Carmen, he montado mis 4 semanas en la web de Siluetas de Mujer ('+({indiv:'entreno individual',grupo:'entreno en grupo',cuenta:'por mi cuenta, con la app y el gimnasio'})[modo]+'):\\n'+
+      (g?'Entreno los '+ds.join(' y ')+'.\\n':'')+(m?'Masaje o maderoterapia: '+ms.join(', ')+'.\\n':'')+
+      'Me sale por unos '+eur(t4/4)+' € a la semana ('+eur(t4)+' € cada 4 semanas). ¿Lo vemos en la valoración?';
     root.querySelector('#sem-wa').href='https://wa.me/34646437371?text='+encodeURIComponent(txt)}
   plan(planes.filter(function(b){return b.getAttribute('aria-pressed')==='true'})[0]||planes[0]);
-})();''' % ('{"base":%d,"grupo":%d,"manos":%d}' % (PRECIO['base'], PRECIO['grupo'], PRECIO['manos']))
+})();''' % ('{"cuenta":%s,"indiv":%s,"grupo":%s,"manos":%s}' % (PRECIO['cuenta'], PRECIO['indiv'], PRECIO['grupo'], PRECIO['manos']))
 
 
 def pagina(base, titulo, desc, cuerpo, actual='', extra_js='', ld=''):
@@ -301,7 +335,7 @@ def portada():
 
 <section class="seccion"><div class="wrap">
   <p class="frase-xl"><span class="nw"><u class="m">Las manos</u><img class="en-linea" src="img/fotos/maderoterapia-mini.webp" alt="" width="160" height="160" loading="lazy"></span>, para lo que notas pronto. <span class="nw"><u class="v">El movimiento</u><img class="en-linea" src="img/fotos/grupo-mini.webp" alt="" width="160" height="160" loading="lazy"></span>, para lo que se queda.</p>
-  <p>Lo que se deshincha con las manos vuelve si el cuerpo no se mueve. Por eso trabajo las dos cosas, con la misma persona siguiéndote.</p>
+  <p>Lo que alivian las manos, la retención y la tensión, vuelve si el cuerpo no se mueve. Por eso trabajo las dos cosas, con la misma persona siguiéndote.</p>
 </div></section>
 
 <section class="seccion" id="empieza"><div class="wrap">
@@ -357,7 +391,7 @@ def portada():
   </div>
 </div></section>
 
-{semana(b, 'manos', 'Arma tu semana conmigo.')}'''
+{semana(b, 'indiv', 'Arma tus 4 semanas conmigo.')}'''
     ld = ('<script type="application/ld+json">{"@context":"https://schema.org","@type":"HealthAndBeautyBusiness","name":"Siluetas de Mujer",'
           '"founder":{"@type":"Person","name":"Mari Carmen Figueras"},"description":"Masaje, maderoterapia y entrenamiento para mujeres en Córdoba, en sala o a domicilio.",'
           '"telephone":"+34646437371","areaServed":{"@type":"City","name":"Córdoba"},"address":{"@type":"PostalAddress","addressLocality":"Córdoba","addressCountry":"ES"},'
@@ -381,7 +415,7 @@ AYUDA = {
         manos='Maderoterapia y maniobras de drenaje linfático. Desaparece la retención y se nota pronto.',
         mov='Fuerza de piernas y rutinas cortas para que la pantorrilla trabaje y la circulación no dependa solo del masaje.',
         p=62, nota='Al principio pesan más las manos. Después, el movimiento lo sostiene.',
-        tiempos=[('Pronto', 'Ligereza', 'Menos hinchazón en pocas sesiones.'),
+        tiempos=[('Pronto', 'Ligereza', 'La retención desaparece en pocas sesiones.'),
                  ('Semanas', 'Piernas que aguantan', 'Llegas a la tarde con menos peso.'),
                  ('Se queda', 'Con movimiento', 'Cuando el movimiento entra en tu semana.')],
         aviso='Si la hinchazón es de una sola pierna, duele, está caliente o aparece de golpe, ve antes a tu médico.',
@@ -395,10 +429,10 @@ AYUDA = {
                 'Me he gastado un dineral en cremas y nada.',
                 'A partir de los 45 se me marca más, y no he cambiado nada.'],
         respuesta='Te digo la verdad: <b>eliminarla, no te la elimina nadie.</b> La tiene casi todo el mundo, y con las hormonas se marca más. La madera mejora mucho cómo se ve y se siente la piel. Y si fortalecemos glúteo y pierna, cambia la forma de la zona.',
-        manos='Maderoterapia sobre piernas, glúteos y abdomen, con drenaje antes de empezar. Piel más suave y uniforme, y menos volumen si hay retención.',
+        manos='Maderoterapia sobre piernas, glúteos y abdomen, con drenaje antes de empezar. Piel más suave y uniforme, y si hay retención, desaparece.',
         mov='Un glúteo y una pierna más fuertes cambian la forma de la zona. Sentadillas, puentes y escalones, 2 o 3 días por semana.',
         p=50, nota='Aquí van a partes iguales.',
-        tiempos=[('Pronto', 'Ligereza', 'Menos volumen si hay retención.'),
+        tiempos=[('Pronto', 'Ligereza', 'Desaparece la retención, si la hay.'),
                  ('Semanas', 'Piel más uniforme', 'Con constancia en las manos.'),
                  ('8-12 semanas', 'La forma de la zona', 'Con fuerza sostenida.')],
         aviso='No es para ti si estás embarazada, tienes varices importantes, has tenido una trombosis, tomas anticoagulantes o tienes heridas en la zona. Te pregunto siempre por tu salud.',
@@ -412,7 +446,7 @@ AYUDA = {
                 'Estoy más cansada y me cuesta hasta levantarme del sofá.',
                 '¿Me apunto a algo de cardio y ya?'],
         respuesta='Con la menopausia se pierden músculo y hueso más deprisa, y la grasa se va más al abdomen. <b>No es que lo hagas peor.</b> Lo que mejor lo frena es la fuerza, dos días por semana, cuidando el suelo pélvico. El cardio suma, pero no basta.',
-        manos='Masaje y maderoterapia para la hinchazón y la tensión. Te ayudan a sentirte mejor mientras lo demás se construye.',
+        manos='Masaje y maderoterapia para la retención y la tensión. Te ayudan a sentirte mejor mientras lo demás se construye.',
         mov='Fuerza de cuerpo entero dos días por semana, cuidando el suelo pélvico en cada sesión.',
         p=30, nota='Aquí manda el movimiento. Te lo digo aunque te vendiera más masajes.',
         tiempos=[('Semanas', 'Más fuerza', 'Al cargar la compra o levantarte de la silla.'),
@@ -513,7 +547,7 @@ def ayuda(slug):
 </div></section>
 
 {pasos()}
-{semana(b, 'deporte' if su.startswith('entrenamiento') else 'manos')}
+{semana(b, 'grupo' if su.startswith('entrenamiento') else 'indiv')}
 
 <section class="seccion"><div class="wrap">
   <div class="tit-sec"><h2 style="font-size:1.6rem">Otras cosas en las que te ayudo</h2></div>
@@ -553,7 +587,7 @@ def madero():
 </div>
 
 <section class="seccion"><div class="wrap">
-  <div class="tit-sec"><h2>Tres maderas, tres maniobras.</h2><p>Manual y no invasiva: sin máquinas ni productos químicos. Son mis tres piezas principales, no las únicas: según la zona y lo que necesite, uso otras.</p></div>
+  <div class="tit-sec"><h2>Tres maderas principales. Y muchas más técnicas.</h2><p>Manual y no invasiva: sin máquinas ni productos químicos. Estas tres son las piezas que más uso, pero no las únicas: según la zona y lo que necesite cada una, combino otras técnicas y otras piezas.</p></div>
   <div class="lamina">{lam}</div>
 </div></section>
 
@@ -563,7 +597,7 @@ def madero():
     <div class="si"><h3>Lo que vas a notar</h3><ul>
       <li><span><b>Piel más suave</b><span>con mejor textura, con constancia.</span></span></li>
       <li><span><b>Ligereza</b><span>sobre todo en las piernas.</span></span></li>
-      <li><span><b>Menos hinchazón</b><span>desaparece la retención.</span></span></li>
+      <li><span><b>Adiós a la retención</b><span>el líquido no se va: desaparece la retención.</span></span></li>
       <li><span><b>Una hora para ti</b><span>sin prisas y con el móvil lejos.</span></span></li></ul></div>
     <div class="no"><h3>Lo que no es</h3><ul>
       <li><span><b>Un milagro de una sesión</b><span>los cambios van poco a poco.</span></span></li>
@@ -602,6 +636,7 @@ def madero():
       <div class="linea-r"><b>Sesión suelta</b><span class="p">45–65 €</span><small>Según la zona y el tiempo que necesite</small></div>
       <div class="linea-r"><b>Bono 5 sesiones</b><span class="p">desde 42 €</span><small>3 € menos cada sesión · válido 3 meses</small></div>
       <div class="linea-r"><b>Bono 10 sesiones</b><span class="p">desde 40 €</span><small>5 € menos cada sesión · válido 6 meses</small></div>
+      <div class="linea-r prog"><b>Dentro del programa Siluetas</b><span class="p">45 €</span><small>Combinada con el entrenamiento: <a href="#reserva">arma tus 4 semanas</a></small></div>
       <div class="linea-r"><b>A domicilio</b><span class="p">Pregúntame</span><small>Cambia según la zona de Córdoba</small></div>
     </div>
     <div class="calc-osc">
@@ -633,7 +668,7 @@ def madero():
   </div>
 </div></section>
 {pasos()}
-{semana(b, 'manos')}'''
+{semana(b, 'indiv')}'''
     js = '''(function(){
   var r=document.getElementById('n-ses'),v=document.getElementById('n-val'),o=document.getElementById('res'),wa=document.getElementById('calc-wa');if(!r)return;
   function coste(b10,b5,su,P){return b10*10*(P-5)+b5*5*(P-3)+su*P}
@@ -740,7 +775,7 @@ def entreno():
   </div>
 </div></section>
 {pasos()}
-{semana(b, 'deporte')}'''
+{semana(b, 'grupo')}'''
     return pagina(b, 'Entrenadora personal para mujeres en Córdoba · Siluetas de Mujer',
                   'Entrenamiento de fuerza para mujeres a partir de los 40 en Córdoba: grupos de hasta 5, 1 a 1 o en tu casa. Valoración gratis y app con tus medidas.',
                   cuerpo, 'entrenamiento-personal-mujeres-cordoba')
@@ -791,7 +826,7 @@ def masajes():
   </div></div>
 </section>
 {pasos()}
-{semana(b, 'manos')}'''
+{semana(b, 'indiv')}'''
     return pagina(b, 'Masajes en Córdoba: descarga y tailandés · Siluetas de Mujer',
                   'Masaje de descarga (35 €) y masaje tailandés (40 €) en Córdoba, 60 minutos, en sala. También a domicilio, con precio según la zona.',
                   cuerpo, 'masajes-cordoba')

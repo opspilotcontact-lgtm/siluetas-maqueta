@@ -537,23 +537,33 @@ p{margin:0 0 1rem;max-width:62ch}
 .cont button:hover{background:var(--tinta);color:var(--arena)}
 .cont output{text-align:center;font-weight:800;font-size:1.3rem;font-variant-numeric:tabular-nums}
 .por-separado{margin-top:1.4rem;font-size:.95rem}
-.dias{display:grid;grid-template-columns:repeat(5,minmax(0,1fr));gap:clamp(.35rem,1.1vw,.75rem);margin-top:.9rem}
-.dia{display:grid;grid-template-rows:auto 1fr;border-radius:5px;background:#fff;box-shadow:0 1px 0 rgb(22 50 63/.08),0 10px 22px -16px rgb(22 50 63/.45);border-top:7px solid var(--tinta);position:relative;min-height:15rem;transition:box-shadow .2s var(--ease)}
-.dia .anilla{position:absolute;top:-13px;left:50%;width:1.6rem;height:12px;transform:translateX(-50%)}
-.dia .anilla::before,.dia .anilla::after{content:"";position:absolute;top:0;width:5px;height:12px;border-radius:3px}
-.dia .anilla::before{left:3px;background:var(--rosa)}.dia .anilla::after{right:3px;background:var(--turq)}
-.dia-cab{display:grid;justify-items:center;gap:0;padding:.8rem .2rem .5rem;border:0;background:none;font:inherit;color:var(--tinta);cursor:default;border-bottom:1px dashed var(--regla)}
-.dia-cab small{font-size:.74rem;font-weight:700;color:var(--suave)}
-.dia-cab b{font-size:clamp(1.5rem,3vw,2.2rem);font-weight:800;line-height:1;letter-spacing:-.04em;font-variant-numeric:tabular-nums}
-.huecos{display:grid;align-content:start;gap:.4rem;padding:.5rem .35rem .6rem}
-.ses{display:flex;align-items:center;justify-content:center;min-height:4.4rem;border-radius:5px;border:0;font:inherit;font-weight:700;font-size:.82rem;color:#fff;cursor:pointer;transition:transform .2s var(--ease),box-shadow .2s var(--ease)}
+.cuatro{display:grid;gap:.4rem;margin-top:.9rem}
+.cuatro .fila{display:grid;grid-template-columns:2.6rem repeat(5,minmax(0,1fr));gap:clamp(.25rem,.9vw,.55rem)}
+.cuatro .fila.cab{margin-bottom:.15rem}
+.dia-cab{position:relative;display:grid;justify-items:center;padding:.75rem .2rem .45rem;border:0;border-radius:5px 5px 0 0;background:var(--tinta);color:var(--arena);font:inherit;cursor:default}
+.dia-cab small{font-size:.78rem;font-weight:700}
+.dia-cab .anilla{position:absolute;top:-11px;left:50%;width:1.6rem;height:12px;transform:translateX(-50%)}
+.dia-cab .anilla::before,.dia-cab .anilla::after{content:"";position:absolute;top:0;width:5px;height:12px;border-radius:3px}
+.dia-cab .anilla::before{left:3px;background:var(--rosa)}.dia-cab .anilla::after{right:3px;background:var(--turq)}
+.dia-cab.destino{cursor:pointer;background:var(--rosa-t)}
+.dia-cab.destino::after{content:"aquí";font-size:.66rem;font-weight:700}
+.n-sem{display:grid;align-content:center;font-weight:800;font-size:.9rem;line-height:1.1}
+.n-sem small{font-weight:500;font-size:.68rem;color:var(--suave)}
+.celda{display:grid;align-content:start;gap:.25rem;min-height:4.6rem;padding:.3rem;border:0;border-radius:4px;background:#fff;box-shadow:0 1px 0 rgb(22 50 63/.08),0 8px 18px -14px rgb(22 50 63/.45);font:inherit;cursor:pointer;text-align:center}
+.celda.destino{box-shadow:0 0 0 2px var(--rosa-t)}
+.ses{display:flex;align-items:center;justify-content:center;min-height:1.9rem;border-radius:4px;font-weight:700;font-size:.74rem;color:#fff;transition:transform .2s var(--ease),box-shadow .2s var(--ease)}
 .ses.g{background:var(--turq-t)}.ses.m{background:var(--rosa-t)}
-.ses:hover{transform:translateY(-2px)}
-.ses[aria-pressed=true]{box-shadow:0 0 0 3px #fff,0 0 0 5px var(--tinta);transform:translateY(-2px)}
-.app{display:grid;place-items:center;min-height:4.4rem;border-radius:5px;border:1.5px dashed var(--regla);font-size:.75rem;color:var(--suave)}
-.dia.destino{box-shadow:0 0 0 2px var(--tinta),0 10px 22px -16px rgb(22 50 63/.45)}
-.dia.destino .dia-cab{cursor:pointer}
-.dia.destino .dia-cab::after{content:"Mover aquí";font-size:.68rem;font-weight:700;color:var(--rosa-t);margin-top:.15rem}
+.ses.fijo{background:repeating-linear-gradient(135deg,var(--turq-t) 0 6px,#0D7C75 6px 12px);cursor:not-allowed}
+.ses.sel{box-shadow:0 0 0 2px #fff,0 0 0 4px var(--tinta);transform:translateY(-1px)}
+.celda .app{display:block;height:100%;min-height:3.9rem;border-radius:3px;border:1.5px dashed var(--regla)}
+.planes button>span{display:grid;gap:.1rem}
+.planes button em{font-style:normal;font-size:.85rem;font-weight:400;color:var(--suave)}
+.planes button[aria-pressed=true] em{color:rgb(243 235 224/.75)}
+.planes button.medida small::after{content:" · a tu medida"}
+.linea-r.prog{background:linear-gradient(90deg,rgb(217 58 122/.08),transparent);margin:0 -.6rem;padding-left:.6rem;padding-right:.6rem}
+.linea-r.prog a{color:var(--rosa-t);font-weight:650}
+.semana-cal .semana-paso:nth-of-type(2){margin-top:1.6rem}
+@media (max-width:480px){.cuatro .fila{grid-template-columns:2.1rem repeat(5,minmax(0,1fr))}.celda{min-height:3.8rem;padding:.2rem}.ses{font-size:.62rem;min-height:1.6rem}.celda .app{min-height:3.2rem}.n-sem{font-size:.78rem}}
 .pista{font-size:.9rem;color:var(--suave);margin:.9rem 0 .4rem}
 .ley-sem{display:flex;flex-wrap:wrap;gap:.4rem 1.2rem;font-size:.85rem}
 .ley-sem .rama{font-size:.85rem}
@@ -570,7 +580,6 @@ p{margin:0 0 1rem;max-width:62ch}
 .cuenta .btn{background:var(--arena);color:var(--tinta);border-color:var(--arena)}
 .cuenta small{font-size:.82rem;color:rgb(243 235 224/.7)}
 @media (max-width:860px){.semana{grid-template-columns:1fr}}
-@media (max-width:480px){.dia{min-height:12rem}.ses{min-height:3.6rem;font-size:.7rem}.app{min-height:3.6rem;font-size:.66rem}.huecos{padding:.4rem .2rem}}
 
 /* ── v5 · módulos con más forma ─────────────────────────────────────────── */
 /* Arreglo: en dos columnas, el título no se estira (el párrafo quedaba lejos) */
@@ -620,3 +629,6 @@ p{margin:0 0 1rem;max-width:62ch}
 .frase-xl .nw{white-space:nowrap}
 .cuenta li b{white-space:nowrap}
 .semana-cal .mas{max-width:28rem}
+.gym{margin-top:1.4rem;padding:.9rem 1rem;border-left:3px solid var(--turq);background:rgb(22 163 154/.08);border-radius:0 5px 5px 0;font-size:.95rem}
+.semana-paso{flex-wrap:wrap}
+@media (max-width:480px){.semana-paso .mes{flex-basis:100%;padding-left:2.3rem;margin-top:-.3rem}}
