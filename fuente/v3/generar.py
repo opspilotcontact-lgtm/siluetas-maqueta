@@ -1,4 +1,4 @@
-"""Siluetas de Mujer · v5 (v4 «el camino, con forma» + audios de Carmen del 1-oct + la agenda).
+"""Siluetas de Mujer · v6 (v4 «el camino, con forma» + audios de Carmen del 1-oct + «Arma tu semana»).
 
 v3 dio el SISTEMA (una paleta, una letra, el camino, una plantilla) y el fundador
 lo aprobó; le faltaba personalidad: «texto y más texto». La v4 mantiene el sistema
@@ -95,7 +95,7 @@ def cabecera(base, actual=''):
     cur = ' aria-current="page"'
     enl = ''.join(f'<a href="{h}"{cur if u and u == actual else ""}>{t}</a>' for h, t, u in nav)
     return f'''<a class="salta" href="#contenido">Saltar al contenido</a>
-<div class="franja">Propuesta de web para Siluetas de Mujer, en revisión (v5). Las imágenes son ilustrativas, generadas con IA. <a href="{base}v4/">Ver la v4</a></div>
+<div class="franja">Propuesta de web para Siluetas de Mujer, en revisión (v6). Las imágenes son ilustrativas, generadas con IA. <a href="{base}v5/">Ver la v5</a></div>
 <header class="cab"><div class="wrap">
   <a class="marca" href="{base}" aria-label="Siluetas de Mujer, inicio"><img src="{base}img/silueta.svg" alt="" width="20" height="30"><span><i>Siluetas</i> de Mujer</span></a>
   <nav class="nav" aria-label="Principal">{enl}</nav>
@@ -129,66 +129,97 @@ def pasos(titulo='Tus 3 pasos para empezar', texto='Sin compromiso. La valoraci�
 </div></section>'''
 
 
-AGENDA_QUE = [('valoracion', 'Valoración gratis', 'mi valoración gratuita'), ('maderoterapia', 'Maderoterapia', 'una sesión de maderoterapia'),
-              ('masaje', 'Masaje', 'un masaje'), ('entreno', 'Entrenamiento', 'empezar a entrenar')]
+# ── «Tu semana con Carmen»: el programa como un calendario que se arma ────
+# Carmen (audio 1-oct 18:44): lo que vende es el PROGRAMA (movimiento + manos), no piezas
+# sueltas, y quiere el precio POR SEMANA. El fundador (2-oct): niveles que se suman.
+# PRECIOS PROVISIONALES (fundador 2-oct, pasados de mes a semana) · A VALIDAR CON CARMEN.
+PRECIO = {'base': 12, 'grupo': 9, 'manos': 28}   # €/semana: app y seguimiento · cada entreno en grupo · cada sesión de manos
+PLANES = [('casa', 'En casa, con la app', 0, 0), ('deporte', 'Deporte', 2, 0), ('manos', 'Deporte y manos', 2, 1)]
+SEM_DIAS = ['Lunes', 'Martes', 'Miércoles', 'Jueves', 'Viernes']
 
 
-def agenda(que='valoracion', titulo='Elige tu día.', texto='Marca el día y la franja que te vienen bien y me llega por WhatsApp. Yo te confirmo la hora.'):
-    """El calendario de mesa: la clienta elige día y franja y sale un WhatsApp para «reservarlo».
-    Solo visual: no hay agenda detrás; Carmen confirma a mano."""
-    ques = ''.join(f'<button type="button" data-que="{k}" data-txt="{html.escape(t)}" aria-pressed="{str(k == que).lower()}">{n}</button>'
-                   for k, n, t in AGENDA_QUE)
-    dias = ''.join(f'<button type="button" class="hoja" data-d="{i}" disabled><span class="anilla" aria-hidden="true"></span>'
-                   f'<small>{d}</small><b>·</b><em></em></button>'
-                   for i, d in enumerate(['Lunes', 'Martes', 'Miércoles', 'Jueves', 'Viernes'] * 2))
-    return f'''<section class="seccion agenda-sec" id="reserva"><div class="wrap">
-  <div class="agenda">
-    <div class="agenda-txt">
+def semana(base, plan='manos', titulo='Arma tu semana.', texto='Elige cómo quieres empezar y mira cómo queda tu semana. Mueve las sesiones al día que te venga mejor, añade o quita, y verás cuánto te sale. Luego lo hablamos.'):
+    """El planificador: plan → semana tipo con sus sesiones → mover / añadir → precio semanal → WhatsApp.
+    Solo visual: no reserva nada; el plan exacto se cierra con Carmen en la valoración gratis."""
+    planes = ''.join(f'<button type="button" data-plan="{k}" data-g="{g}" data-m="{m}" aria-pressed="{str(k == plan).lower()}">'
+                     f'<b>{n}</b><small>desde {PRECIO["base"] + g * PRECIO["grupo"] + m * PRECIO["manos"]} €/sem.</small></button>'
+                     for k, n, g, m in PLANES)
+    dias = ''.join(f'<div class="dia" data-d="{i}"><button type="button" class="dia-cab" data-mover="{i}" aria-label="Mover la sesión elegida al {d.lower()}">'
+                   f'<span class="anilla" aria-hidden="true"></span><small>{d[:3]}</small><b></b></button><div class="huecos"></div></div>'
+                   for i, d in enumerate(SEM_DIAS))
+    return f'''<section class="seccion semana-sec" id="reserva"><div class="wrap">
+  <div class="semana">
+    <div class="semana-txt">
       <h2>{titulo}</h2>
       <p>{texto}</p>
-      <p class="suave">De lunes a viernes, en mi sala o en tu casa, en Córdoba capital.</p>
+      <p class="semana-paso"><b>1</b>¿Cómo quieres empezar?</p>
+      <div class="planes" role="group" aria-label="Plan">{planes}</div>
     </div>
-    <div class="agenda-cal">
-      <p class="agenda-paso"><b>1</b>¿Para qué?</p>
-      <div class="chips" role="group" aria-label="Para qué">{ques}</div>
-      <p class="agenda-paso"><b>2</b>Elige el día <span class="mes" aria-live="polite"></span></p>
-      <div class="hojas" role="group" aria-label="Días, de lunes a viernes">{dias}</div>
-      <p class="agenda-paso"><b>3</b>¿Mañana o tarde?</p>
-      <div class="chips" role="group" aria-label="Franja"><button type="button" data-f="por la mañana" aria-pressed="true">Mañana · 10 a 14</button><button type="button" data-f="por la tarde" aria-pressed="false">Tarde · 14 a 20</button></div>
-      <div class="agenda-res">
-        <p id="agenda-frase" aria-live="polite">Elige un día de lunes a viernes.</p>
-        <a class="btn" id="agenda-wa" href="{wa('Hola Mari Carmen, quiero reservar ' + dict((k, t) for k, _, t in AGENDA_QUE)[que] + '. ¿Qué día te viene bien?')}">Reservar por WhatsApp</a>
-        <small>Es una petición, no una cita cerrada: te contesto yo y cerramos la hora.</small>
+    <div class="semana-cal">
+      <p class="semana-paso"><b>2</b>Tu semana <span class="mes" aria-live="polite"></span></p>
+      <div class="dias">{dias}</div>
+      <p class="pista" aria-live="polite">Toca una sesión y después el día al que quieres moverla.</p>
+      <div class="ley-sem"><span class="rama v">Entreno en grupo</span><span class="rama m">Masaje o maderoterapia</span><span class="app-ley">App: tu entreno en casa</span></div>
+      <p class="semana-paso"><b>3</b>¿Quieres más?</p>
+      <div class="mas">
+        <div class="cont" data-t="g"><span class="rama v">Entrenos en grupo</span><button type="button" data-menos="g" aria-label="Un entreno menos">−</button><output data-n="g">2</output><button type="button" data-mas="g" aria-label="Un entreno más">+</button></div>
+        <div class="cont" data-t="m"><span class="rama m">Sesiones de manos</span><button type="button" data-menos="m" aria-label="Una sesión de manos menos">−</button><output data-n="m">1</output><button type="button" data-mas="m" aria-label="Una sesión de manos más">+</button></div>
+      </div>
+      <p class="suave por-separado">¿Solo una cosa? También puedes hacer cada una por separado: <a href="{base}maderoterapia-cordoba/">maderoterapia</a>, <a href="{base}masajes-cordoba/">masajes</a> o <a href="{base}entrenamiento-personal-mujeres-cordoba/">entrenamiento</a>.</p>
+      <div class="cuenta">
+        <div class="total"><span>Te saldría por unos</span><b><output id="sem-precio">58</output> €</b><span>a la semana</span></div>
+        <ul id="sem-desglose"></ul>
+        <a class="btn" id="sem-wa" href="{wa('Hola Mari Carmen, quiero empezar el programa de Siluetas de Mujer. ¿Lo vemos en la valoración?')}">Hablar con Carmen</a>
+        <small>Precio aproximado, para orientarte. Tu plan exacto lo cerramos en la valoración, que es gratis.</small>
       </div>
     </div>
   </div>
 </div></section>'''
 
 
-AGENDA_JS = '''(function(){
-  var d=document,root=d.querySelector('.agenda');if(!root)return;
-  var hs=[].slice.call(root.querySelectorAll('.hoja')),qs=[].slice.call(root.querySelectorAll('[data-que]')),fs=[].slice.call(root.querySelectorAll('[data-f]'));
-  var fr=d.getElementById('agenda-frase'),wa=d.getElementById('agenda-wa'),mes=root.querySelector('.mes');
-  var M=['enero','febrero','marzo','abril','mayo','junio','julio','agosto','septiembre','octubre','noviembre','diciembre'];
-  var D=['domingo','lunes','martes','miércoles','jueves','viernes','sábado'];
-  var hoy=new Date();hoy.setHours(0,0,0,0);var t=new Date(hoy),wd=t.getDay();
-  t.setDate(t.getDate()-((wd+6)%7));if(wd===0||wd>=4)t.setDate(t.getDate()+7);var dias=[];
-  while(dias.length<10){if(t.getDay()>0&&t.getDay()<6)dias.push(new Date(t));t.setDate(t.getDate()+1)}
-  var sel=null,que=qs.filter(function(b){return b.getAttribute('aria-pressed')==='true'})[0]||qs[0],fra=fs[0];
-  hs.forEach(function(h,i){var f=dias[i];h.disabled=f<=hoy;if(h.disabled)h.classList.add('pasado');h.querySelector('small').textContent=D[f.getDay()].slice(0,3);
-    h.querySelector('b').textContent=f.getDate();h.querySelector('em').textContent=M[f.getMonth()].slice(0,3);
-    h.setAttribute('aria-label',D[f.getDay()]+' '+f.getDate()+' de '+M[f.getMonth()]+(h.disabled?' (ya pasado)':''));if(!h.disabled)h.setAttribute('aria-pressed','false');
-    h.onclick=function(){sel=i;pinta()}});
-  mes.textContent='· '+M[dias[0].getMonth()]+(dias[9].getMonth()!==dias[0].getMonth()?' y '+M[dias[9].getMonth()]:'');
-  function grupo(bs,cb){bs.forEach(function(b){b.onclick=function(){bs.forEach(function(x){x.setAttribute('aria-pressed',x===b)});cb(b);pinta()}})}
-  grupo(qs,function(b){que=b});grupo(fs,function(b){fra=b});
-  function pinta(){hs.forEach(function(h,i){if(!h.disabled)h.setAttribute('aria-pressed',i===sel)});
-    if(sel===null){fr.textContent='Elige un día de lunes a viernes.';return}
-    var f=dias[sel],dia=D[f.getDay()]+' '+f.getDate()+' de '+M[f.getMonth()];
-    fr.innerHTML='<b>'+que.textContent+'</b> el <b>'+dia+'</b>, '+fra.dataset.f+'.';
-    wa.textContent='Reservar el '+D[f.getDay()]+' '+f.getDate();
-    wa.href='https://wa.me/34646437371?text='+encodeURIComponent('Hola Mari Carmen, me gustaría reservar '+que.dataset.txt+' el '+dia+' '+fra.dataset.f+'. ¿Tienes hueco?')}
-})();'''
+SEMANA_JS = '''(function(){
+  var d=document,root=d.querySelector('.semana');if(!root)return;
+  var P=%s,D=['lunes','martes','miércoles','jueves','viernes'],M=['enero','febrero','marzo','abril','mayo','junio','julio','agosto','septiembre','octubre','noviembre','diciembre'];
+  var ORDEN={g:[1,3,0,2,4],m:[4,2,0,1,3]},MAX={g:5,m:3},N={g:'Entreno en grupo',m:'Masaje o maderoterapia'};
+  var cols=[].slice.call(root.querySelectorAll('.dia')),planes=[].slice.call(root.querySelectorAll('[data-plan]'));
+  var ses=[],sel=null,pista=root.querySelector('.pista');
+  var hoy=new Date();hoy.setHours(0,0,0,0);var lun=new Date(hoy);lun.setDate(lun.getDate()-((hoy.getDay()+6)%%7)+7);
+  cols.forEach(function(c,i){var f=new Date(lun);f.setDate(lun.getDate()+i);c.querySelector('.dia-cab b').textContent=f.getDate()});
+  root.querySelector('.mes').textContent='· semana del '+lun.getDate()+' de '+M[lun.getMonth()];
+  function cuenta(t){return ses.filter(function(s){return s.t===t}).length}
+  function enDia(i){return ses.filter(function(s){return s.d===i}).length}
+  function libre(t){var o=ORDEN[t];for(var k=0;k<2;k++)for(var j=0;j<o.length;j++)if(enDia(o[j])<=k&&!ses.some(function(s){return s.d===o[j]&&s.t===t}))return o[j];for(j=0;j<5;j++)if(enDia(j)<2)return j;return -1}
+  function poner(t,n){while(cuenta(t)<n){var x=libre(t);if(x<0)break;ses.push({t:t,d:x})}while(cuenta(t)>n){for(var i=ses.length-1;i>=0;i--)if(ses[i].t===t){ses.splice(i,1);break}}}
+  function plan(b){ses=[];sel=null;poner('g',+b.dataset.g);poner('m',+b.dataset.m);pinta()}
+  planes.forEach(function(b){b.onclick=function(){plan(b)}});
+  [].forEach.call(root.querySelectorAll('[data-mas],[data-menos]'),function(b){b.onclick=function(){var t=b.dataset.mas||b.dataset.menos,n=cuenta(t)+(b.dataset.mas?1:-1);
+    poner(t,Math.max(0,Math.min(MAX[t],n)));sel=null;pinta()}});
+  cols.forEach(function(c,i){c.querySelector('[data-mover]').onclick=function(){if(sel===null)return;if(enDia(i)>=2&&ses[sel].d!==i){pista.textContent='Ese día ya tiene dos sesiones. Elige otro.';return}
+    ses[sel].d=i;sel=null;pinta()}});
+  function pinta(){
+    var g=cuenta('g'),m=cuenta('m');
+    planes.forEach(function(b){b.setAttribute('aria-pressed',+b.dataset.g===g&&+b.dataset.m===m)});
+    root.querySelector('[data-n="g"]').textContent=g;root.querySelector('[data-n="m"]').textContent=m;
+    cols.forEach(function(c,i){var h=c.querySelector('.huecos');h.innerHTML='';
+      ses.forEach(function(s,k){if(s.d!==i)return;var b=d.createElement('button');b.type='button';b.className='ses '+s.t;b.setAttribute('aria-pressed',sel===k);
+        b.innerHTML='<span>'+(s.t==='g'?'Entreno':'Manos')+'</span>';b.setAttribute('aria-label',N[s.t]+' el '+D[i]+'. Tocar para moverla');
+        b.onclick=function(){sel=sel===k?null:k;pinta()};h.appendChild(b)});
+      if(!enDia(i)){var a=d.createElement('span');a.className='app';a.textContent='app';h.appendChild(a)}
+      c.classList.toggle('destino',sel!==null&&ses[sel].d!==i&&enDia(i)<2)});
+    pista.textContent=sel===null?'Toca una sesión y después el día al que quieres moverla.':'Ahora toca el día al que la quieres llevar.';
+    var e=P.base+g*P.grupo+m*P.manos;root.querySelector('#sem-precio').textContent=e;
+    var li=['<li><span>App, entrenos en casa y mi seguimiento</span><b>'+P.base+' €</b></li>'];
+    if(g)li.push('<li><span>'+g+' entreno'+(g>1?'s':'')+' en grupo</span><b>'+g*P.grupo+' €</b></li>');
+    if(m)li.push('<li><span>'+m+' sesión'+(m>1?'es':'')+' de manos</span><b>'+m*P.manos+' €</b></li>');
+    li.push('<li class="mes-eq"><span>Más o menos al mes</span><b>'+Math.round(e*52/12/5)*5+' €</b></li>');
+    root.querySelector('#sem-desglose').innerHTML=li.join('');
+    var dias=[];ses.slice().sort(function(a,b){return a.d-b.d}).forEach(function(s){dias.push(D[s.d]+': '+(s.t==='g'?'entreno en grupo':'masaje o maderoterapia'))});
+    var p=planes.filter(function(b){return b.getAttribute('aria-pressed')==='true'})[0];
+    var txt='Hola Mari Carmen, he montado mi semana en la web de Siluetas de Mujer'+(p?' ('+p.querySelector('b').textContent+')':'')+':\\n'+
+      (dias.length?dias.join('\\n'):'solo la app, entrenando en casa')+'\\nMe sale por unos '+e+' € a la semana. ¿Lo vemos en la valoración?';
+    root.querySelector('#sem-wa').href='https://wa.me/34646437371?text='+encodeURIComponent(txt)}
+  plan(planes.filter(function(b){return b.getAttribute('aria-pressed')==='true'})[0]||planes[0]);
+})();''' % ('{"base":%d,"grupo":%d,"manos":%d}' % (PRECIO['base'], PRECIO['grupo'], PRECIO['manos']))
 
 
 def pagina(base, titulo, desc, cuerpo, actual='', extra_js='', ld=''):
@@ -219,7 +250,7 @@ def pagina(base, titulo, desc, cuerpo, actual='', extra_js='', ld=''):
   var io=new IntersectionObserver(function(es){{es.forEach(function(e){{if(e.isIntersecting){{e.target.classList.add('visto');io.unobserve(e.target)}}}})}},{{rootMargin:'0px 0px -12% 0px'}});
   els.forEach(function(e){{io.observe(e)}});
 }})();
-{AGENDA_JS}
+{SEMANA_JS}
 {extra_js}
 </script>
 </body>
@@ -326,7 +357,7 @@ def portada():
   </div>
 </div></section>
 
-{agenda('valoracion', 'Elige tu día. Te contesto yo.', 'Marca para qué, el día y la franja, y me llega por WhatsApp. Yo te confirmo la hora: es una petición, no una cita cerrada.')}'''
+{semana(b, 'manos', 'Arma tu semana conmigo.')}'''
     ld = ('<script type="application/ld+json">{"@context":"https://schema.org","@type":"HealthAndBeautyBusiness","name":"Siluetas de Mujer",'
           '"founder":{"@type":"Person","name":"Mari Carmen Figueras"},"description":"Masaje, maderoterapia y entrenamiento para mujeres en Córdoba, en sala o a domicilio.",'
           '"telephone":"+34646437371","areaServed":{"@type":"City","name":"Córdoba"},"address":{"@type":"PostalAddress","addressLocality":"Córdoba","addressCountry":"ES"},'
@@ -482,7 +513,7 @@ def ayuda(slug):
 </div></section>
 
 {pasos()}
-{agenda({'maderoterapia-cordoba': 'maderoterapia', 'masajes-cordoba': 'masaje'}.get(su, 'entreno'))}
+{semana(b, 'deporte' if su.startswith('entrenamiento') else 'manos')}
 
 <section class="seccion"><div class="wrap">
   <div class="tit-sec"><h2 style="font-size:1.6rem">Otras cosas en las que te ayudo</h2></div>
@@ -602,7 +633,7 @@ def madero():
   </div>
 </div></section>
 {pasos()}
-{agenda('maderoterapia')}'''
+{semana(b, 'manos')}'''
     js = '''(function(){
   var r=document.getElementById('n-ses'),v=document.getElementById('n-val'),o=document.getElementById('res'),wa=document.getElementById('calc-wa');if(!r)return;
   function coste(b10,b5,su,P){return b10*10*(P-5)+b5*5*(P-3)+su*P}
@@ -638,7 +669,7 @@ def entreno():
 </div>
 
 <section class="seccion"><div class="wrap">
-  <div class="tit-sec"><h2>No entrenamos para un espejo. Entrenamos para tu vida en Córdoba.</h2></div>
+  <div class="tit-sec"><h2>No entrenamos para un espejo. Entrenamos para tu vida.</h2></div>
   <ul class="logros">
     <li>Subir la Cuesta del Bailío <span>sin pararte.</span></li>
     <li>Ir a los Patios en mayo <span>sin que te duelan las rodillas.</span></li>
@@ -709,7 +740,7 @@ def entreno():
   </div>
 </div></section>
 {pasos()}
-{agenda('entreno')}'''
+{semana(b, 'deporte')}'''
     return pagina(b, 'Entrenadora personal para mujeres en Córdoba · Siluetas de Mujer',
                   'Entrenamiento de fuerza para mujeres a partir de los 40 en Córdoba: grupos de hasta 5, 1 a 1 o en tu casa. Valoración gratis y app con tus medidas.',
                   cuerpo, 'entrenamiento-personal-mujeres-cordoba')
@@ -760,7 +791,7 @@ def masajes():
   </div></div>
 </section>
 {pasos()}
-{agenda('masaje')}'''
+{semana(b, 'manos')}'''
     return pagina(b, 'Masajes en Córdoba: descarga y tailandés · Siluetas de Mujer',
                   'Masaje de descarga (35 €) y masaje tailandés (40 €) en Córdoba, 60 minutos, en sala. También a domicilio, con precio según la zona.',
                   cuerpo, 'masajes-cordoba')

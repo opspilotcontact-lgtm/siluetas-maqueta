@@ -267,40 +267,63 @@
 
 .vh{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0);white-space:nowrap}
 
-/* ── v5 · LA AGENDA: hojas de calendario de mesa ──────────────────────────
-   Cada día es una hoja con dos anillas (rosa y turquesa, los dos trazos). Al elegirla
-   se pone en tinta. Solo visual: sale un WhatsApp y Carmen confirma la hora. */
-.agenda{display:grid;grid-template-columns:minmax(0,.85fr) minmax(0,1.5fr);gap:clamp(2rem,5vw,4.5rem);align-items:start}
-.agenda-txt h2{margin-bottom:.9rem}
-.agenda-txt>p:not(.agenda-paso){color:var(--suave)}
-.agenda-paso{display:flex;align-items:center;gap:.6rem;font-weight:700;margin:1.6rem 0 .7rem}
-.agenda-paso b{width:1.7rem;height:1.7rem;border-radius:50%;display:grid;place-items:center;border:2px solid var(--tinta);font-size:.85rem}
-.agenda-paso .mes{font-weight:500;color:var(--suave)}
-.agenda-cal>.agenda-paso:first-child{margin-top:0}
-.agenda-txt{position:sticky;top:6rem}
-.chips{display:flex;flex-wrap:wrap;gap:.45rem}
-.chips button{font:inherit;font-size:.95rem;font-weight:600;min-height:2.75rem;padding:.5rem .95rem;border-radius:4px;border:1.5px solid var(--regla);background:rgb(255 255 255/.55);color:var(--tinta);cursor:pointer;transition:background .2s var(--ease),border-color .2s var(--ease)}
-.chips button:hover{border-color:var(--tinta)}
-.chips button[aria-pressed=true]{background:var(--tinta);border-color:var(--tinta);color:var(--arena)}
-.hojas{display:grid;grid-template-columns:repeat(5,minmax(0,1fr));gap:clamp(.4rem,1.2vw,.8rem)}
-.hoja{position:relative;display:grid;justify-items:center;gap:.1rem;padding:1.15rem .3rem .75rem;border:0;border-radius:5px;background:#fff;color:var(--tinta);font:inherit;cursor:pointer;
-  box-shadow:0 1px 0 rgb(22 50 63/.08),0 10px 22px -16px rgb(22 50 63/.45);border-top:7px solid var(--tinta);transition:transform .2s var(--ease),background .2s var(--ease),color .2s var(--ease)}
-.hoja:hover:not([disabled]){transform:translateY(-3px)}
-.hoja[disabled]{cursor:default;opacity:.7}
-.hoja .anilla{position:absolute;top:-13px;left:50%;width:1.6rem;height:12px;transform:translateX(-50%)}
-.hoja .anilla::before,.hoja .anilla::after{content:"";position:absolute;top:0;width:5px;height:12px;border-radius:3px}
-.hoja .anilla::before{left:3px;background:var(--rosa)}.hoja .anilla::after{right:3px;background:var(--turq)}
-.hoja small{font-size:.74rem;font-weight:700;text-transform:capitalize;color:var(--suave)}
-.hoja b{font-size:clamp(1.7rem,3.6vw,2.6rem);font-weight:800;line-height:1;letter-spacing:-.04em;font-variant-numeric:tabular-nums}
-.hoja em{font-style:normal;font-size:.74rem;color:var(--suave)}
-.hoja[aria-pressed=true]{background:var(--tinta);color:var(--arena);transform:translateY(-3px)}
-.hoja[aria-pressed=true] small,.hoja[aria-pressed=true] em{color:rgb(243 235 224/.75)}
-.hojas .hoja:nth-child(n+6){margin-top:.9rem}
-.agenda-res{margin-top:1.6rem;padding:1.3rem 1.4rem;border-radius:6px;background:rgb(22 50 63/.06);display:grid;gap:.8rem;justify-items:start}
-.agenda-res p{margin:0;font-size:1.12rem}
-.agenda-res small{color:var(--suave);font-size:.85rem}
-@media (max-width:860px){.agenda{grid-template-columns:1fr}.agenda-txt{position:static}}
-@media (max-width:420px){.hoja{padding:1rem .15rem .6rem}.hoja small,.hoja em{font-size:.66rem}}
+/* ── v6 · «ARMA TU SEMANA»: el programa como un calendario de mesa ─────────
+   Cada día es una hoja con las dos anillas (rosa y turquesa). Las sesiones son fichas de su
+   color que se tocan y se llevan a otro día; el precio semanal se recalcula. Solo visual. */
+.semana{display:grid;grid-template-columns:minmax(0,.9fr) minmax(0,1.45fr);gap:clamp(2rem,5vw,4.5rem);align-items:start}
+.semana-txt h2{margin-bottom:.9rem}
+.semana-txt>p:not(.semana-paso){color:var(--suave)}
+.semana-paso{display:flex;align-items:center;gap:.6rem;font-weight:700;margin:1.6rem 0 .7rem}
+.semana-paso b{width:1.7rem;height:1.7rem;border-radius:50%;display:grid;place-items:center;border:2px solid var(--tinta);font-size:.85rem}
+.semana-paso .mes{font-weight:500;color:var(--suave)}
+.semana-cal>.semana-paso:first-child{margin-top:0}
+.planes{display:grid;gap:.45rem}
+.planes button{display:flex;justify-content:space-between;align-items:baseline;gap:1rem;text-align:left;font:inherit;min-height:3.1rem;padding:.7rem 1rem;border-radius:5px;border:1.5px solid var(--regla);background:rgb(255 255 255/.55);color:var(--tinta);cursor:pointer;transition:background .2s var(--ease),border-color .2s var(--ease)}
+.planes button b{font-weight:700}
+.planes button small{color:var(--suave);font-size:.88rem;white-space:nowrap}
+.planes button:hover{border-color:var(--tinta)}
+.planes button[aria-pressed=true]{background:var(--tinta);border-color:var(--tinta);color:var(--arena)}
+.planes button[aria-pressed=true] small{color:rgb(243 235 224/.75)}
+.mas{display:grid;gap:.5rem}
+.cont{display:grid;grid-template-columns:1fr 2.75rem 2.2rem 2.75rem;align-items:center;gap:.3rem;padding:.4rem 0;border-bottom:1px solid var(--regla)}
+.cont button{width:2.75rem;height:2.75rem;border-radius:50%;border:1.5px solid var(--tinta);background:transparent;font:700 1.3rem/1 Figtree,sans-serif;color:var(--tinta);cursor:pointer}
+.cont button:hover{background:var(--tinta);color:var(--arena)}
+.cont output{text-align:center;font-weight:800;font-size:1.3rem;font-variant-numeric:tabular-nums}
+.por-separado{margin-top:1.4rem;font-size:.95rem}
+.dias{display:grid;grid-template-columns:repeat(5,minmax(0,1fr));gap:clamp(.35rem,1.1vw,.75rem);margin-top:.9rem}
+.dia{display:grid;grid-template-rows:auto 1fr;border-radius:5px;background:#fff;box-shadow:0 1px 0 rgb(22 50 63/.08),0 10px 22px -16px rgb(22 50 63/.45);border-top:7px solid var(--tinta);position:relative;min-height:15rem;transition:box-shadow .2s var(--ease)}
+.dia .anilla{position:absolute;top:-13px;left:50%;width:1.6rem;height:12px;transform:translateX(-50%)}
+.dia .anilla::before,.dia .anilla::after{content:"";position:absolute;top:0;width:5px;height:12px;border-radius:3px}
+.dia .anilla::before{left:3px;background:var(--rosa)}.dia .anilla::after{right:3px;background:var(--turq)}
+.dia-cab{display:grid;justify-items:center;gap:0;padding:.8rem .2rem .5rem;border:0;background:none;font:inherit;color:var(--tinta);cursor:default;border-bottom:1px dashed var(--regla)}
+.dia-cab small{font-size:.74rem;font-weight:700;color:var(--suave)}
+.dia-cab b{font-size:clamp(1.5rem,3vw,2.2rem);font-weight:800;line-height:1;letter-spacing:-.04em;font-variant-numeric:tabular-nums}
+.huecos{display:grid;align-content:start;gap:.4rem;padding:.5rem .35rem .6rem}
+.ses{display:flex;align-items:center;justify-content:center;min-height:4.4rem;border-radius:5px;border:0;font:inherit;font-weight:700;font-size:.82rem;color:#fff;cursor:pointer;transition:transform .2s var(--ease),box-shadow .2s var(--ease)}
+.ses.g{background:var(--turq-t)}.ses.m{background:var(--rosa-t)}
+.ses:hover{transform:translateY(-2px)}
+.ses[aria-pressed=true]{box-shadow:0 0 0 3px #fff,0 0 0 5px var(--tinta);transform:translateY(-2px)}
+.app{display:grid;place-items:center;min-height:4.4rem;border-radius:5px;border:1.5px dashed var(--regla);font-size:.75rem;color:var(--suave)}
+.dia.destino{box-shadow:0 0 0 2px var(--tinta),0 10px 22px -16px rgb(22 50 63/.45)}
+.dia.destino .dia-cab{cursor:pointer}
+.dia.destino .dia-cab::after{content:"Mover aquí";font-size:.68rem;font-weight:700;color:var(--rosa-t);margin-top:.15rem}
+.pista{font-size:.9rem;color:var(--suave);margin:.9rem 0 .4rem}
+.ley-sem{display:flex;flex-wrap:wrap;gap:.4rem 1.2rem;font-size:.85rem}
+.ley-sem .rama{font-size:.85rem}
+.app-ley{display:inline-flex;align-items:center;gap:.5rem;color:var(--suave);font-weight:600}
+.app-ley::before{content:"";width:.9rem;height:.7rem;border:1.5px dashed var(--suave);border-radius:2px}
+.cuenta{margin-top:1.4rem;padding:clamp(1.2rem,3vw,1.8rem);border-radius:6px;background:var(--tinta);color:var(--arena);display:grid;gap:1rem;justify-items:start}
+.cuenta .total{display:grid}
+.cuenta .total span{font-size:.92rem;color:rgb(243 235 224/.75)}
+.cuenta .total b{font-size:clamp(2.6rem,6vw,3.8rem);font-weight:800;letter-spacing:-.04em;line-height:1;font-variant-numeric:tabular-nums}
+.cuenta ul{list-style:none;margin:0;padding:0;width:100%;display:grid;gap:.1rem}
+.cuenta li{display:flex;justify-content:space-between;gap:1rem;padding:.45rem 0;border-bottom:1px solid rgb(243 235 224/.18);font-size:.95rem}
+.cuenta li b{font-variant-numeric:tabular-nums}
+.cuenta li.mes-eq{color:rgb(243 235 224/.7);border-bottom:0}
+.cuenta .btn{background:var(--arena);color:var(--tinta);border-color:var(--arena)}
+.cuenta small{font-size:.82rem;color:rgb(243 235 224/.7)}
+@media (max-width:860px){.semana{grid-template-columns:1fr}}
+@media (max-width:480px){.dia{min-height:12rem}.ses{min-height:3.6rem;font-size:.7rem}.app{min-height:3.6rem;font-size:.66rem}.huecos{padding:.4rem .2rem}}
 
 /* ── v5 · módulos con más forma ─────────────────────────────────────────── */
 /* Arreglo: en dos columnas, el título no se estira (el párrafo quedaba lejos) */
@@ -348,6 +371,5 @@
 .aviso{display:grid;grid-template-columns:2rem 1fr;gap:.8rem;align-items:start;border-left:0;border-radius:6px;background:#fff;box-shadow:0 10px 26px -20px rgb(22 50 63/.5)}
 .aviso::before{content:"!";width:2rem;height:2rem;border-radius:50%;display:grid;place-items:center;font-weight:800;border:2px solid var(--rosa);color:var(--rosa-t)}
 .frase-xl .nw{white-space:nowrap}
-.hoja.pasado{opacity:1;background:transparent;box-shadow:none;border-top-color:var(--regla);color:var(--suave)}
-.hoja.pasado b{text-decoration:line-through;text-decoration-thickness:2px;opacity:.5}
-.hoja.pasado .anilla{opacity:.35}
+.cuenta li b{white-space:nowrap}
+.semana-cal .mas{max-width:28rem}

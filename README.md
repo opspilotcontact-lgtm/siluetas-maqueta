@@ -1,7 +1,7 @@
 # Siluetas de Mujer · propuesta de marca y web
 
-Maqueta en revisión (noindex). Versión actual: **v5** en la raíz (v4 + correcciones de Carmen del 1-oct + «Elige tu día»).
-Versiones anteriores: /v4/, /v2/ y /v1/.
+Maqueta en revisión (noindex). Versión actual: **v6** en la raíz (v5 + «Arma tu semana»: el programa por niveles con precio semanal, provisional).
+Versiones anteriores: /v5/, /v4/, /v2/ y /v1/.
 
 ## Cómo se construye la versión actual
 
