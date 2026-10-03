@@ -1038,6 +1038,7 @@ def main():
     for f in ('silueta.svg', 'silueta-arena.svg'):
         shutil.copy(RAIZ / 'img' / f, SALIDA / 'img' / f)
     preparar_fotos()
+    shutil.copytree(FUENTE / 'app-demo', SALIDA / 'app-demo')   # muestra de la app (noindex, fuera del sitemap)
     pags = {'index.html': portada(), 'maderoterapia-cordoba/index.html': madero(),
             'entrenamiento-personal-mujeres-cordoba/index.html': entreno(), 'masajes-cordoba/index.html': masajes(),
             'tarjeta-regalo/index.html': regalo()}
@@ -1050,7 +1051,7 @@ def main():
         d.write_text(sello_seo(ruta, txt), encoding='utf-8')
         print('ok', ruta)
     # Google: todo abierto (las versiones anteriores llevan noindex y la web nueva no las enlaza)
-    (SALIDA / 'robots.txt').write_text('User-agent: *\nAllow: /\nDisallow: /fuente/\nDisallow: /logo/\nDisallow: /README.md\n\nSitemap: ' + SITIO + 'sitemap.xml\n', encoding='utf-8')
+    (SALIDA / 'robots.txt').write_text('User-agent: *\nAllow: /\nDisallow: /fuente/\nDisallow: /logo/\nDisallow: /README.md\nDisallow: /app-demo/\n\nSitemap: ' + SITIO + 'sitemap.xml\n', encoding='utf-8')
     hoy = __import__('datetime').date.today().isoformat()
     urls = [r for r in pags if not r.startswith(('aviso-legal', 'privacidad'))]
     prio = lambda r: '1.0' if r == 'index.html' else ('0.9' if r.split('/')[0] in ('maderoterapia-cordoba', 'entrenamiento-personal-mujeres-cordoba', 'masajes-cordoba') else '0.7')

@@ -3,5 +3,6 @@ Allow: /
 Disallow: /fuente/
 Disallow: /logo/
 Disallow: /README.md
+Disallow: /app-demo/
 
 Sitemap: https://siluetasdemujer.es/sitemap.xml

@@ -1,0 +1,525 @@
+<!doctype html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="robots" content="noindex, nofollow">
+<title>Siluetas · App (demo)</title>
+<meta name="theme-color" content="#16323F">
+<link rel="manifest" href="manifest.webmanifest">
+<link rel="icon" href="../img/silueta.svg" type="image/svg+xml">
+<link rel="apple-touch-icon" href="icono-192.png">
+<style>
+@font-face{font-family:Figtree;src:url(../fonts/figtree-var.woff2) format('woff2');font-weight:300 900;font-display:swap}
+@font-face{font-family:'DM Serif Display';src:url(../fonts/dmserif-400i.woff2) format('woff2');font-style:italic;font-display:swap}
+:root{--arena:#F3EBE0;--arena2:#EADFCF;--tinta:#16323F;--suave:#4A5459;--rosa:#D93A7A;--rosa-t:#B8295F;--turq:#16A39A;--turq-t:#0A6F69;--regla:rgb(22 50 63/.14);--blanco:#fff;--ease:cubic-bezier(.22,.7,.2,1)}
+*,*::before,*::after{box-sizing:border-box}
+html,body{margin:0;height:100%}
+body{background:var(--arena2);color:var(--tinta);font:400 16px/1.5 Figtree,system-ui,sans-serif;-webkit-font-smoothing:antialiased}
+button{font:inherit;color:inherit;cursor:pointer}
+h1,h2,h3,p{margin:0}
+h1{font-size:1.65rem;font-weight:780;letter-spacing:-.025em;line-height:1.1}
+h2{font-size:1.15rem;font-weight:750;letter-spacing:-.01em}
+h3{font-size:1rem;font-weight:700}
+.suave{color:var(--suave)}
+small{font-size:.82rem}
+
+/* Escenario: en escritorio, el móvil en el centro con la explicación al lado */
+.escena{min-height:100%;display:grid;grid-template-columns:minmax(0,1fr) auto minmax(0,1fr);gap:3rem;align-items:center;padding:2rem}
+.nota-demo{max-width:22rem;justify-self:end;display:grid;gap:.9rem;font-size:.95rem}
+.nota-demo .marca{font:italic 400 1.6rem/1 'DM Serif Display',serif}
+.nota-demo .etq{display:inline-block;background:var(--tinta);color:var(--arena);font-size:.75rem;font-weight:700;padding:.2rem .5rem;border-radius:4px}
+.lado2{max-width:20rem;display:grid;gap:.8rem;font-size:.92rem}
+.rol{display:grid;gap:.4rem}
+.rol button{border:1.5px solid var(--regla);background:var(--blanco);border-radius:6px;padding:.7rem .9rem;text-align:left;font-weight:650}
+.rol button[aria-pressed=true]{background:var(--tinta);color:var(--arena);border-color:var(--tinta)}
+.reset{background:none;border:0;padding:0;text-decoration:underline;color:var(--suave);justify-self:start;font-size:.85rem}
+.movil{width:390px;height:min(844px,calc(100vh - 4rem));background:var(--arena);border-radius:42px;border:10px solid var(--tinta);box-shadow:0 40px 80px -40px rgb(22 50 63/.6);overflow:hidden;display:flex;flex-direction:column;position:relative}
+@media (max-width:980px){
+  body{background:var(--arena)}
+  .escena{display:block;padding:0}
+  .nota-demo,.lado2{display:none}
+  .movil{width:100%;height:100dvh;border:0;border-radius:0;box-shadow:none}
+}
+.barra-demo{display:none}
+@media (max-width:980px){.barra-demo{display:flex;gap:.4rem;align-items:center;justify-content:space-between;background:var(--tinta);color:var(--arena);font-size:.78rem;padding:.4rem .9rem calc(.4rem + env(safe-area-inset-top,0) * 0)}
+  .barra-demo button{background:rgb(243 235 224/.15);border:0;border-radius:4px;padding:.25rem .55rem;color:var(--arena);font-size:.78rem;font-weight:650}}
+
+/* La app */
+.cab{display:flex;align-items:center;justify-content:space-between;padding:1rem 1.1rem .6rem}
+.cab .yo{display:flex;align-items:center;gap:.6rem}
+.avatar{width:2.4rem;height:2.4rem;border-radius:50%;display:grid;place-items:center;font-weight:800;color:#fff;background:var(--c,var(--turq-t));flex:none;font-size:.95rem}
+.cab .logo{width:20px;height:30px}
+.vista{flex:1;overflow-y:auto;padding:.4rem 1.1rem 6.2rem;scroll-behavior:smooth}
+.vista>*+*{margin-top:1.1rem}
+.nav{position:absolute;left:0;right:0;bottom:0;display:grid;grid-template-columns:repeat(var(--n,5),1fr);background:var(--blanco);border-top:1px solid var(--regla);padding:.45rem .3rem calc(.55rem + env(safe-area-inset-bottom,0))}
+.nav button{background:none;border:0;display:grid;justify-items:center;gap:.15rem;font-size:.7rem;font-weight:650;color:var(--suave);padding:.3rem 0}
+.nav button svg{width:22px;height:22px;fill:none;stroke:currentColor;stroke-width:1.9;stroke-linecap:round;stroke-linejoin:round}
+.nav button[aria-current=page]{color:var(--tinta)}
+.nav button[aria-current=page] svg{stroke:var(--rosa-t)}
+
+.tarjeta{background:var(--blanco);border-radius:14px;padding:1rem;box-shadow:0 1px 0 rgb(22 50 63/.06),0 12px 24px -20px rgb(22 50 63/.5)}
+.tarjeta.tinta{background:var(--tinta);color:var(--arena)}
+.tarjeta.tinta .suave{color:rgb(243 235 224/.72)}
+.fila{display:flex;align-items:center;gap:.7rem}
+.entre{justify-content:space-between}
+.chip{display:inline-flex;align-items:center;gap:.35rem;font-size:.75rem;font-weight:700;padding:.2rem .55rem;border-radius:999px;background:var(--arena);color:var(--tinta)}
+.chip.v{background:#DAF1EE;color:var(--turq-t)}.chip.m{background:#F7E3EA;color:var(--rosa-t)}
+.chip.aviso{background:#FFF1D6;color:#7A4B00}
+.btn{text-decoration:none;display:inline-flex;align-items:center;justify-content:center;gap:.4rem;min-height:2.75rem;padding:.6rem 1rem;border-radius:6px;border:1.5px solid var(--tinta);background:var(--tinta);color:var(--arena);font-weight:700}
+.btn.linea{background:transparent;color:var(--tinta)}
+.btn.arena{background:var(--arena);color:var(--tinta);border-color:var(--arena)}
+.btn.wa{background:#1F8B4C;border-color:#1F8B4C;color:#fff}
+.btn.peq{min-height:2.2rem;padding:.35rem .7rem;font-size:.88rem}
+.btn[disabled]{opacity:.45;cursor:not-allowed}
+.acciones{display:flex;flex-wrap:wrap;gap:.5rem}
+.camino{position:relative;padding-left:1.4rem}
+.camino::before,.camino::after{content:"";position:absolute;top:.3rem;bottom:.3rem;width:3px;border-radius:2px}
+.camino::before{left:0;background:var(--rosa)}.camino::after{left:6px;background:var(--turq)}
+
+/* Semana */
+.semana{display:grid;grid-template-columns:repeat(5,1fr);gap:.35rem}
+.dia{display:grid;justify-items:center;gap:.2rem;padding:.5rem .1rem .55rem;border-radius:10px;background:var(--blanco);border-top:5px solid var(--tinta);position:relative}
+.dia small{font-size:.68rem;font-weight:700;color:var(--suave)}
+.dia b{font-size:1.25rem;line-height:1;font-weight:800}
+.dia .pt{display:flex;gap:3px;min-height:8px}
+.dia .pt i{width:8px;height:8px;border-radius:50%;background:var(--turq-t)}
+.dia .pt i.m{background:var(--rosa-t)}.dia .pt i.no{background:transparent;border:1.5px solid var(--suave)}
+.dia.hoy{outline:2px solid var(--rosa);outline-offset:1px}
+
+/* Listas */
+.lista{display:grid;gap:.5rem}
+.item{display:grid;grid-template-columns:auto 1fr auto;gap:.75rem;align-items:center;padding:.8rem .9rem;background:var(--blanco);border-radius:12px}
+.item .t{display:grid;gap:.1rem}
+.item .t small{color:var(--suave)}
+.hora{display:grid;justify-items:center;min-width:3.2rem;padding:.35rem .3rem;border-radius:8px;background:var(--arena)}
+.hora b{font-size:1rem;line-height:1}.hora small{font-size:.68rem;color:var(--suave);font-weight:700}
+.plazas{display:flex;gap:3px}
+.plazas i{width:10px;height:10px;border-radius:50%;background:var(--turq-t)}
+.plazas i.libre{background:transparent;border:1.5px solid var(--turq-t)}
+.plazas i.fuera{background:transparent;border:1.5px dashed var(--suave)}
+
+.comp{display:flex;flex-wrap:wrap;gap:.45rem}
+.comp .p{display:flex;align-items:center;gap:.45rem;background:var(--arena);border-radius:999px;padding:.2rem .7rem .2rem .2rem;font-size:.85rem;font-weight:650}
+.comp .p .avatar{width:1.8rem;height:1.8rem;font-size:.75rem}
+
+/* Encuentra tu grupo */
+.paso-cab{display:flex;gap:.3rem;margin-bottom:.8rem}
+.paso-cab i{flex:1;height:4px;border-radius:2px;background:var(--regla)}
+.paso-cab i.ya{background:var(--rosa)}
+.opc{display:grid;gap:.45rem}
+.opc button{display:flex;justify-content:space-between;align-items:center;text-align:left;border:1.5px solid var(--regla);background:var(--blanco);border-radius:10px;padding:.8rem .9rem;font-weight:650}
+.opc button small{font-weight:400;color:var(--suave);display:block}
+.opc button[aria-pressed=true]{border-color:var(--tinta);box-shadow:inset 4px 0 0 var(--rosa)}
+.rejilla{display:grid;grid-template-columns:3.4rem repeat(5,1fr);gap:.3rem;font-size:.75rem;align-items:center}
+.rejilla button{min-height:2.5rem;border-radius:8px;border:1.5px solid var(--regla);background:var(--blanco);font-weight:700;font-size:.7rem}
+.rejilla button[aria-pressed=true]{background:var(--turq-t);border-color:var(--turq-t);color:#fff}
+.rejilla .c{text-align:center;font-weight:700;color:var(--suave)}
+
+.porque{display:grid;gap:.35rem;margin-top:.6rem}
+.porque div{display:flex;align-items:center;gap:.5rem;font-size:.85rem}
+.porque div::before{content:"";width:.55rem;height:.55rem;border-radius:50%;background:var(--turq);flex:none}
+.punt{font-size:2rem;font-weight:800;letter-spacing:-.04em;line-height:1;text-align:right}
+.punt small{display:block;font-size:.66rem;font-weight:600;letter-spacing:0;color:var(--suave);margin-top:.15rem}
+.barra{height:8px;border-radius:4px;background:var(--arena);overflow:hidden}
+.barra i{display:block;height:100%;background:linear-gradient(90deg,var(--rosa),var(--turq));width:var(--p)}
+
+/* Progreso */
+.dato{display:grid;gap:.1rem;padding:.8rem;border-radius:12px;background:var(--arena)}
+.dato b{font-size:1.4rem;font-weight:800;line-height:1}
+.dato em{font-style:normal;font-weight:700;color:var(--turq-t);font-size:.85rem}
+.dos{display:grid;grid-template-columns:1fr 1fr;gap:.5rem}
+
+/* Web (lo que ve la web) */
+.web-mini{border:1.5px dashed var(--suave);border-radius:12px;padding:.9rem;background:var(--arena)}
+.web-mini .fila-w{display:grid;grid-template-columns:1fr auto;gap:.5rem;padding:.55rem 0;border-bottom:1px solid var(--regla);font-size:.88rem}
+.web-mini .fila-w:last-child{border:0}
+.web-mini b.ok{color:var(--turq-t)}.web-mini b.lleno{color:var(--rosa-t)}
+
+.toast{position:absolute;left:1rem;right:1rem;bottom:5.4rem;background:var(--tinta);color:var(--arena);padding:.8rem 1rem;border-radius:10px;font-size:.9rem;transform:translateY(20px);opacity:0;transition:all .3s var(--ease);pointer-events:none;z-index:5}
+.toast.ver{transform:none;opacity:1}
+.hoja{position:absolute;inset:0;background:rgb(22 50 63/.45);display:flex;align-items:flex-end;z-index:4}
+.hoja[hidden]{display:none}
+.hoja .panel{background:var(--arena);width:100%;border-radius:18px 18px 0 0;padding:1.1rem 1.1rem calc(1.4rem + env(safe-area-inset-bottom,0));max-height:85%;overflow-y:auto;display:grid;gap:.8rem}
+.vacio{padding:1.2rem;text-align:center;color:var(--suave);font-size:.9rem;border:1.5px dashed var(--regla);border-radius:12px}
+.privado{display:flex;gap:.5rem;align-items:flex-start;font-size:.82rem;color:var(--suave);background:var(--arena);border-radius:10px;padding:.7rem .8rem}
+.privado::before{content:"🔒";font-size:.9rem}
+</style>
+</head>
+<body>
+<div class="escena">
+  <aside class="nota-demo">
+    <span class="marca">Siluetas <span style="font-family:Figtree;font-style:normal;font-size:1rem;font-weight:700">· la app</span></span>
+    <span class="etq">MUESTRA DE PRUEBA · DATOS DE EJEMPLO</span>
+    <p>Así sería la app de Siluetas de Mujer: las socias ven y cambian sus clases, y las interesadas encuentran un grupo con mujeres parecidas a ellas, sin que Carmen tenga que hacer de intermediaria.</p>
+    <p class="suave">Todo funciona de verdad, pero los datos son inventados y se guardan solo en este navegador. No hay servidor detrás.</p>
+  </aside>
+  <div class="movil" id="app">
+    <div class="barra-demo"><span>Demo · datos de ejemplo</span><span><button data-rol="socia">Socia</button> <button data-rol="nueva">Nueva</button> <button data-rol="carmen">Carmen</button></span></div>
+    <header class="cab" id="cab"></header>
+    <main class="vista" id="vista"></main>
+    <nav class="nav" id="nav"></nav>
+    <div class="toast" id="toast" role="status" aria-live="polite"></div>
+    <div class="hoja" id="hoja" hidden><div class="panel" id="hoja-panel"></div></div>
+  </div>
+  <aside class="lado2">
+    <h2>Ver la app como…</h2>
+    <div class="rol">
+      <button data-rol="socia">Lucía · socia de un grupo</button>
+      <button data-rol="nueva">Elena · quiere entrar en un grupo</button>
+      <button data-rol="carmen">Carmen · su panel</button>
+    </div>
+    <p class="suave">Prueba: con Elena busca grupo y pide entrar. Luego entra como Carmen y aprueba la propuesta. Mira cómo cambian las plazas en «Lo que ve la web».</p>
+    <button class="reset" id="reset">Volver a empezar la demo</button>
+  </aside>
+</div>
+
+<script>
+(function(){
+'use strict';
+var $=function(s,r){return (r||document).querySelector(s)},$$=function(s,r){return [].slice.call((r||document).querySelectorAll(s))};
+var WA='34646437371';
+var DIAS=['Lun','Mar','Mié','Jue','Vie'],DIASL=['lunes','martes','miércoles','jueves','viernes'];
+var ZONAS={'poniente':'Poniente · Arroyo del Moro','centro':'Centro','norte':'Brillante · El Naranjo','levante':'Levante · Fuensanta'};
+var SITIO={'poniente':'Sala de Arroyo del Moro','centro':'Sala del Centro (por definir)','norte':'Punto de Brillante (por definir)','levante':'Punto de Levante (por definir)'};
+var RITMO=['Suave','Medio','Con caña'];
+var OBJ={fuerza:'Ganar fuerza',meno:'Menopausia',empezar:'Empezar desde cero',espalda:'Espalda y postura',energia:'Más energía',suelo:'Suelo pélvico'};
+var EDAD=['35-44','45-54','55-64','65+'];
+var FRANJA={m:'Mañana',t:'Tarde'};
+var COL=['#0A6F69','#B8295F','#16323F','#7A5AA6','#B5651D','#2F6D9E'];
+
+/* ── Datos de ejemplo ─────────────────────────────────────────────── */
+function semilla(){
+  var p=[ // personas: id, nombre, zona, edad(idx), ritmo(idx), objetivos, disponibilidad ['dia+franja'], grupo
+    ['lucia','Lucía','poniente',1,0,['fuerza','meno'],['1t','3t'],'g1'],
+    ['ana','Ana','poniente',2,0,['meno','espalda'],['1t','3t','0m'],'g1'],
+    ['pilar','Pilar','poniente',2,0,['fuerza'],['1t','3t'],'g1'],
+    ['rosa','Rosa','poniente',1,1,['energia','fuerza'],['1t','3t','4m'],'g1'],
+    ['marisa','Marisa','poniente',1,1,['fuerza'],['0m','2m'],'g2'],['conchi','Conchi','poniente',2,1,['espalda'],['0m','2m'],'g2'],
+    ['inma','Inma','poniente',0,1,['energia'],['0m','2m'],'g2'],['laura','Laura','poniente',1,2,['fuerza'],['0m','2m'],'g2'],['sole','Sole','poniente',1,1,['suelo','fuerza'],['0m','2m'],'g2'],
+    ['carmen-r','Carmen R.','centro',2,0,['meno','suelo'],['1m','3m'],'g3'],['mari','Mari','centro',3,0,['empezar'],['1m','3m'],'g3'],['tere','Tere','centro',2,0,['espalda'],['1m','3m','4t'],'g3'],
+    // interesadas sin grupo
+    ['bea','Bea','norte',1,1,['meno','fuerza'],['0t','2t'],null],['nuria','Nuria','norte',1,0,['meno'],['0t','2t','4t'],null],
+    ['paqui','Paqui','norte',2,0,['fuerza','espalda'],['0t','2t'],null],['angeles','Ángeles','norte',2,1,['meno','energia'],['0t','2t','1m'],null],
+    ['eva','Eva','levante',0,2,['energia'],['4t'],null],['juani','Juani','levante',3,0,['empezar'],['1m','3m'],null],
+    ['lola','Lola','centro',3,0,['empezar','suelo'],['1m','3m'],null],['silvia','Silvia','poniente',0,2,['fuerza'],['4m'],null]
+  ];
+  var gente={};p.forEach(function(x,i){gente[x[0]]={id:x[0],nombre:x[1],zona:x[2],edad:x[3],ritmo:x[4],obj:x[5],disp:x[6],grupo:x[7],col:COL[i%COL.length]}});
+  return {
+    gente:gente,
+    grupos:{
+      g1:{id:'g1',nombre:'Martes y jueves tarde',zona:'poniente',dias:[1,3],franja:'t',hora:'18:00',ritmo:0,cupo:5,wa:'https://chat.whatsapp.com/EJEMPLO-g1'},
+      g2:{id:'g2',nombre:'Lunes y miércoles mañana',zona:'poniente',dias:[0,2],franja:'m',hora:'10:00',ritmo:1,cupo:5,wa:'https://chat.whatsapp.com/EJEMPLO-g2'},
+      g3:{id:'g3',nombre:'Martes y jueves mañana',zona:'centro',dias:[1,3],franja:'m',hora:'10:30',ritmo:0,cupo:5,wa:'https://chat.whatsapp.com/EJEMPLO-g3'}
+    },
+    ausencias:{},   // 'grupo|semana|dia' : [ids]
+    recuperas:{},   // 'grupo|semana|dia' : [ids]
+    solicitudes:[], // {persona, propuestaClave}
+    aprobadas:[],
+    rol:'socia',vista:'inicio',
+    nueva:{paso:0,zona:null,edad:null,ritmo:null,obj:[],disp:[]},
+    masajes:{lucia:[{sem:0,dia:4,hora:'17:00',tipo:'Maderoterapia'}]}
+  };
+}
+var S;
+function guarda(){try{localStorage.setItem('siluetas-demo',JSON.stringify(S))}catch(e){}}
+function carga(){try{var t=localStorage.getItem('siluetas-demo');if(t){S=JSON.parse(t);return}}catch(e){}S=semilla()}
+carga();
+
+/* ── Fechas: semana que viene y las 3 siguientes ───────────────────── */
+var hoy=new Date();hoy.setHours(0,0,0,0);
+var lun=new Date(hoy);lun.setDate(hoy.getDate()-((hoy.getDay()+6)%7));
+function fecha(sem,dia){var f=new Date(lun);f.setDate(lun.getDate()+sem*7+dia);return f}
+var MES=['ene','feb','mar','abr','may','jun','jul','ago','sep','oct','nov','dic'];
+function fTxt(sem,dia){var f=fecha(sem,dia);return DIASL[dia]+' '+f.getDate()+' '+MES[f.getMonth()]}
+var hoyDia=(hoy.getDay()+6)%7;
+if(hoyDia>=5){lun.setDate(lun.getDate()+7);hoyDia=-1}   // en fin de semana, la agenda empieza el lunes que viene
+
+/* ── Utilidades ───────────────────────────────────────────────────── */
+function miembros(g){return Object.keys(S.gente).filter(function(k){return S.gente[k].grupo===g})}
+function clave(g,s,d){return g+'|'+s+'|'+d}
+function ocupadas(g,s,d){var k=clave(g,s,d),aus=(S.ausencias[k]||[]).length,rec=(S.recuperas[k]||[]).length;return miembros(g).length-aus+rec}
+function libres(g,s,d){return S.grupos[g].cupo-ocupadas(g,s,d)}
+function av(p){return '<span class="avatar" style="--c:'+p.col+'">'+p.nombre[0]+'</span>'}
+function esc(t){return String(t).replace(/[&<>"]/g,function(c){return {'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]})}
+function toast(t){var e=$('#toast');e.textContent=t;e.classList.add('ver');clearTimeout(toast.t);toast.t=setTimeout(function(){e.classList.remove('ver')},2600)}
+function plazasDots(g,s,d){var o=ocupadas(g,s,d),c=S.grupos[g].cupo,h='';for(var i=0;i<c;i++)h+='<i class="'+(i<o?'':'libre')+'"></i>';return '<span class="plazas" aria-label="'+o+' de '+c+' plazas ocupadas">'+h+'</span>'}
+
+/* ── El emparejamiento: reglas + puntuación ──────────────────────────
+   Duro: misma zona, al menos 2 huecos de la semana en común, ritmo a 1 de distancia como mucho.
+   Puntos (0-100): objetivos en común 40 · edad parecida 25 · mismo ritmo 20 · más horarios en común 15. */
+function franjasDe(p){return p.disp}
+function compat(a,b){
+  if(a.zona!==b.zona)return null;
+  var comun=a.disp.filter(function(x){return b.disp.indexOf(x)>=0});
+  if(comun.length<2)return null;
+  if(Math.abs(a.ritmo-b.ritmo)>1)return null;
+  var oA=a.obj,oB=b.obj,inter=oA.filter(function(x){return oB.indexOf(x)>=0}).length,union=oA.concat(oB.filter(function(x){return oA.indexOf(x)<0})).length;
+  var pts=40*(inter/union)+25*(1-Math.abs(a.edad-b.edad)/3)+20*(a.ritmo===b.ritmo?1:.4)+15*Math.min(1,comun.length/3);
+  return {pts:Math.round(pts),comun:comun,inter:inter};
+}
+function puntGrupo(ms){var t=0,n=0;for(var i=0;i<ms.length;i++)for(var j=i+1;j<ms.length;j++){var c=compat(ms[i],ms[j]);t+=c?c.pts:0;n++}return n?Math.round(t/n):0}
+function propuestas(){
+  var libresP=Object.keys(S.gente).map(function(k){return S.gente[k]}).filter(function(p){return !p.grupo});
+  var hechas=[],usadas={};
+  // para cada par de huecos (dia franja + otro día misma franja) agrupamos por zona
+  var porZona={};libresP.forEach(function(p){(porZona[p.zona]=porZona[p.zona]||[]).push(p)});
+  Object.keys(porZona).forEach(function(z){
+    var pool=porZona[z];
+    // semilla = la que más compatibles tiene
+    var orden=pool.slice().sort(function(a,b){return cuenta(b,pool)-cuenta(a,pool)});
+    orden.forEach(function(sem){
+      if(usadas[sem.id])return;
+      var cands=pool.filter(function(p){return p!==sem&&!usadas[p.id]}).map(function(p){var c=compat(sem,p);return c?{p:p,c:c}:null}).filter(Boolean).sort(function(a,b){return b.c.pts-a.c.pts});
+      if(cands.length<2)return;
+      var miem=[sem].concat(cands.slice(0,4).map(function(x){return x.p}));
+      // huecos comunes a TODAS
+      var huecos=sem.disp.filter(function(h){return miem.every(function(p){return p.disp.indexOf(h)>=0})});
+      if(huecos.length<2){miem=[sem].concat(cands.slice(0,2).map(function(x){return x.p}));huecos=sem.disp.filter(function(h){return miem.every(function(p){return p.disp.indexOf(h)>=0})})}
+      if(huecos.length<2||miem.length<3)return;
+      var media=puntGrupo(miem);
+      var objComun=Object.keys(OBJ).filter(function(o){return miem.filter(function(p){return p.obj.indexOf(o)>=0}).length>=Math.ceil(miem.length/2)});
+      var franja=huecos[0][1],dias=huecos.filter(function(h){return h[1]===franja}).map(function(h){return +h[0]}).slice(0,2);
+      if(dias.length<2)return;
+      miem.forEach(function(p){usadas[p.id]=1});
+      hechas.push({clave:z+'-'+dias.join('')+franja,zona:z,dias:dias,franja:franja,miembros:miem.map(function(p){return p.id}),pts:media,objetivos:objComun,ritmo:Math.round(miem.reduce(function(s,p){return s+p.ritmo},0)/miem.length),
+        edades:[Math.min.apply(null,miem.map(function(p){return p.edad})),Math.max.apply(null,miem.map(function(p){return p.edad}))]});
+    });
+  });
+  return hechas.filter(function(h){return S.aprobadas.indexOf(h.clave)<0});
+  function cuenta(p,pool){return pool.filter(function(q){return q!==p&&compat(p,q)}).length}
+}
+
+/* ── Iconos ───────────────────────────────────────────────────────── */
+var IC={
+  inicio:'<svg viewBox="0 0 24 24"><path d="M4 11 12 4l8 7v9H4z"/><path d="M10 20v-5h4v5"/></svg>',
+  clases:'<svg viewBox="0 0 24 24"><rect x="3.5" y="5" width="17" height="15" rx="2"/><path d="M3.5 10h17M8 3v4M16 3v4"/></svg>',
+  grupo:'<svg viewBox="0 0 24 24"><circle cx="9" cy="9" r="3"/><circle cx="17" cy="10" r="2.4"/><path d="M3.5 19c.6-3 2.8-4.6 5.5-4.6s4.9 1.6 5.5 4.6M14.5 15.2c2.6-.3 4.8 1 5.4 3.8"/></svg>',
+  progreso:'<svg viewBox="0 0 24 24"><path d="M4 19h16"/><path d="M5 15l4-4 3 3 6-7"/><path d="M15 7h3v3"/></svg>',
+  perfil:'<svg viewBox="0 0 24 24"><circle cx="12" cy="8.5" r="3.5"/><path d="M5 20c.8-3.7 3.6-5.6 7-5.6s6.2 1.9 7 5.6"/></svg>',
+  buscar:'<svg viewBox="0 0 24 24"><circle cx="11" cy="11" r="6"/><path d="m20 20-4.2-4.2"/></svg>',
+  web:'<svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="8.5"/><path d="M3.5 12h17M12 3.5c2.4 2.6 3.6 5.4 3.6 8.5s-1.2 5.9-3.6 8.5c-2.4-2.6-3.6-5.4-3.6-8.5S9.6 6.1 12 3.5z"/></svg>',
+  propuestas:'<svg viewBox="0 0 24 24"><path d="M12 3.5 14.5 9l5.9.5-4.5 3.9 1.4 5.8L12 16.1l-5.3 3.1 1.4-5.8-4.5-3.9L9.5 9z"/></svg>'
+};
+var NAVS={
+  socia:[['inicio','Inicio'],['clases','Mis clases'],['grupo','Mi grupo'],['progreso','Progreso'],['perfil','Perfil']],
+  nueva:[['buscar','Encuentra grupo'],['perfil','Perfil']],
+  carmen:[['inicio','Semana'],['propuestas','Propuestas'],['grupo','Grupos'],['web','Lo que ve la web']]
+};
+
+/* ── Pintar ───────────────────────────────────────────────────────── */
+function pinta(){
+  var n=NAVS[S.rol];if(!n.some(function(x){return x[0]===S.vista}))S.vista=n[0][0];
+  $$('[data-rol]').forEach(function(b){b.setAttribute('aria-pressed',b.dataset.rol===S.rol)});
+  var nav=$('#nav');nav.style.setProperty('--n',n.length);
+  nav.innerHTML=n.map(function(x){return '<button data-ir="'+x[0]+'"'+(x[0]===S.vista?' aria-current="page"':'')+'>'+IC[x[0]]+x[1]+'</button>'}).join('');
+  var yo=S.rol==='socia'?S.gente.lucia:S.rol==='nueva'?{nombre:'Elena',col:'#7A5AA6'}:{nombre:'Carmen',col:'#B8295F'};
+  var sub=S.rol==='carmen'?'Tu panel':S.rol==='nueva'?'Bienvenida a Siluetas':'Grupo martes y jueves';
+  $('#cab').innerHTML='<div class="yo">'+av(yo)+'<div><h3>Hola, '+yo.nombre+'</h3><small class="suave">'+sub+'</small></div></div><img class="logo" src="../img/silueta.svg" alt="Siluetas de Mujer">';
+  var f=VISTAS[S.rol][S.vista];$('#vista').innerHTML=f();$('#vista').scrollTop=0;guarda();
+}
+var VISTAS={socia:{},nueva:{},carmen:{}};
+
+/* ── SOCIA ────────────────────────────────────────────────────────── */
+function misSesiones(id,semanas){
+  var p=S.gente[id],out=[];if(!p)return out;
+  for(var s=0;s<(semanas||4);s++)for(var d=0;d<5;d++){
+    var g=p.grupo&&S.grupos[p.grupo];
+    if(g&&g.dias.indexOf(d)>=0)out.push({tipo:'grupo',g:g.id,s:s,d:d,hora:g.hora,no:(S.ausencias[clave(g.id,s,d)]||[]).indexOf(id)>=0});
+    Object.keys(S.recuperas).forEach(function(k){var a=k.split('|');if(+a[1]===s&&+a[2]===d&&S.recuperas[k].indexOf(id)>=0)out.push({tipo:'recupera',g:a[0],s:s,d:d,hora:S.grupos[a[0]].hora})});
+    (S.masajes[id]||[]).forEach(function(m){if(m.sem===s&&m.dia===d)out.push({tipo:'masaje',s:s,d:d,hora:m.hora,txt:m.tipo})});
+  }
+  return out.filter(function(x){return x.s>0||x.d>=hoyDia});
+}
+VISTAS.socia.inicio=function(){
+  var ss=misSesiones('lucia',2),prox=ss.filter(function(x){return !x.no})[0],g=S.grupos.g1;
+  var sem='';for(var d=0;d<5;d++){var en=ss.filter(function(x){return x.s===0&&x.d===d});sem+='<div class="dia'+(d===hoyDia?' hoy':'')+'"><small>'+DIAS[d]+'</small><b>'+fecha(0,d).getDate()+'</b><span class="pt">'+en.map(function(x){return '<i class="'+(x.no?'no':x.tipo==='masaje'?'m':'')+'"></i>'}).join('')+'</span></div>'}
+  return '<div class="tarjeta tinta"><small class="suave">Tu próxima clase</small><h1 style="margin:.3rem 0 .2rem">'+(prox?cap(fTxt(prox.s,prox.d))+' · '+prox.hora:'Nada esta semana')+'</h1>'+
+    '<p class="suave">'+(prox?(prox.tipo==='masaje'?prox.txt+' con Carmen':'Grupo '+S.grupos[prox.g].nombre.toLowerCase()+' · '+SITIO[S.grupos[prox.g].zona]):'')+'</p>'+
+    '<div class="acciones" style="margin-top:.9rem"><button class="btn arena peq" data-ir="clases">Cambiar o avisar</button><button class="btn peq linea" style="color:var(--arena);border-color:rgb(243 235 224/.5)" data-ir="grupo">Ver mi grupo</button></div></div>'+
+    '<div><h2 style="margin-bottom:.5rem">Esta semana</h2><div class="semana">'+sem+'</div><p class="suave" style="font-size:.8rem;margin-top:.4rem"><span class="chip v">● entreno</span> <span class="chip m">● masaje</span> <span class="chip">○ no vas</span></p></div>'+
+    '<div class="tarjeta camino"><h3>Entre clase y clase</h3><p class="suave" style="font-size:.9rem;margin-top:.2rem">Movilidad de cadera, 8 minutos. Te lo ha dejado Carmen para hoy.</p><div class="acciones" style="margin-top:.6rem"><button class="btn peq linea" data-toast="¡Hecho! Carmen lo verá en tu progreso.">Lo he hecho</button></div></div>'+
+    '<div class="tarjeta"><div class="fila entre"><div><h3>Tu fuerza</h3><small class="suave">Levantarte de la silla en 30 s</small></div><span class="punt">14</span></div><div class="barra" style="margin-top:.6rem;--p:70%"><i></i></div><small class="suave">+5 desde tu valoración del 6 de octubre</small></div>';
+};
+function cap(t){return t.charAt(0).toUpperCase()+t.slice(1)}
+VISTAS.socia.clases=function(){
+  var ss=misSesiones('lucia',4);
+  var h='<div><h1>Tus próximas 4 semanas</h1><p class="suave" style="margin-top:.3rem">Toca una clase para avisar de que no vas o recuperarla en otro grupo con plaza.</p></div><div class="lista">';
+  if(!ss.length)h+='<div class="vacio">No tienes clases.</div>';
+  ss.forEach(function(x,i){
+    var g=x.g&&S.grupos[x.g];
+    var t=x.tipo==='masaje'?x.txt:x.tipo==='recupera'?'Recuperación · '+g.nombre:'Grupo '+g.nombre.toLowerCase();
+    var st=x.no?'<span class="chip aviso">No vas</span>':x.tipo==='recupera'?'<span class="chip v">Recuperas</span>':x.tipo==='masaje'?'<span class="chip m">Masaje</span>':plazasDots(x.g,x.s,x.d);
+    h+='<button class="item" style="border:0;text-align:left" data-ses="'+i+'"><span class="hora"><small>'+DIAS[x.d]+'</small><b>'+fecha(x.s,x.d).getDate()+'</b></span><span class="t"><b>'+t+'</b><small>'+x.hora+(g?' · '+SITIO[g.zona]:' · con Carmen')+'</small></span>'+st+'</button>';
+  });
+  return h+'</div>';
+};
+function abreSesion(i){
+  var x=misSesiones('lucia',4)[i];if(!x)return;var g=x.g&&S.grupos[x.g];
+  var h='<h2>'+cap(fTxt(x.s,x.d))+' · '+x.hora+'</h2>';
+  if(x.tipo==='masaje'){h+='<p class="suave">'+x.txt+' con Carmen.</p><a class="btn wa" href="https://wa.me/'+WA+'?text='+encodeURIComponent('Hola Mari Carmen, necesito cambiar mi '+x.txt.toLowerCase()+' del '+fTxt(x.s,x.d)+'.')+'">Cambiarla por WhatsApp</a>'}
+  else if(x.tipo==='recupera'){h+='<p class="suave">Recuperas en el grupo '+g.nombre.toLowerCase()+'.</p><button class="btn linea" data-anula="'+clave(x.g,x.s,x.d)+'">Ya no voy a recuperar</button>'}
+  else if(x.no){h+='<p class="suave">Has avisado de que no vas. Tu plaza queda libre ese día para otra socia.</p><button class="btn" data-vuelvo="'+clave(x.g,x.s,x.d)+'">Al final sí voy</button>'}
+  else{
+    h+='<p class="suave">Grupo '+g.nombre.toLowerCase()+' · '+SITIO[g.zona]+'</p><button class="btn" data-falto="'+clave(x.g,x.s,x.d)+'">No puedo ir: aviso y libero mi plaza</button>';
+    // recuperar en otro grupo esa semana, mismo ritmo o a uno de distancia, con plaza
+    var op=[];Object.keys(S.grupos).forEach(function(k){var o=S.grupos[k];if(k===x.g||Math.abs(o.ritmo-g.ritmo)>1)return;o.dias.forEach(function(d){if(libres(k,x.s,d)>0&&(x.s>0||d>=hoyDia))op.push({k:k,d:d})})});
+    h+='<h3 style="margin-top:.4rem">O recupérala esa semana en</h3>'+(op.length?op.map(function(o){var og=S.grupos[o.k];return '<button class="item" style="border:0;text-align:left" data-recupera="'+clave(x.g,x.s,x.d)+'|'+o.k+'|'+o.d+'"><span class="hora"><small>'+DIAS[o.d]+'</small><b>'+fecha(x.s,o.d).getDate()+'</b></span><span class="t"><b>'+og.nombre+'</b><small>'+og.hora+' · '+ZONAS[og.zona]+' · ritmo '+RITMO[og.ritmo].toLowerCase()+'</small></span>'+plazasDots(o.k,x.s,o.d)+'</button>'}).join(''):'<div class="vacio">Esa semana no queda hueco en otro grupo parecido.</div>');
+  }
+  hoja(h+'<button class="btn linea" data-cierra>Cerrar</button>');
+}
+VISTAS.socia.grupo=function(){
+  var g=S.grupos.g1,m=miembros('g1').filter(function(k){return k!=='lucia'}).map(function(k){return S.gente[k]});
+  return '<div><h1>Tu grupo</h1><p class="suave" style="margin-top:.3rem">'+g.nombre+' · '+g.hora+' · '+SITIO[g.zona]+'</p></div>'+
+   '<div class="tarjeta"><h3 style="margin-bottom:.6rem">Tus compañeras</h3><div class="comp">'+m.map(function(p){return '<span class="p">'+av(p)+p.nombre+'</span>'}).join('')+'</div>'+
+   '<p class="suave" style="font-size:.85rem;margin-top:.7rem">Ritmo '+RITMO[g.ritmo].toLowerCase()+' · '+miembros('g1').length+' de '+g.cupo+' plazas</p>'+
+   '<div class="acciones" style="margin-top:.8rem"><a class="btn wa" href="'+g.wa+'" target="_blank" rel="noopener" data-demo-wa>Abrir el grupo de WhatsApp</a></div></div>'+
+   '<div class="privado">Tus compañeras solo ven tu nombre y tu zona. Tu teléfono lo ven solo dentro del grupo de WhatsApp, y tu salud solo la ve Carmen.</div>'+
+   '<div class="tarjeta camino"><h3>¿Conoces a alguien?</h3><p class="suave" style="font-size:.9rem;margin-top:.2rem">Queda una plaza en tu grupo. Pásale el enlace y la app le dirá si encaja.</p><div class="acciones" style="margin-top:.6rem"><button class="btn peq linea" data-toast="Enlace copiado (demo).">Copiar invitación</button></div></div>';
+};
+VISTAS.socia.progreso=function(){
+  return '<div><h1>Tu progreso</h1><p class="suave" style="margin-top:.3rem">Desde tu valoración del 6 de octubre. Repetimos las pruebas cada 6 semanas.</p></div>'+
+  '<div class="dos"><div class="dato"><small class="suave">Cintura</small><b>84 cm</b><em>−3 cm</em></div><div class="dato"><small class="suave">Silla en 30 s</small><b>14</b><em>+5</em></div><div class="dato"><small class="suave">Equilibrio</small><b>22 s</b><em>+9 s</em></div><div class="dato"><small class="suave">Asistencia</small><b>92 %</b><em>11 de 12</em></div></div>'+
+  '<div class="tarjeta"><h3>Silla en 30 segundos</h3><svg viewBox="0 0 300 110" style="width:100%;height:auto;margin-top:.5rem" role="img" aria-label="De 9 a 14 repeticiones en 6 semanas"><path d="M10 95 L60 88 L110 80 L160 66 L210 52 L260 40 L290 34" fill="none" stroke="#16A39A" stroke-width="4" stroke-linecap="round"/><g fill="#16323F" font-size="11" font-family="Figtree">'+[9,10,11,12,13,14].map(function(v,i){return '<text x="'+(10+i*50)+'" y="'+(110-(v-6)*8-16)+'">'+v+'</text>'}).join('')+'</g></svg><small class="suave">Datos de ejemplo</small></div>';
+};
+VISTAS.socia.perfil=function(){
+  var p=S.gente.lucia;
+  return '<div><h1>Tu perfil</h1></div><div class="tarjeta lista" style="gap:.7rem">'+
+  fila('Zona',ZONAS[p.zona])+fila('Edad',EDAD[p.edad])+fila('Ritmo',RITMO[p.ritmo])+fila('Objetivos',p.obj.map(function(o){return OBJ[o]}).join(', '))+fila('Plan','Grupo · 50 € a la semana')+'</div>'+
+  '<div class="tarjeta"><h3>Tu salud</h3><p class="suave" style="font-size:.9rem;margin-top:.2rem">Lesiones, medicación y lo que hablamos en tu valoración.</p><div class="privado" style="margin-top:.6rem">Solo lo ve Carmen, para adaptar tus clases. Nunca tus compañeras ni la app para hacer grupos.</div></div>';
+  function fila(a,b){return '<div class="fila entre"><small class="suave">'+a+'</small><b style="text-align:right">'+b+'</b></div>'}
+};
+
+/* ── NUEVA: encuentra tu grupo ────────────────────────────────────── */
+var PASOS=['zona','edad','ritmo','obj','disp','res'];
+VISTAS.nueva.buscar=function(){
+  var n=S.nueva,p=PASOS[n.paso],h='<div class="paso-cab">'+PASOS.slice(0,5).map(function(x,i){return '<i class="'+(i<n.paso?'ya':'')+'"></i>'}).join('')+'</div>';
+  if(p==='zona')h+='<h1>¿Por qué zona te mueves?</h1><p class="suave" style="margin:.3rem 0 .8rem">Para entrenar cerca de casa.</p><div class="opc">'+Object.keys(ZONAS).map(function(z){return op('zona',z,ZONAS[z],SITIO[z])}).join('')+'</div>';
+  if(p==='edad')h+='<h1>¿En qué franja de edad estás?</h1><p class="suave" style="margin:.3rem 0 .8rem">Para que te juntes con mujeres en tu momento.</p><div class="opc">'+EDAD.map(function(e,i){return op('edad',i,e+' años','')}).join('')+'</div>';
+  if(p==='ritmo')h+='<h1>¿Qué ritmo te va?</h1><p class="suave" style="margin:.3rem 0 .8rem">Sin juicios. Se puede cambiar cuando quieras.</p><div class="opc">'+[['Suave','Empiezo o vuelvo después de mucho tiempo'],['Medio','Me muevo algo y quiero avanzar'],['Con caña','Me gusta sudar y que me exijan']].map(function(r,i){return op('ritmo',i,r[0],r[1])}).join('')+'</div>';
+  if(p==='obj')h+='<h1>¿Qué te gustaría conseguir?</h1><p class="suave" style="margin:.3rem 0 .8rem">Elige una o varias.</p><div class="opc">'+Object.keys(OBJ).map(function(o){return '<button data-obj="'+o+'" aria-pressed="'+(n.obj.indexOf(o)>=0)+'">'+OBJ[o]+'<span>'+(n.obj.indexOf(o)>=0?'✓':'')+'</span></button>'}).join('')+'</div><div class="acciones" style="margin-top:1rem"><button class="btn" data-sig '+(n.obj.length?'':'disabled')+'>Seguir</button></div>';
+  if(p==='disp'){h+='<h1>¿Cuándo te viene bien?</h1><p class="suave" style="margin:.3rem 0 .8rem">Marca todos los huecos en los que podrías. Cuantos más, más fácil encajar.</p><div class="rejilla"><span></span>'+DIAS.map(function(d){return '<span class="c">'+d+'</span>'}).join('');
+    ['m','t'].forEach(function(f){h+='<span class="c" style="text-align:left">'+FRANJA[f]+'</span>';for(var d=0;d<5;d++){var k=d+f;h+='<button data-disp="'+k+'" aria-pressed="'+(n.disp.indexOf(k)>=0)+'" aria-label="'+DIASL[d]+' por la '+FRANJA[f].toLowerCase()+'">'+(n.disp.indexOf(k)>=0?'✓':'')+'</button>'}});
+    h+='</div><div class="acciones" style="margin-top:1rem"><button class="btn" data-sig '+(n.disp.length>=2?'':'disabled')+'>Buscar mi grupo</button></div>'}
+  if(p==='res')h=resultado();
+  if(n.paso>0&&p!=='res')h+='<button class="reset" style="margin-top:.8rem" data-atras>← Atrás</button>';
+  return h;
+  function op(campo,v,t,sub){return '<button data-campo="'+campo+'" data-v="'+v+'" aria-pressed="'+(n[campo]===v)+'"><span>'+t+(sub?'<small>'+sub+'</small>':'')+'</span><span>'+(n[campo]===v?'✓':'›')+'</span></button>'}
+};
+function perfilElena(){var n=S.nueva;return {id:'elena',nombre:'Elena',zona:n.zona,edad:n.edad,ritmo:n.ritmo,obj:n.obj,disp:n.disp,col:'#7A5AA6'}}
+function resultado(){
+  var e=perfilElena(),h='';
+  var sol=S.solicitudes.filter(function(x){return x.persona==='elena'})[0];
+  // 1) grupos existentes con plaza y compatibles
+  var ex=Object.keys(S.grupos).map(function(k){var g=S.grupos[k];if(g.zona!==e.zona||Math.abs(g.ritmo-e.ritmo)>1)return null;
+    var huecos=g.dias.filter(function(d){return e.disp.indexOf(d+g.franja)>=0}).length;if(huecos<g.dias.length)return null;
+    var lib=g.cupo-miembros(k).length;if(lib<=0)return null;
+    var ms=miembros(k).map(function(id){return compat(e,S.gente[id])||{pts:35}});var pts=Math.round(ms.reduce(function(s,c){return s+c.pts},0)/ms.length);
+    return {g:g,lib:lib,pts:pts}}).filter(Boolean).sort(function(a,b){return b.pts-a.pts});
+  // 2) con las interesadas sin grupo
+  var pool=Object.keys(S.gente).map(function(k){return S.gente[k]}).filter(function(p){return !p.grupo&&p.zona===e.zona}).map(function(p){var c=compat(e,p);return c?{p:p,c:c}:null}).filter(Boolean).sort(function(a,b){return b.c.pts-a.c.pts});
+  h+='<h1>Esto es lo que hemos encontrado</h1><p class="suave" style="margin:.3rem 0 .9rem">'+ZONAS[e.zona]+' · '+EDAD[e.edad]+' · ritmo '+RITMO[e.ritmo].toLowerCase()+'</p>';
+  if(sol)h+='<div class="tarjeta tinta"><h2>Solicitud enviada ✓</h2><p class="suave" style="margin-top:.3rem">'+(sol.tipo==='grupo'?'Carmen confirma tu plaza y te escribe por WhatsApp.':'Carmen tiene ya la propuesta del grupo nuevo. En cuanto la apruebe, os presentamos a todas.')+'</p></div>';
+  ex.forEach(function(x){
+    h+='<div class="tarjeta"><div class="fila entre"><div><small class="suave">Grupo que ya funciona</small><h2>'+x.g.nombre+'</h2><small class="suave">'+x.g.hora+' · '+SITIO[x.g.zona]+'</small></div><span class=\"punt\">'+x.pts+'<small>% encaje</small></span></div>'+
+     '<div class="comp" style="margin-top:.6rem">'+miembros(x.g.id).map(function(id){var p=S.gente[id];return '<span class="p">'+av(p)+p.nombre+'</span>'}).join('')+'</div>'+
+     '<div class="porque"><div>Quedan '+x.lib+' plazas</div><div>Ritmo '+RITMO[x.g.ritmo].toLowerCase()+', como el tuyo</div><div>Te vienen bien sus dos días</div></div>'+
+     '<div class="acciones" style="margin-top:.8rem"><button class="btn" data-pido="grupo|'+x.g.id+'" '+(sol?'disabled':'')+'>Pedir mi plaza</button></div></div>';
+  });
+  if(pool.length>=2){
+    var top=pool.slice(0,4),comun=e.disp.filter(function(hh){return top.every(function(x){return x.p.disp.indexOf(hh)>=0})});
+    var media=puntGrupo([e].concat(top.map(function(x){return x.p})));
+    var obj=Object.keys(OBJ).filter(function(o){return e.obj.indexOf(o)>=0&&top.some(function(x){return x.p.obj.indexOf(o)>=0})});
+    h+='<div class="tarjeta"><div class="fila entre"><div><small class="suave">Grupo nuevo, contigo dentro</small><h2>'+(top.length+1)+' mujeres que encajáis</h2><small class="suave">Todavía no os conocéis: la app os presenta</small></div><span class=\"punt\">'+media+'<small>% encaje</small></span></div>'+
+     '<div class="comp" style="margin-top:.6rem">'+top.map(function(x){return '<span class="p">'+av(x.p)+x.p.nombre+' <small class="suave">'+EDAD[x.p.edad]+'</small></span>'}).join('')+'</div>'+
+     '<div class="porque"><div>Todas en '+ZONAS[e.zona]+'</div>'+(obj.length?'<div>Buscáis '+obj.map(function(o){return OBJ[o].toLowerCase()}).join(' y ')+'</div>':'')+(comun.length?'<div>Os viene bien a todas: '+comun.map(function(k){return DIASL[+k[0]]+' por la '+FRANJA[k[1]].toLowerCase()}).join(', ')+'</div>':'<div>Coincidís en varios huecos de la semana</div>')+'<div>Ritmos parecidos</div></div>'+
+     '<div class="acciones" style="margin-top:.8rem"><button class="btn" data-pido="nuevo|'+e.zona+'" '+(sol?'disabled':'')+'>Quiero este grupo</button></div></div>';
+  }
+  if(!ex.length&&pool.length<2)h+='<div class="vacio">Todavía no hay suficientes mujeres compatibles en tu zona. Te guardamos en la lista y te avisamos en cuanto se forme un grupo.</div><div class="acciones"><button class="btn" data-pido="espera|'+e.zona+'" '+(sol?'disabled':'')+'>Avisadme</button></div>';
+  h+='<div class="privado">Las demás solo verán tu nombre y tu zona hasta que estéis en el mismo grupo. Lo que nos cuentes de tu salud lo ve solo Carmen.</div><button class="reset" data-reempieza>Cambiar mis respuestas</button>';
+  return h;
+}
+VISTAS.nueva.perfil=function(){var n=S.nueva;return '<h1>Tu perfil</h1><div class="tarjeta lista" style="gap:.6rem">'+
+  [['Zona',n.zona?ZONAS[n.zona]:'—'],['Edad',n.edad!=null?EDAD[n.edad]:'—'],['Ritmo',n.ritmo!=null?RITMO[n.ritmo]:'—'],['Objetivos',n.obj.map(function(o){return OBJ[o]}).join(', ')||'—'],['Huecos',n.disp.length+' marcados']].map(function(f){return '<div class="fila entre"><small class="suave">'+f[0]+'</small><b style="text-align:right">'+f[1]+'</b></div>'}).join('')+'</div>'};
+
+/* ── CARMEN ───────────────────────────────────────────────────────── */
+VISTAS.carmen.inicio=function(){
+  var h='<div><h1>Tu semana</h1><p class="suave" style="margin-top:.3rem">Semana del '+fecha(0,0).getDate()+' de '+MES[fecha(0,0).getMonth()]+'.</p></div><div class="lista">';
+  for(var d=0;d<5;d++){
+    Object.keys(S.grupos).forEach(function(k){var g=S.grupos[k];if(g.dias.indexOf(d)<0)return;
+      var aus=(S.ausencias[clave(k,0,d)]||[]).map(function(id){return S.gente[id].nombre}),rec=(S.recuperas[clave(k,0,d)]||[]).map(function(id){return S.gente[id].nombre});
+      h+='<div class="item"><span class="hora"><small>'+DIAS[d]+'</small><b>'+g.hora+'</b></span><span class="t"><b>'+g.nombre+'</b><small>'+SITIO[g.zona]+(aus.length?' · no viene: '+aus.join(', '):'')+(rec.length?' · recupera: '+rec.join(', '):'')+'</small></span>'+plazasDots(k,0,d)+'</div>'});
+    Object.keys(S.masajes).forEach(function(id){S.masajes[id].forEach(function(m){if(m.sem===0&&m.dia===d)h+='<div class="item"><span class="hora"><small>'+DIAS[d]+'</small><b>'+m.hora+'</b></span><span class="t"><b>'+m.tipo+' · '+S.gente[id].nombre+'</b><small>En la sala</small></span><span class="chip m">Masaje</span></div>'})});
+  }
+  var pr=propuestas().length,sol=S.solicitudes.length;
+  return h+'</div>'+(pr||sol?'<button class="tarjeta tinta" style="border:0;text-align:left;width:100%" data-ir="propuestas"><h2>'+(pr?pr+' grupo'+(pr>1?'s':'')+' posible'+(pr>1?'s':''):'')+(pr&&sol?' · ':'')+(sol?sol+' solicitud'+(sol>1?'es':''):'')+'</h2><p class="suave" style="margin-top:.2rem">La app ha encontrado mujeres que encajan. Míralo y aprueba con un toque.</p></button>':'');
+};
+VISTAS.carmen.propuestas=function(){
+  var pr=propuestas(),h='<div><h1>Propuestas</h1><p class="suave" style="margin-top:.3rem">La app junta a las interesadas por zona, horarios, ritmo, objetivos y edad. Tú solo dices sí o no.</p></div>';
+  S.solicitudes.filter(function(s){return s.tipo==='grupo'}).forEach(function(s){var g=S.grupos[s.grupo];
+    h+='<div class="tarjeta"><small class="suave">Solicitud de plaza</small><h2>Elena quiere entrar en «'+g.nombre+'»</h2><p class="suave" style="font-size:.9rem">'+EDAD[S.nueva.edad]+' · ritmo '+RITMO[S.nueva.ritmo].toLowerCase()+' · '+S.nueva.obj.map(function(o){return OBJ[o].toLowerCase()}).join(', ')+'</p><div class="acciones" style="margin-top:.7rem"><button class="btn" data-acepta="'+s.grupo+'">Aceptar</button><button class="btn linea" data-rechaza>Ahora no</button></div></div>'});
+  if(!pr.length&&!S.solicitudes.length)h+='<div class="vacio">No hay propuestas nuevas. En cuanto 3 o más interesadas encajen, aparecerán aquí.</div>';
+  pr.forEach(function(p){
+    var con=S.solicitudes.some(function(s){return s.tipo==='nuevo'&&s.zona===p.zona});
+    var ms=p.miembros.map(function(id){return S.gente[id]});if(con)ms=ms.concat([perfilElena()]);var pts=puntGrupo(ms);
+    h+='<div class="tarjeta"><div class="fila entre"><div><small class="suave">Grupo posible · '+ZONAS[p.zona]+'</small><h2>'+cap(DIASL[p.dias[0]])+' y '+DIASL[p.dias[1]]+' por la '+FRANJA[p.franja].toLowerCase()+'</h2></div><span class=\"punt\">'+pts+'<small>% encaje</small></span></div>'+
+     '<div class="comp" style="margin-top:.6rem">'+ms.map(function(x){return '<span class="p">'+av(x)+x.nombre+'</span>'}).join('')+'</div>'+
+     '<div class="porque"><div>'+ms.length+' mujeres en '+ZONAS[p.zona]+(con?' (Elena lo ha pedido)':'')+'</div><div>Les viene bien a todas '+DIASL[p.dias[0]]+' y '+DIASL[p.dias[1]]+'</div>'+(p.objetivos.length?'<div>Comparten: '+p.objetivos.map(function(o){return OBJ[o].toLowerCase()}).join(', ')+'</div>':'')+'<div>Ritmo '+RITMO[p.ritmo].toLowerCase()+' · '+EDAD[p.edades[0]]+(p.edades[1]!==p.edades[0]?' a '+EDAD[p.edades[1]]:'')+' años</div></div>'+
+     '<div class="acciones" style="margin-top:.8rem"><button class="btn" data-aprueba="'+p.clave+'">Aprobar el grupo</button><button class="btn linea" data-toast="Guardado para más adelante.">Más adelante</button></div></div>';
+  });
+  return h;
+};
+VISTAS.carmen.grupo=function(){
+  return '<div><h1>Tus grupos</h1><p class="suave" style="margin-top:.3rem">De 3 a 5 mujeres. Días fijos.</p></div><div class="lista">'+Object.keys(S.grupos).map(function(k){var g=S.grupos[k],m=miembros(k);
+    return '<div class="tarjeta"><div class="fila entre"><div><h3>'+g.nombre+' · '+g.hora+'</h3><small class="suave">'+SITIO[g.zona]+' · ritmo '+RITMO[g.ritmo].toLowerCase()+'</small></div><span class="chip '+(m.length>=g.cupo?'m':'v')+'">'+m.length+'/'+g.cupo+'</span></div><div class="comp" style="margin-top:.6rem">'+m.map(function(id){var p=S.gente[id];return '<span class="p">'+av(p)+p.nombre+'</span>'}).join('')+'</div></div>'}).join('')+'</div>';
+};
+VISTAS.carmen.web=function(){
+  var filas='';
+  for(var s=0;s<2;s++)for(var d=0;d<5;d++){if(s===0&&d<hoyDia)continue;Object.keys(S.grupos).forEach(function(k){var g=S.grupos[k];if(g.dias.indexOf(d)<0)return;var l=libres(k,s,d);
+    filas+='<div class="fila-w"><span>'+cap(fTxt(s,d))+' · '+g.hora+'<br><small class="suave">Grupo '+g.nombre.toLowerCase()+' · '+ZONAS[g.zona]+'</small></span><b class="'+(l>0?'ok':'lleno')+'">'+(l>0?l+' plaza'+(l>1?'s':''):'Completo')+'</b></div>'})}
+  return '<div><h1>Lo que ve la web</h1><p class="suave" style="margin-top:.3rem">Esto es lo que mostraría el calendario de siluetasdemujer.es con la agenda real: solo días, horas y plazas libres. Nunca nombres.</p></div>'+
+   '<div class="web-mini"><small class="suave">siluetasdemujer.es · Arma tus 4 semanas</small>'+filas+'</div>'+
+   '<div class="privado">Cuando una socia avisa de que no va, su plaza aparece libre ese día. Cuando apruebas un grupo nuevo, sus días aparecen aquí.</div>';
+};
+
+/* ── Hoja inferior ────────────────────────────────────────────────── */
+function hoja(h){$('#hoja-panel').innerHTML=h;$('#hoja').hidden=false}
+function cierra(){$('#hoja').hidden=true}
+
+/* ── Acciones ─────────────────────────────────────────────────────── */
+document.addEventListener('click',function(ev){
+  var b=ev.target.closest('button,a');if(!b)return;var d=b.dataset;
+  if(d.rol){S.rol=d.rol;S.vista=NAVS[d.rol][0][0];cierra();return pinta()}
+  if(d.ir){S.vista=d.ir;cierra();return pinta()}
+  if(d.toast!==undefined&&d.toast){toast(d.toast);return}
+  if(d.demoWa!==undefined){ev.preventDefault();toast('En la app real, esto abre el grupo de WhatsApp.');return}
+  if(d.cierra!==undefined||b===$('#hoja')){return cierra()}
+  if(d.ses!==undefined)return abreSesion(+d.ses);
+  if(d.falto){(S.ausencias[d.falto]=S.ausencias[d.falto]||[]).push('lucia');cierra();toast('Aviso enviado. Tu plaza queda libre ese día.');return pinta()}
+  if(d.vuelvo){S.ausencias[d.vuelvo]=(S.ausencias[d.vuelvo]||[]).filter(function(x){return x!=='lucia'});cierra();toast('¡Genial! Cuenta contigo.');return pinta()}
+  if(d.recupera){var a=d.recupera.split('|'),orig=a.slice(0,3).join('|'),nk=clave(a[3],+a[1],+a[4]);(S.ausencias[orig]=S.ausencias[orig]||[]).push('lucia');(S.recuperas[nk]=S.recuperas[nk]||[]).push('lucia');cierra();toast('Hecho: recuperas el '+fTxt(+a[1],+a[4])+'.');return pinta()}
+  if(d.anula){Object.keys(S.recuperas).forEach(function(k){S.recuperas[k]=S.recuperas[k].filter(function(x){return x!=='lucia'})});cierra();toast('Recuperación anulada.');return pinta()}
+  if(d.campo){S.nueva[d.campo]=d.campo==='zona'?d.v:+d.v;S.nueva.paso++;return pinta()}
+  if(d.obj){var o=S.nueva.obj,i=o.indexOf(d.obj);i>=0?o.splice(i,1):o.push(d.obj);return pinta()}
+  if(d.disp){var ds=S.nueva.disp,j=ds.indexOf(d.disp);j>=0?ds.splice(j,1):ds.push(d.disp);return pinta()}
+  if(d.sig!==undefined){S.nueva.paso++;return pinta()}
+  if(d.atras!==undefined){S.nueva.paso=Math.max(0,S.nueva.paso-1);return pinta()}
+  if(d.reempieza!==undefined){S.nueva={paso:0,zona:null,edad:null,ritmo:null,obj:[],disp:[]};S.solicitudes=S.solicitudes.filter(function(s){return s.persona!=='elena'});return pinta()}
+  if(d.pido){var p=d.pido.split('|');S.solicitudes.push(p[0]==='grupo'?{persona:'elena',tipo:'grupo',grupo:p[1]}:{persona:'elena',tipo:p[0],zona:p[1]});toast('Solicitud enviada a Carmen.');return pinta()}
+  if(d.acepta){S.gente.elena=Object.assign(perfilElena(),{grupo:d.acepta});S.solicitudes=S.solicitudes.filter(function(s){return s.persona!=='elena'});toast('Elena entra en el grupo. Le llega la bienvenida y el enlace de WhatsApp.');return pinta()}
+  if(d.rechaza!==undefined){S.solicitudes=S.solicitudes.filter(function(s){return s.tipo!=='grupo'});toast('Le avisamos con cariño de que ahora no hay plaza.');return pinta()}
+  if(d.aprueba){var pr=propuestas().filter(function(x){return x.clave===d.aprueba})[0];if(!pr)return;
+    var id='g'+(Object.keys(S.grupos).length+1),pide=S.solicitudes.some(function(s){return s.tipo==='nuevo'&&s.zona===pr.zona});
+    S.grupos[id]={id:id,nombre:cap(DIASL[pr.dias[0]])+' y '+DIASL[pr.dias[1]]+' '+(pr.franja==='m'?'mañana':'tarde'),zona:pr.zona,dias:pr.dias,franja:pr.franja,hora:pr.franja==='m'?'10:00':'18:30',ritmo:pr.ritmo,cupo:5,wa:'https://chat.whatsapp.com/EJEMPLO-'+id};
+    pr.miembros.forEach(function(m){S.gente[m].grupo=id});
+    if(pide){S.gente.elena=Object.assign(perfilElena(),{grupo:id});S.solicitudes=S.solicitudes.filter(function(s){return !(s.tipo==='nuevo'&&s.zona===pr.zona)})}
+    S.aprobadas.push(pr.clave);toast('Grupo creado. La app les presenta y les manda el enlace de WhatsApp.');return pinta()}
+});
+$('#hoja').addEventListener('click',function(e){if(e.target.id==='hoja')cierra()});
+$('#reset').addEventListener('click',function(){S=semilla();try{localStorage.removeItem('siluetas-demo')}catch(e){}cierra();pinta();toast('Demo reiniciada.')});
+(function(){var h=location.hash.replace('#','').split('/');if(NAVS[h[0]]){S.rol=h[0];S.vista=h[1]&&NAVS[h[0]].some(function(x){return x[0]===h[1]})?h[1]:NAVS[h[0]][0][0]}})();   // #carmen, #socia, #nueva (o #carmen/propuestas)
+pinta();
+})();
+</script>
+</body>
+</html>
