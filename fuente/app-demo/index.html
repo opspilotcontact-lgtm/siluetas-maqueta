@@ -144,6 +144,51 @@ small{font-size:.82rem}
 .vacio{padding:1.2rem;text-align:center;color:var(--suave);font-size:.9rem;border:1.5px dashed var(--regla);border-radius:12px}
 .privado{display:flex;gap:.5rem;align-items:flex-start;font-size:.82rem;color:var(--suave);background:var(--arena);border-radius:10px;padding:.7rem .8rem}
 .privado::before{content:"🔒";font-size:.9rem}
+/* Tu día: la silueta se dibuja con lo que haces */
+.dia-hoy{display:grid;grid-template-columns:5.2rem 1fr;gap:1rem;align-items:center}
+.sil-hoy{position:relative;width:5.2rem;aspect-ratio:100/152}
+.sil-hoy svg{width:100%;height:100%;display:block;overflow:visible}
+.sil-hoy .base path{fill:rgb(243 235 224/.16)}
+.sil-hoy .llena{transition:clip-path 1s var(--ease)}
+.gestos{display:grid;gap:.45rem;margin-top:.9rem}
+.gesto{display:grid;grid-template-columns:2.2rem 1fr auto;gap:.7rem;align-items:center;padding:.7rem .8rem;border-radius:12px;background:var(--blanco);border:0;text-align:left;width:100%}
+.gesto .ico{width:2.2rem;height:2.2rem;border-radius:50%;display:grid;place-items:center;font-weight:800;font-size:.95rem;border:2px solid var(--c);color:var(--c)}
+.gesto.hecho .ico{background:var(--c);color:#fff}
+.gesto .t b{display:block;font-size:.95rem}
+.gesto .t small{color:var(--suave)}
+.gesto .ir{font-size:.8rem;font-weight:700;color:var(--c)}
+.gesto.v{--c:var(--turq-t)}.gesto.m{--c:var(--rosa-t)}.gesto.e{--c:var(--tinta)}
+.animo{display:grid;grid-template-columns:1fr 1fr;gap:.4rem}
+.animo button{border:1.5px solid var(--regla);background:var(--blanco);border-radius:10px;padding:.65rem .5rem;font-weight:650;font-size:.9rem}
+.animo button[aria-pressed=true]{background:var(--tinta);color:var(--arena);border-color:var(--tinta)}
+.mes-cuidado{display:grid;grid-template-columns:repeat(7,1fr);gap:4px;margin-top:.6rem}
+.mes-cuidado i{aspect-ratio:1;border-radius:4px;background:var(--arena)}
+.mes-cuidado i.u{background:#BFE3DE}.mes-cuidado i.d{background:var(--turq)}.mes-cuidado i.t{background:var(--turq-t)}.mes-cuidado i.f{background:transparent}
+.mes-cuidado i.hoy{outline:2px solid var(--rosa);outline-offset:1px}
+.plan12{display:grid;grid-template-columns:repeat(12,1fr);gap:3px;margin:.7rem 0 .4rem}
+.plan12 i{height:10px;border-radius:3px;background:var(--arena)}
+.plan12 i.ya{background:var(--turq-t)}.plan12 i.ahora{background:var(--rosa)}
+.fases{display:grid;grid-template-columns:repeat(3,1fr);font-size:.72rem;font-weight:700;color:var(--suave)}
+.fases span:nth-child(2){text-align:center}.fases span:nth-child(3){text-align:right}
+.logros{display:grid;gap:.45rem}
+.logro{display:flex;gap:.7rem;align-items:center;font-size:.9rem}
+.logro b.i{width:2rem;height:2rem;border-radius:50%;display:grid;place-items:center;background:#F7E3EA;color:var(--rosa-t);flex:none}
+.logro.no{opacity:.5}.logro.no b.i{background:var(--arena);color:var(--suave)}
+/* Reproductor de rutina */
+.player{display:grid;gap:.9rem;text-align:center}
+.player .paso{font-size:1.35rem;font-weight:780;letter-spacing:-.02em;line-height:1.15;min-height:3.1rem}
+.player .reloj{font-size:3.4rem;font-weight:800;letter-spacing:-.04em;font-variant-numeric:tabular-nums;line-height:1}
+.player .bolas{display:flex;gap:5px;justify-content:center}
+.player .bolas i{width:9px;height:9px;border-radius:50%;background:var(--regla)}
+.player .bolas i.ya{background:var(--turq-t)}.player .bolas i.ahora{background:var(--rosa)}
+.player .sig{font-size:.85rem;color:var(--suave)}
+/* Carmen: cómo van */
+.va{display:grid;grid-template-columns:auto 1fr auto;gap:.7rem;align-items:center;padding:.75rem .85rem;background:var(--blanco);border-radius:12px}
+.va .mini{display:flex;gap:3px}
+.va .mini i{width:9px;height:18px;border-radius:3px;background:var(--arena)}
+.va .mini i.si{background:var(--turq)}
+.va small{color:var(--suave)}
+.alerta{font-size:.78rem;font-weight:700;color:#7A4B00}
 </style>
 </head>
 <body>
@@ -218,12 +263,27 @@ function semilla(){
     aprobadas:[],
     rol:'socia',vista:'inicio',
     nueva:{paso:0,zona:null,edad:null,ritmo:null,obj:[],disp:[]},
-    masajes:{lucia:[{sem:0,dia:4,hora:'17:00',tipo:'Maderoterapia'}]}
+    masajes:{lucia:[{sem:0,dia:4,hora:'17:00',tipo:'Maderoterapia'}]},
+    hist:historialSemilla(),semanaPlan:3
   };
+}
+var RUTINAS={
+  fuerza:{t:'Fuerza en casa',min:10,tipo:'mov',pasos:[['Sentarte y levantarte de la silla, despacio',60],['Remo con goma (o con dos botellas de agua)',60],['Puente de glúteo',60],['Flexión apoyada en la pared',60],['Respira y descansa',30],['Otra vuelta: silla',60],['Otra vuelta: remo',60],['Otra vuelta: puente',60],['Estira y suelta',60]]},
+  movilidad:{t:'Movilidad de cadera',min:8,tipo:'mov',pasos:[['Círculos de cadera, de pie',60],['Puente de glúteo lento',60],['Gato y vaca (en el suelo o en la silla)',60],['Zancada atrás con apoyo',90],['Estiramiento de la parte delantera de la cadera',90],['Respira y suelta',60]]},
+  piernas:{t:'Piernas ligeras',min:6,tipo:'cuida',pasos:[['Piernas en alto contra la pared',120],['Mueve los tobillos arriba y abajo',60],['Círculos de tobillo',60],['Paseo suave por casa',120]]},
+  suelo:{t:'Respira y suelo pélvico',min:5,tipo:'cuida',pasos:[['Siéntate cómoda y respira hondo',60],['Al soltar el aire, activa el suelo pélvico suave',60],['Suelta del todo al coger aire',60],['Respiración lenta, sin apretar',60],['Notas cómo estás',60]]}
+};
+var ANIMO={energia:'Con energía',normal:'Normal',cansada:'Cansada',duele:'Me duele algo'};
+function iso(f){return f.getFullYear()+'-'+String(f.getMonth()+1).padStart(2,'0')+'-'+String(f.getDate()).padStart(2,'0')}
+function historialSemilla(){ // los últimos 24 días de Lucía (y un poco de las demás para el panel de Carmen)
+  var h={},base=new Date();base.setHours(0,0,0,0);
+  var patron='1110110111101011101101100'; // 1 = se cuidó
+  for(var i=1;i<=24;i++){var f=new Date(base);f.setDate(base.getDate()-i);if(patron[i]==='1')h[iso(f)]={mov:i%3!==0,cuida:i%2===0,animo:i===4?'cansada':'normal'}}
+  return h;
 }
 var S;
 function guarda(){try{localStorage.setItem('siluetas-demo',JSON.stringify(S))}catch(e){}}
-function carga(){try{var t=localStorage.getItem('siluetas-demo');if(t){S=JSON.parse(t);return}}catch(e){}S=semilla()}
+function carga(){try{var t=localStorage.getItem('siluetas-demo');if(t){S=JSON.parse(t);if(!S.hist){S.hist=historialSemilla();S.semanaPlan=3}return}}catch(e){}S=semilla()}
 carga();
 
 /* ── Fechas: semana que viene y las 3 siguientes ───────────────────── */
@@ -299,12 +359,13 @@ var IC={
   perfil:'<svg viewBox="0 0 24 24"><circle cx="12" cy="8.5" r="3.5"/><path d="M5 20c.8-3.7 3.6-5.6 7-5.6s6.2 1.9 7 5.6"/></svg>',
   buscar:'<svg viewBox="0 0 24 24"><circle cx="11" cy="11" r="6"/><path d="m20 20-4.2-4.2"/></svg>',
   web:'<svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="8.5"/><path d="M3.5 12h17M12 3.5c2.4 2.6 3.6 5.4 3.6 8.5s-1.2 5.9-3.6 8.5c-2.4-2.6-3.6-5.4-3.6-8.5S9.6 6.1 12 3.5z"/></svg>',
-  propuestas:'<svg viewBox="0 0 24 24"><path d="M12 3.5 14.5 9l5.9.5-4.5 3.9 1.4 5.8L12 16.1l-5.3 3.1 1.4-5.8-4.5-3.9L9.5 9z"/></svg>'
+  propuestas:'<svg viewBox="0 0 24 24"><path d="M12 3.5 14.5 9l5.9.5-4.5 3.9 1.4 5.8L12 16.1l-5.3 3.1 1.4-5.8-4.5-3.9L9.5 9z"/></svg>',
+  cuidado:'<svg viewBox="0 0 24 24"><path d="M12 20s-7-4.4-7-10a4 4 0 0 1 7-2.6A4 4 0 0 1 19 10c0 5.6-7 10-7 10z"/></svg>'
 };
 var NAVS={
-  socia:[['inicio','Inicio'],['clases','Mis clases'],['grupo','Mi grupo'],['progreso','Progreso'],['perfil','Perfil']],
+  socia:[['inicio','Hoy'],['clases','Mis clases'],['grupo','Mi grupo'],['progreso','Progreso'],['perfil','Perfil']],
   nueva:[['buscar','Encuentra grupo'],['perfil','Perfil']],
-  carmen:[['inicio','Semana'],['propuestas','Propuestas'],['grupo','Grupos'],['web','Lo que ve la web']]
+  carmen:[['inicio','Semana'],['propuestas','Propuestas'],['cuidado','Cómo van'],['grupo','Grupos'],['web','La web']]
 };
 
 /* ── Pintar ───────────────────────────────────────────────────────── */
@@ -331,15 +392,35 @@ function misSesiones(id,semanas){
   }
   return out.filter(function(x){return x.s>0||x.d>=hoyDia});
 }
+function hoyIso(){return iso(new Date(new Date().setHours(0,0,0,0)))}
+function hoyReg(){var k=hoyIso();return S.hist[k]||(S.hist[k]={mov:false,cuida:false,animo:null})}
+function gestosHechos(r){return (r.mov?1:0)+(r.cuida?1:0)+(r.animo?1:0)}
+var SIL=null;fetch('../img/silueta.svg').then(function(x){return x.text()}).then(function(t){SIL=(t.match(/<path[^>]*>/g)||[]).join('');if(S.rol==='socia'&&S.vista==='inicio')pinta()}).catch(function(){});
+function silueta(frac){
+  if(!SIL)return '<div class="barra" style="--p:'+Math.round(frac*100)+'%"><i></i></div>';
+  var clip='inset('+Math.round((1-frac)*100)+'% 0 0 0)';
+  return '<svg viewBox="0 0 100 152" aria-hidden="true"><g class="base">'+SIL+'</g><g class="llena" style="clip-path:'+clip+'">'+SIL+'</g></svg>';
+}
+function rutinaDeHoy(){var d=(new Date().getDay()+6)%7;return d%2?'movilidad':'fuerza'}
+function cuidaDeHoy(){var d=(new Date().getDay()+6)%7;return d%2?'suelo':'piernas'}
+function claseHoy(){return misSesiones('lucia',1).filter(function(x){return x.s===0&&x.d===hoyDia&&!x.no&&x.tipo!=='masaje'})[0]}
+function diasCuidadosMes(){var n=0,base=new Date();base.setHours(0,0,0,0);for(var i=0;i<30;i++){var f=new Date(base);f.setDate(base.getDate()-i);var r=S.hist[iso(f)];if(r&&gestosHechos(r))n++}return n}
+function diasCuidadosSemana(){var n=0,base=new Date();base.setHours(0,0,0,0);var dd=(base.getDay()+6)%7;for(var i=0;i<=dd;i++){var f=new Date(base);f.setDate(base.getDate()-i);var r=S.hist[iso(f)];if(r&&gestosHechos(r))n++}return n}
+function fraseDia(n){return n===3?'Hoy lo has hecho bien. Tu silueta está completa.':n===2?'Te falta un gesto para completar el día.':n===1?'Buen comienzo. Un gesto más y vas lanzada.':'Un día cuenta. Empieza por lo que te apetezca.'}
 VISTAS.socia.inicio=function(){
-  var ss=misSesiones('lucia',2),prox=ss.filter(function(x){return !x.no})[0],g=S.grupos.g1;
-  var sem='';for(var d=0;d<5;d++){var en=ss.filter(function(x){return x.s===0&&x.d===d});sem+='<div class="dia'+(d===hoyDia?' hoy':'')+'"><small>'+DIAS[d]+'</small><b>'+fecha(0,d).getDate()+'</b><span class="pt">'+en.map(function(x){return '<i class="'+(x.no?'no':x.tipo==='masaje'?'m':'')+'"></i>'}).join('')+'</span></div>'}
-  return '<div class="tarjeta tinta"><small class="suave">Tu próxima clase</small><h1 style="margin:.3rem 0 .2rem">'+(prox?cap(fTxt(prox.s,prox.d))+' · '+prox.hora:'Nada esta semana')+'</h1>'+
-    '<p class="suave">'+(prox?(prox.tipo==='masaje'?prox.txt+' con Carmen':'Grupo '+S.grupos[prox.g].nombre.toLowerCase()+' · '+SITIO[S.grupos[prox.g].zona]):'')+'</p>'+
-    '<div class="acciones" style="margin-top:.9rem"><button class="btn arena peq" data-ir="clases">Cambiar o avisar</button><button class="btn peq linea" style="color:var(--arena);border-color:rgb(243 235 224/.5)" data-ir="grupo">Ver mi grupo</button></div></div>'+
-    '<div><h2 style="margin-bottom:.5rem">Esta semana</h2><div class="semana">'+sem+'</div><p class="suave" style="font-size:.8rem;margin-top:.4rem"><span class="chip v">● entreno</span> <span class="chip m">● masaje</span> <span class="chip">○ no vas</span></p></div>'+
-    '<div class="tarjeta camino"><h3>Entre clase y clase</h3><p class="suave" style="font-size:.9rem;margin-top:.2rem">Movilidad de cadera, 8 minutos. Te lo ha dejado Carmen para hoy.</p><div class="acciones" style="margin-top:.6rem"><button class="btn peq linea" data-toast="¡Hecho! Carmen lo verá en tu progreso.">Lo he hecho</button></div></div>'+
-    '<div class="tarjeta"><div class="fila entre"><div><h3>Tu fuerza</h3><small class="suave">Levantarte de la silla en 30 s</small></div><span class="punt">14</span></div><div class="barra" style="margin-top:.6rem;--p:70%"><i></i></div><small class="suave">+5 desde tu valoración del 6 de octubre</small></div>';
+  var r=hoyReg(),n=gestosHechos(r),cl=claseHoy(),rt=RUTINAS[rutinaDeHoy()],cu=RUTINAS[cuidaDeHoy()],sem=diasCuidadosSemana();
+  var h='<div class="tarjeta tinta"><div class="dia-hoy"><div class="sil-hoy">'+silueta(n/3)+'</div><div><small class="suave">Tu día · '+cap(DIASL[(new Date().getDay()+6)%7]||'hoy')+'</small><h1 style="margin:.25rem 0 .3rem;font-size:1.4rem">'+n+' de 3 gestos</h1><p class="suave" style="font-size:.92rem">'+fraseDia(n)+'</p></div></div></div>';
+  h+='<div class="gestos">'+
+    '<button class="gesto v'+(r.mov?' hecho':'')+'" '+(cl?'data-gesto="mov"':'data-rutina="'+rutinaDeHoy()+'"')+'><span class="ico">'+(r.mov?'✓':'1')+'</span><span class="t"><b>Muévete</b><small>'+(cl?'Tu clase de las '+cl.hora+' · márcala al volver':rt.t+' · '+rt.min+' min en casa')+'</small></span><span class="ir">'+(r.mov?'Hecho':cl?'Marcar':'Empezar')+'</span></button>'+
+    '<button class="gesto m'+(r.cuida?' hecho':'')+'" data-rutina="'+cuidaDeHoy()+'"><span class="ico">'+(r.cuida?'✓':'2')+'</span><span class="t"><b>Cuídate</b><small>'+cu.t+' · '+cu.min+' min</small></span><span class="ir">'+(r.cuida?'Hecho':'Empezar')+'</span></button>'+
+    '<div class="gesto e'+(r.animo?' hecho':'')+'" style="grid-template-columns:2.2rem 1fr"><span class="ico">'+(r.animo?'✓':'3')+'</span><span class="t"><b>¿Cómo te sientes hoy?</b><small>'+(r.animo?ANIMO[r.animo]+' · gracias por contármelo':'Diez segundos. Solo lo ve Carmen.')+'</small></span></div>'+
+    '<div class="animo">'+Object.keys(ANIMO).map(function(k){return '<button data-animo="'+k+'" aria-pressed="'+(r.animo===k)+'">'+ANIMO[k]+'</button>'}).join('')+'</div>'+
+  '</div>';
+  if(r.animo==='duele')h+='<div class="tarjeta" style="border-left:4px solid var(--rosa)"><h3>Cuéntaselo a Carmen</h3><p class="suave" style="font-size:.9rem;margin-top:.2rem">Si algo te duele, mejor no forzar. Escríbele y adaptáis la clase. Si es fuerte o no se te pasa, ve a tu médico.</p><div class="acciones" style="margin-top:.6rem"><a class="btn wa peq" href="https://wa.me/'+WA+'?text='+encodeURIComponent('Hola Mari Carmen, hoy me duele algo y quería contártelo antes de la clase.')+'">Escribir a Carmen</a></div></div>';
+  h+='<div class="tarjeta"><div class="fila entre"><div><h3>Esta semana te has cuidado</h3><small class="suave">'+(sem>=4?'Vas muy bien. Así se nota.':sem>=2?'Vas cogiendo el ritmo.':'Cada día que vuelves suma.')+'</small></div><span class="punt">'+sem+'<small>días</small></span></div></div>';
+  var ss=misSesiones('lucia',2),prox=ss.filter(function(x){return !x.no&&!(x.s===0&&x.d===hoyDia)})[0];
+  if(prox)h+='<button class="item" style="border:0;text-align:left;width:100%" data-ir="clases"><span class="hora"><small>'+DIAS[prox.d]+'</small><b>'+fecha(prox.s,prox.d).getDate()+'</b></span><span class="t"><b>Próxima: '+(prox.tipo==='masaje'?prox.txt:'grupo '+S.grupos[prox.g].nombre.toLowerCase())+'</b><small>'+prox.hora+' · toca para cambiar o avisar</small></span><span>›</span></button>';
+  return h;
 };
 function cap(t){return t.charAt(0).toUpperCase()+t.slice(1)}
 VISTAS.socia.clases=function(){
@@ -378,7 +459,18 @@ VISTAS.socia.grupo=function(){
    '<div class="tarjeta camino"><h3>¿Conoces a alguien?</h3><p class="suave" style="font-size:.9rem;margin-top:.2rem">Queda una plaza en tu grupo. Pásale el enlace y la app le dirá si encaja.</p><div class="acciones" style="margin-top:.6rem"><button class="btn peq linea" data-toast="Enlace copiado (demo).">Copiar invitación</button></div></div>';
 };
 VISTAS.socia.progreso=function(){
-  return '<div><h1>Tu progreso</h1><p class="suave" style="margin-top:.3rem">Desde tu valoración del 6 de octubre. Repetimos las pruebas cada 6 semanas.</p></div>'+
+  var sp=S.semanaPlan,fase=sp<=4?'Base':sp<=8?'Fuerza':'Confianza',plan='';for(var i=1;i<=12;i++)plan+='<i class="'+(i<sp?'ya':i===sp?'ahora':'')+'"></i>';
+  var cal='',base=new Date();base.setHours(0,0,0,0);var ini=new Date(base);ini.setDate(base.getDate()-27-((base.getDay()+6)%7)+((base.getDay()+6)%7));
+  var off=(ini.getDay()+6)%7;for(var k=0;k<off;k++)cal+='<i class="f"></i>';
+  for(var j=27;j>=0;j--){var f=new Date(base);f.setDate(base.getDate()-j);var rr=S.hist[iso(f)],g=rr?gestosHechos(rr):0;cal+='<i class="'+(g===3?'t':g===2?'d':g===1?'u':'')+(j===0?' hoy':'')+'" title="'+f.getDate()+'"></i>'}
+  var mes=diasCuidadosMes(),LOG=[['✓','Primera semana completa',true],['10','Diez días cuidándote',mes>=10],['+5','Cinco más en la prueba de la silla',true],['4','Cuatro semanas seguidas viniendo a clase',sp>=4],['★','Fase de fuerza',sp>=5]];
+  return '<div><h1>Tu progreso</h1><p class="suave" style="margin-top:.3rem">Poco a poco y sin prisa. Lo que cuenta es volver.</p></div>'+
+  '<div class="tarjeta"><div class="fila entre"><div><small class="suave">Tu plan de 12 semanas</small><h2>Semana '+sp+' · '+fase+'</h2></div><span class="chip v">'+Math.round(sp/12*100)+' %</span></div><div class="plan12">'+plan+'</div><div class="fases"><span>Base</span><span>Fuerza</span><span>Confianza</span></div>'+
+  '<p class="suave" style="font-size:.88rem;margin-top:.6rem">'+(fase==='Base'?'Ahora: aprender los movimientos y coger el hábito. En la semana 5 subimos la carga.':fase==='Fuerza'?'Ahora: más carga, poco a poco. Repetimos tus pruebas en la semana 8.':'Ahora: que lo que has construido se quede.')+'</p></div>'+
+  '<div class="tarjeta"><div class="fila entre"><div><h3>Días que te has cuidado</h3><small class="suave">Últimas 4 semanas. Un día sin entrar no borra nada.</small></div><span class="punt">'+mes+'<small>este mes</small></span></div><div class="mes-cuidado">'+cal+'</div><p class="suave" style="font-size:.75rem;margin-top:.4rem">Cuanto más oscuro, más gestos ese día.</p></div>'+
+  '<div class="tarjeta"><h3 style="margin-bottom:.6rem">Lo que vas consiguiendo</h3><div class="logros">'+LOG.map(function(l){return '<div class="logro'+(l[2]?'':' no')+'"><b class="i">'+l[0]+'</b>'+l[1]+'</div>'}).join('')+'</div></div>'+
+  '<div><h2 style="margin:.4rem 0 .5rem">Tus pruebas</h2></div>'+
+  '<p class="suave" style="font-size:.88rem;margin-top:-.6rem">Desde tu valoración del 6 de octubre. Repetimos las pruebas cada 6 semanas.</p>'+
   '<div class="dos"><div class="dato"><small class="suave">Cintura</small><b>84 cm</b><em>−3 cm</em></div><div class="dato"><small class="suave">Silla en 30 s</small><b>14</b><em>+5</em></div><div class="dato"><small class="suave">Equilibrio</small><b>22 s</b><em>+9 s</em></div><div class="dato"><small class="suave">Asistencia</small><b>92 %</b><em>11 de 12</em></div></div>'+
   '<div class="tarjeta"><h3>Silla en 30 segundos</h3><svg viewBox="0 0 300 110" style="width:100%;height:auto;margin-top:.5rem" role="img" aria-label="De 9 a 14 repeticiones en 6 semanas"><path d="M10 95 L60 88 L110 80 L160 66 L210 52 L260 40 L290 34" fill="none" stroke="#16A39A" stroke-width="4" stroke-linecap="round"/><g fill="#16323F" font-size="11" font-family="Figtree">'+[9,10,11,12,13,14].map(function(v,i){return '<text x="'+(10+i*50)+'" y="'+(110-(v-6)*8-16)+'">'+v+'</text>'}).join('')+'</g></svg><small class="suave">Datos de ejemplo</small></div>';
 };
@@ -469,6 +561,22 @@ VISTAS.carmen.propuestas=function(){
   });
   return h;
 };
+var EJ={ana:{sem:4},pilar:{sem:5},rosa:{sem:0,sin:6},marisa:{sem:3},conchi:{sem:2},inma:{sem:4},laura:{sem:5},sole:{sem:2,dolor:true},'carmen-r':{sem:3},mari:{sem:2},tere:{sem:4}};   // datos de ejemplo de la semana
+VISTAS.carmen.cuidado=function(){
+  var gente=Object.keys(S.gente).map(function(k){return S.gente[k]}).filter(function(p){return p.grupo});
+  var datos=gente.map(function(p,i){
+    if(p.id==='lucia'){var r=S.hist[hoyIso()]||{};return {p:p,sem:diasCuidadosSemana(),sin:0,dolor:r.animo==='duele'}}
+    var x=EJ[p.id]||{sem:1};return {p:p,sem:x.sem,sin:x.sin||0,dolor:!!x.dolor};
+  });
+  datos.sort(function(a,b){return (b.dolor-a.dolor)||(b.sin-a.sin)||(a.sem-b.sem)});
+  var necesitan=datos.filter(function(x){return x.dolor||x.sin}).length,medio=Math.round(datos.reduce(function(s,x){return s+x.sem},0)/datos.length*10)/10;
+  return '<div><h1>Cómo van</h1><p class="suave" style="margin-top:.3rem">Quién se está cuidando esta semana y a quién le vendría bien un mensaje tuyo. Sin perseguir a nadie.</p></div>'+
+   '<div class="dos"><div class="dato"><small class="suave">Media de días cuidándose</small><b>'+medio+'</b><em>esta semana</em></div><div class="dato"><small class="suave">Para escribirles</small><b>'+necesitan+'</b><em>'+(necesitan?'te necesitan':'todo bien')+'</em></div></div>'+
+   '<div class="lista">'+datos.map(function(x){var mini='';for(var i=0;i<5;i++)mini+='<i class="'+(i<x.sem?'si':'')+'"></i>';
+     var al=x.dolor?'<span class="alerta">Ha marcado que le duele algo</span>':x.sin?'<span class="alerta">Lleva '+x.sin+' días sin entrar</span>':'<small>'+(x.sem>=4?'Va muy bien':x.sem>=2?'Va cogiendo el ritmo':'Esta semana, poco')+'</small>';
+     return '<div class="va">'+av(x.p)+'<div><b>'+x.p.nombre+'</b><br>'+al+'</div>'+(x.dolor||x.sin?'<button class="btn peq wa" data-empuja="'+x.p.nombre+'">Escribirle</button>':'<span class="mini" aria-label="'+x.sem+' días">'+mini+'</span>')+'</div>'}).join('')+'</div>'+
+   '<div class="privado">Lo que marcan sobre cómo se sienten es dato de salud: solo lo ves tú, nunca sus compañeras.</div>';
+};
 VISTAS.carmen.grupo=function(){
   return '<div><h1>Tus grupos</h1><p class="suave" style="margin-top:.3rem">De 3 a 5 mujeres. Días fijos.</p></div><div class="lista">'+Object.keys(S.grupos).map(function(k){var g=S.grupos[k],m=miembros(k);
     return '<div class="tarjeta"><div class="fila entre"><div><h3>'+g.nombre+' · '+g.hora+'</h3><small class="suave">'+SITIO[g.zona]+' · ritmo '+RITMO[g.ritmo].toLowerCase()+'</small></div><span class="chip '+(m.length>=g.cupo?'m':'v')+'">'+m.length+'/'+g.cupo+'</span></div><div class="comp" style="margin-top:.6rem">'+m.map(function(id){var p=S.gente[id];return '<span class="p">'+av(p)+p.nombre+'</span>'}).join('')+'</div></div>'}).join('')+'</div>';
@@ -482,9 +590,23 @@ VISTAS.carmen.web=function(){
    '<div class="privado">Cuando una socia avisa de que no va, su plaza aparece libre ese día. Cuando apruebas un grupo nuevo, sus días aparecen aquí.</div>';
 };
 
+/* ── Reproductor de rutina ───────────────────────────────────────── */
+var PL={k:null,i:0,t:0,run:false,iv:null};
+function abreRutina(k){var r=RUTINAS[k];PL={k:k,i:0,t:r.pasos[0][1],run:false,iv:null};pintaPlayer()}
+function pintaPlayer(){var r=RUTINAS[PL.k],p=r.pasos[PL.i],sig=r.pasos[PL.i+1];
+  var m=Math.floor(PL.t/60),sg=PL.t%60;
+  hoja('<div class="player"><small class="suave">'+r.t+' · '+r.min+' min · paso '+(PL.i+1)+' de '+r.pasos.length+'</small><div class="bolas">'+r.pasos.map(function(x,i){return '<i class="'+(i<PL.i?'ya':i===PL.i?'ahora':'')+'"></i>'}).join('')+'</div>'+
+   '<div class="paso">'+p[0]+'</div><div class="reloj" aria-live="off">'+m+':'+String(sg).padStart(2,'0')+'</div>'+
+   '<p class="sig">'+(sig?'Después: '+sig[0]:'Es el último paso')+'</p>'+
+   '<div class="acciones" style="justify-content:center"><button class="btn" data-pl="play">'+(PL.run?'Pausa':PL.i===0&&PL.t===p[1]?'Empezar':'Seguir')+'</button><button class="btn linea" data-pl="next">'+(sig?'Siguiente':'Terminar')+'</button></div>'+
+   '<p class="suave" style="font-size:.8rem">Ve a tu ritmo. Si algo molesta, para y cuéntaselo a Carmen.</p><button class="reset" data-pl="salir" style="justify-self:center">Salir de la rutina</button></div>')}
+function tic(){PL.t--;if(PL.t<=0){avanza();return}var e=$('.player .reloj');if(e){var m=Math.floor(PL.t/60),sg=PL.t%60;e.textContent=m+':'+String(sg).padStart(2,'0')}}
+function avanza(){var r=RUTINAS[PL.k];if(PL.i<r.pasos.length-1){PL.i++;PL.t=r.pasos[PL.i][1];pintaPlayer()}else termina()}
+function termina(){clearInterval(PL.iv);PL.run=false;var r=RUTINAS[PL.k],reg=hoyReg();reg[r.tipo==='mov'?'mov':'cuida']=true;cierra();pinta();
+  var n=gestosHechos(reg);toast(n===3?'¡Día completo! Tu silueta está entera.':'¡Hecho! Tu silueta se ha llenado un poco más.')}
 /* ── Hoja inferior ────────────────────────────────────────────────── */
 function hoja(h){$('#hoja-panel').innerHTML=h;$('#hoja').hidden=false}
-function cierra(){$('#hoja').hidden=true}
+function cierra(){$('#hoja').hidden=true;if(PL&&PL.iv){clearInterval(PL.iv);PL.run=false}}
 
 /* ── Acciones ─────────────────────────────────────────────────────── */
 document.addEventListener('click',function(ev){
@@ -495,6 +617,13 @@ document.addEventListener('click',function(ev){
   if(d.demoWa!==undefined){ev.preventDefault();toast('En la app real, esto abre el grupo de WhatsApp.');return}
   if(d.cierra!==undefined||b===$('#hoja')){return cierra()}
   if(d.ses!==undefined)return abreSesion(+d.ses);
+  if(d.rutina)return abreRutina(d.rutina);
+  if(d.pl){if(d.pl==='play'){PL.run=!PL.run;clearInterval(PL.iv);if(PL.run)PL.iv=setInterval(tic,1000);return pintaPlayer()}
+    if(d.pl==='next'){clearInterval(PL.iv);PL.run=false;var rr=RUTINAS[PL.k];if(PL.i<rr.pasos.length-1){PL.i++;PL.t=rr.pasos[PL.i][1];return pintaPlayer()}return termina()}
+    if(d.pl==='salir')return cierra()}
+  if(d.gesto){hoyReg()[d.gesto]=true;toast('¡Bien! Clase hecha.');return pinta()}
+  if(d.animo){var reg=hoyReg();reg.animo=d.animo;toast(d.animo==='duele'?'Gracias por contarlo. Carmen lo verá.':'Gracias. Apuntado.');return pinta()}
+  if(d.empuja){toast('Se abre WhatsApp con '+d.empuja+' (demo).');return}
   if(d.falto){(S.ausencias[d.falto]=S.ausencias[d.falto]||[]).push('lucia');cierra();toast('Aviso enviado. Tu plaza queda libre ese día.');return pinta()}
   if(d.vuelvo){S.ausencias[d.vuelvo]=(S.ausencias[d.vuelvo]||[]).filter(function(x){return x!=='lucia'});cierra();toast('¡Genial! Cuenta contigo.');return pinta()}
   if(d.recupera){var a=d.recupera.split('|'),orig=a.slice(0,3).join('|'),nk=clave(a[3],+a[1],+a[4]);(S.ausencias[orig]=S.ausencias[orig]||[]).push('lucia');(S.recuperas[nk]=S.recuperas[nk]||[]).push('lucia');cierra();toast('Hecho: recuperas el '+fTxt(+a[1],+a[4])+'.');return pinta()}
