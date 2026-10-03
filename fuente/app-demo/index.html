@@ -189,6 +189,32 @@ small{font-size:.82rem}
 .va .mini i.si{background:var(--turq)}
 .va small{color:var(--suave)}
 .alerta{font-size:.78rem;font-weight:700;color:#7A4B00}
+/* Con Carmen: directo y correcciones */
+.con-carmen{display:grid;gap:.5rem}
+.fila-c{display:grid;grid-template-columns:2.6rem 1fr auto;gap:.75rem;align-items:center;padding:.75rem .85rem;background:var(--blanco);border-radius:12px;border:0;text-align:left;width:100%}
+.fila-c .ico{width:2.6rem;height:2.6rem;border-radius:10px;display:grid;place-items:center;background:var(--arena)}
+.fila-c .ico svg{width:22px;height:22px;fill:none;stroke:var(--tinta);stroke-width:1.9;stroke-linecap:round;stroke-linejoin:round}
+.fila-c b{display:block;font-size:.95rem}.fila-c small{color:var(--suave)}
+.vivo{display:inline-flex;align-items:center;gap:.35rem;font-size:.72rem;font-weight:800;color:#fff;background:#C62828;padding:.15rem .5rem;border-radius:4px}
+.vivo::before{content:"";width:.45rem;height:.45rem;border-radius:50%;background:#fff;animation:late 1.2s infinite}
+@keyframes late{50%{opacity:.25}}
+@media (prefers-reduced-motion:reduce){.vivo::before{animation:none}}
+.pantalla{position:relative;border-radius:12px;overflow:hidden;background:#000;aspect-ratio:9/12}
+.pantalla video,.pantalla img{width:100%;height:100%;object-fit:cover;display:block}
+.pantalla.ancha{aspect-ratio:16/9}
+.pantalla .play{position:absolute;inset:0;display:grid;place-items:center;background:linear-gradient(to top,rgb(22 50 63/.7),rgb(22 50 63/.1));color:#fff;border:0;font-weight:700}
+.pantalla .play span{width:3.4rem;height:3.4rem;border-radius:50%;background:rgb(243 235 224/.92);color:var(--tinta);display:grid;place-items:center;font-size:1.3rem}
+.pantalla .cinta{position:absolute;left:.6rem;bottom:.6rem;color:#fff;font-size:.78rem;font-weight:700;text-shadow:0 1px 2px #000}
+.consejos{display:grid;gap:.3rem;font-size:.88rem}
+.consejos div{display:flex;gap:.5rem}.consejos div::before{content:"·";font-weight:800;color:var(--rosa-t)}
+.nota{display:grid;grid-template-columns:auto 1fr auto;gap:.6rem;align-items:center;background:var(--arena);border-radius:999px;padding:.35rem .9rem .35rem .35rem}
+.nota button{width:2.3rem;height:2.3rem;border-radius:50%;border:0;background:var(--tinta);color:var(--arena);font-weight:800}
+.onda{display:flex;align-items:center;gap:2px;height:1.6rem}
+.onda i{flex:1;background:var(--turq-t);border-radius:2px;opacity:.7}
+.rapidas{display:flex;flex-wrap:wrap;gap:.35rem}
+.rapidas button{border:1.5px solid var(--regla);background:var(--blanco);border-radius:999px;padding:.4rem .75rem;font-size:.85rem;font-weight:650}
+.rapidas button[aria-pressed=true]{background:var(--tinta);color:var(--arena);border-color:var(--tinta)}
+.grabando{color:#C62828;font-weight:800}
 </style>
 </head>
 <body>
@@ -264,7 +290,13 @@ function semilla(){
     rol:'socia',vista:'inicio',
     nueva:{paso:0,zona:null,edad:null,ritmo:null,obj:[],disp:[]},
     masajes:{lucia:[{sem:0,dia:4,hora:'17:00',tipo:'Maderoterapia'}]},
-    hist:historialSemilla(),semanaPlan:3
+    hist:historialSemilla(),semanaPlan:3,
+    videos:[
+      {id:'v1',de:'lucia',ej:'Sentadilla a cajón',dias:9,dur:18,estado:'corregido',rapida:['Baja más despacio','Rodillas hacia fuera'],texto:'Muy bien la espalda, Lucía. Baja contando hasta tres y empuja las rodillas un pelín hacia fuera.'},
+      {id:'v2',de:'ana',ej:'Puente de glúteo',dias:1,dur:22,estado:'pendiente'},
+      {id:'v3',de:'sole',ej:'Remo con goma',dias:0,dur:15,estado:'pendiente'}
+    ],
+    directo:{apuntadas:['ana','pilar','rosa','marisa','inma','tere']}
   };
 }
 var RUTINAS={
@@ -283,7 +315,7 @@ function historialSemilla(){ // los últimos 24 días de Lucía (y un poco de la
 }
 var S;
 function guarda(){try{localStorage.setItem('siluetas-demo',JSON.stringify(S))}catch(e){}}
-function carga(){try{var t=localStorage.getItem('siluetas-demo');if(t){S=JSON.parse(t);if(!S.hist){S.hist=historialSemilla();S.semanaPlan=3}return}}catch(e){}S=semilla()}
+function carga(){try{var t=localStorage.getItem('siluetas-demo');if(t){S=JSON.parse(t);if(!S.hist){S.hist=historialSemilla();S.semanaPlan=3}if(!S.videos){var x=semilla();S.videos=x.videos;S.directo=x.directo}return}}catch(e){}S=semilla()}
 carga();
 
 /* ── Fechas: semana que viene y las 3 siguientes ───────────────────── */
@@ -360,12 +392,14 @@ var IC={
   buscar:'<svg viewBox="0 0 24 24"><circle cx="11" cy="11" r="6"/><path d="m20 20-4.2-4.2"/></svg>',
   web:'<svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="8.5"/><path d="M3.5 12h17M12 3.5c2.4 2.6 3.6 5.4 3.6 8.5s-1.2 5.9-3.6 8.5c-2.4-2.6-3.6-5.4-3.6-8.5S9.6 6.1 12 3.5z"/></svg>',
   propuestas:'<svg viewBox="0 0 24 24"><path d="M12 3.5 14.5 9l5.9.5-4.5 3.9 1.4 5.8L12 16.1l-5.3 3.1 1.4-5.8-4.5-3.9L9.5 9z"/></svg>',
-  cuidado:'<svg viewBox="0 0 24 24"><path d="M12 20s-7-4.4-7-10a4 4 0 0 1 7-2.6A4 4 0 0 1 19 10c0 5.6-7 10-7 10z"/></svg>'
+  cuidado:'<svg viewBox="0 0 24 24"><path d="M12 20s-7-4.4-7-10a4 4 0 0 1 7-2.6A4 4 0 0 1 19 10c0 5.6-7 10-7 10z"/></svg>',
+  videos:'<svg viewBox="0 0 24 24"><rect x="3" y="6" width="13" height="12" rx="2"/><path d="m16 10 5-3v10l-5-3z"/></svg>',
+  directo:'<svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="2.5"/><path d="M7.8 7.8a6 6 0 0 0 0 8.4M16.2 7.8a6 6 0 0 1 0 8.4M5 5a10 10 0 0 0 0 14M19 5a10 10 0 0 1 0 14"/></svg>'
 };
 var NAVS={
   socia:[['inicio','Hoy'],['clases','Mis clases'],['grupo','Mi grupo'],['progreso','Progreso'],['perfil','Perfil']],
   nueva:[['buscar','Encuentra grupo'],['perfil','Perfil']],
-  carmen:[['inicio','Semana'],['propuestas','Propuestas'],['cuidado','Cómo van'],['grupo','Grupos'],['web','La web']]
+  carmen:[['inicio','Semana'],['propuestas','Propuestas'],['cuidado','Cómo van'],['videos','Vídeos'],['grupo','Grupos'],['web','La web']]
 };
 
 /* ── Pintar ───────────────────────────────────────────────────────── */
@@ -417,6 +451,7 @@ VISTAS.socia.inicio=function(){
     '<div class="animo">'+Object.keys(ANIMO).map(function(k){return '<button data-animo="'+k+'" aria-pressed="'+(r.animo===k)+'">'+ANIMO[k]+'</button>'}).join('')+'</div>'+
   '</div>';
   if(r.animo==='duele')h+='<div class="tarjeta" style="border-left:4px solid var(--rosa)"><h3>Cuéntaselo a Carmen</h3><p class="suave" style="font-size:.9rem;margin-top:.2rem">Si algo te duele, mejor no forzar. Escríbele y adaptáis la clase. Si es fuerte o no se te pasa, ve a tu médico.</p><div class="acciones" style="margin-top:.6rem"><a class="btn wa peq" href="https://wa.me/'+WA+'?text='+encodeURIComponent('Hola Mari Carmen, hoy me duele algo y quería contártelo antes de la clase.')+'">Escribir a Carmen</a></div></div>';
+  h+=conCarmen();
   h+='<div class="tarjeta"><div class="fila entre"><div><h3>Esta semana te has cuidado</h3><small class="suave">'+(sem>=4?'Vas muy bien. Así se nota.':sem>=2?'Vas cogiendo el ritmo.':'Cada día que vuelves suma.')+'</small></div><span class="punt">'+sem+'<small>días</small></span></div></div>';
   var ss=misSesiones('lucia',2),prox=ss.filter(function(x){return !x.no&&!(x.s===0&&x.d===hoyDia)})[0];
   if(prox)h+='<button class="item" style="border:0;text-align:left;width:100%" data-ir="clases"><span class="hora"><small>'+DIAS[prox.d]+'</small><b>'+fecha(prox.s,prox.d).getDate()+'</b></span><span class="t"><b>Próxima: '+(prox.tipo==='masaje'?prox.txt:'grupo '+S.grupos[prox.g].nombre.toLowerCase())+'</b><small>'+prox.hora+' · toca para cambiar o avisar</small></span><span>›</span></button>';
@@ -590,6 +625,82 @@ VISTAS.carmen.web=function(){
    '<div class="privado">Cuando una socia avisa de que no va, su plaza aparece libre ese día. Cuando apruebas un grupo nuevo, sus días aparecen aquí.</div>';
 };
 
+/* ── Con Carmen: vídeos de técnica, notas de voz y directo ───────────
+   En la demo el vídeo y la voz NO salen del navegador: se guardan en memoria
+   (URL.createObjectURL) y se pierden al recargar. En la app real irían a un
+   almacenamiento privado con enlaces que caducan y borrado a los 60 días. */
+var BLOB={};   // id → {video:url, voz:url}
+var EJS=['Sentadilla a cajón','Remo con goma','Puente de glúteo','Flexión en la pared','Zancada atrás con apoyo'];
+var RAPIDAS=['¡Así, perfecto!','Baja más despacio','Rodillas hacia fuera','Espalda larga','Respira al subir','Más rango, sin dolor'];
+function directoInfo(){ // el directo: jueves a las 19:00, 30 minutos
+  var ahora=new Date(),d=(ahora.getDay()+6)%7,min=ahora.getHours()*60+ahora.getMinutes();
+  var enVivo=d===3&&min>=19*60&&min<19*60+30;
+  var dias=(3-d+7)%7;if(dias===0&&min>=19*60+30)dias=7;var f=new Date(ahora);f.setDate(ahora.getDate()+dias);
+  return {enVivo:enVivo,txt:enVivo?'Ahora · fuerza en casa':(dias===0?'Hoy':dias===1?'Mañana':cap(DIASL[3]))+' '+f.getDate()+' '+MES[f.getMonth()]+' · 19:00',apuntada:S.directo.apuntadas.indexOf('lucia')>=0};
+}
+function conCarmen(){
+  var di=directoInfo(),mis=S.videos.filter(function(v){return v.de==='lucia'}),pend=mis.filter(function(v){return v.estado==='pendiente'}).length,nueva=mis.filter(function(v){return v.estado==='corregido'&&!v.vista}).length;
+  return '<div><h2 style="margin:.4rem 0 .5rem">Con Carmen</h2><div class="con-carmen">'+
+   '<button class="fila-c" data-abre="directo"><span class="ico">'+IC.directo+'</span><span><b>Clase en directo '+(di.enVivo?'<span class="vivo">EN DIRECTO</span>':'')+'</b><small>'+di.txt+' · 30 min · '+(di.apuntada?'te has apuntado':S.directo.apuntadas.length+' apuntadas')+'</small></span><span>›</span></button>'+
+   '<button class="fila-c" data-abre="grabar"><span class="ico">'+IC.videos+'</span><span><b>Carmen te corrige</b><small>'+(nueva?'Tienes '+nueva+(nueva>1?' correcciones nuevas':' corrección nueva'):pend?'Carmen está viendo tu vídeo':'Grábate 30 segundos y te dice cómo mejorarlo')+'</small></span><span>'+(nueva?'<span class="chip m">Nueva</span>':'›')+'</span></button>'+
+   '<button class="fila-c" data-abre="correcciones"><span class="ico">'+IC.progreso+'</span><span><b>Tus correcciones</b><small>'+mis.length+' vídeo'+(mis.length!==1?'s':'')+' · se borran a los 60 días</small></span><span>›</span></button>'+
+  '</div></div>';
+}
+function hojaDirecto(){
+  var di=directoInfo();
+  hoja('<h2>Clase en directo</h2><p class="suave">'+di.txt+' · 30 minutos · fuerza en casa con Carmen. Solo necesitas una silla y una goma (o dos botellas de agua).</p>'+
+   '<div class="pantalla ancha"><img src="../img/fotos/entreno-640.webp" alt=""><button class="play" data-demo-play><span>▶</span></button><span class="cinta">Grabación del jueves pasado · 31 min</span></div>'+
+   '<div class="acciones">'+(di.enVivo?'<button class="btn" data-entra>Entrar al directo</button>':'<button class="btn" data-apunta>'+(di.apuntada?'Ya estás apuntada ✓':'Apuntarme')+'</button>')+'<button class="btn linea" data-cierra>Cerrar</button></div>'+
+   '<div class="privado">Tu cámara es opcional: puedes entrar solo con la de Carmen. Solo se graba a Carmen, nunca a vosotras.</div>');
+}
+function hojaGrabar(){
+  hoja('<h2>Carmen te corrige</h2><p class="suave">Elige el ejercicio, grábate unos segundos y Carmen te responde con una nota de voz en menos de 48 horas.</p>'+
+   '<div class="rapidas" id="ej">'+EJS.map(function(e,i){return '<button data-ej="'+i+'" aria-pressed="'+(i===0)+'">'+e+'</button>'}).join('')+'</div>'+
+   '<div class="tarjeta"><h3 style="margin-bottom:.4rem">Para que te vea bien</h3><div class="consejos"><div>Apoya el móvil de lado, a la altura de la cadera</div><div>Que se te vea entera, de la cabeza a los pies</div><div>Haz 3 o 4 repeticiones despacio · 30 segundos como mucho</div></div></div>'+
+   '<label class="btn" style="cursor:pointer">Grabar o elegir vídeo<input type="file" accept="video/*" capture="environment" id="cam" hidden></label>'+
+   '<div id="prev"></div>'+
+   '<div class="privado">Tu vídeo solo lo ve Carmen. Se borra solo a los 60 días. En esta demo no sale de tu móvil.</div><button class="btn linea" data-cierra>Cerrar</button>');
+}
+function hojaCorrecciones(){
+  var mis=S.videos.filter(function(v){return v.de==='lucia'}).slice().reverse();
+  hoja('<h2>Tus correcciones</h2>'+(mis.length?mis.map(function(v){var b=BLOB[v.id]||{};v.vista=v.estado==='corregido'?true:v.vista;
+    return '<div class="tarjeta"><div class="fila entre"><div><b>'+v.ej+'</b><br><small class="suave">'+(v.dias===0?'Hoy':v.dias===1?'Ayer':'Hace '+v.dias+' días')+' · '+v.dur+' s</small></div>'+(v.estado==='corregido'?'<span class="chip v">Corregido</span>':'<span class="chip aviso">Carmen lo está viendo</span>')+'</div>'+
+     (b.video?'<div class="pantalla" style="margin-top:.6rem;max-height:14rem"><video src="'+b.video+'" controls playsinline></video></div>':'')+
+     (v.estado==='corregido'?'<div style="margin-top:.7rem;display:grid;gap:.5rem">'+nota(v)+(v.rapida?'<div class="rapidas">'+v.rapida.map(function(r){return '<span class="chip">'+r+'</span>'}).join('')+'</div>':'')+(v.texto?'<p class="suave" style="font-size:.9rem">«'+esc(v.texto)+'»</p>':'')+'</div>':'')+'</div>'}).join(''):'<div class="vacio">Todavía no has enviado ningún vídeo.</div>')+
+   '<button class="btn linea" data-cierra>Cerrar</button>');guarda();
+}
+function nota(v){var b=BLOB[v.id]||{},on='';for(var i=0;i<28;i++)on+='<i style="height:'+(25+Math.round(Math.abs(Math.sin(i*1.7+v.id.length))*75))+'%"></i>';
+  return '<div class="nota"><button data-voz="'+v.id+'" aria-label="Escuchar la nota de voz de Carmen">▶</button><span class="onda">'+on+'</span><small class="suave">'+(b.voz?'Carmen':'0:12')+'</small></div>'+(b.voz?'':'<small class="suave" style="font-size:.72rem">Voz de ejemplo leída por el móvil. En la app real, la de Carmen.</small>')}
+function reproduceVoz(id){var v=S.videos.filter(function(x){return x.id===id})[0],b=BLOB[id]||{};
+  if(b.voz){var a=new Audio(b.voz);a.play();return}
+  if('speechSynthesis' in window){speechSynthesis.cancel();var u=new SpeechSynthesisUtterance(v.texto||((v.rapida||[]).join('. ')));u.lang='es-ES';u.rate=1;speechSynthesis.speak(u)}else toast('Tu navegador no puede leer la nota en voz alta.')}
+/* Grabadora de voz de Carmen (micrófono real, solo en esta sesión) */
+var REC={mr:null,partes:[],id:null};
+function grabaVoz(id,btn){
+  if(REC.mr&&REC.mr.state==='recording'){REC.mr.stop();return}
+  if(!navigator.mediaDevices||!window.MediaRecorder){toast('Este navegador no puede grabar audio. Usa las respuestas rápidas.');return}
+  navigator.mediaDevices.getUserMedia({audio:true}).then(function(st){
+    REC={mr:new MediaRecorder(st),partes:[],id:id};REC.mr.ondataavailable=function(e){REC.partes.push(e.data)};
+    REC.mr.onstop=function(){st.getTracks().forEach(function(t){t.stop()});var url=URL.createObjectURL(new Blob(REC.partes,{type:REC.mr.mimeType||'audio/webm'}));(BLOB[REC.id]=BLOB[REC.id]||{}).voz=url;toast('Nota de voz lista. Pulsa «Enviar corrección».');pinta()};
+    REC.mr.start();btn.textContent='■ Parar';btn.classList.add('grabando');toast('Grabando… habla con naturalidad.');
+  }).catch(function(){toast('Sin permiso de micrófono. Puedes usar las respuestas rápidas.')});
+}
+VISTAS.carmen.videos=function(){
+  var di=directoInfo(),pend=S.videos.filter(function(v){return v.estado==='pendiente'}),hechos=S.videos.filter(function(v){return v.estado==='corregido'});
+  var h='<div><h1>Vídeos</h1><p class="suave" style="margin-top:.3rem">Tu directo de la semana y los vídeos que te han mandado para corregir.</p></div>'+
+   '<div class="tarjeta tinta"><div class="fila entre"><div><small class="suave">Tu directo</small><h2>'+di.txt+'</h2><small class="suave">'+S.directo.apuntadas.length+' apuntadas · se graba solo tu cámara</small></div>'+(di.enVivo?'<span class="vivo">EN DIRECTO</span>':'')+'</div><div class="acciones" style="margin-top:.8rem"><button class="btn arena peq" data-entra>'+(di.enVivo?'Abrir la sala':'Probar la sala')+'</button><button class="btn peq linea" style="color:var(--arena);border-color:rgb(243 235 224/.5)" data-toast="En la app real: subes la grabación y aparece en la app de todas.">Subir la grabación</button></div></div>'+
+   '<h2 style="margin-top:.4rem">Por corregir · '+pend.length+'</h2>';
+  if(!pend.length)h+='<div class="vacio">Todo corregido. Buen trabajo.</div>';
+  pend.forEach(function(v){var p=S.gente[v.de]||{nombre:'?',col:'#16323F'},b=BLOB[v.id]||{};
+    h+='<div class="tarjeta"><div class="fila">'+av(p)+'<div><b>'+p.nombre+' · '+v.ej+'</b><br><small class="suave">'+(v.dias===0?'Hoy':v.dias===1?'Ayer':'Hace '+v.dias+' días')+' · '+v.dur+' s</small></div></div>'+
+     '<div class="pantalla" style="margin-top:.6rem;max-height:15rem">'+(b.video?'<video src="'+b.video+'" controls playsinline></video>':'<img src="../img/fotos/'+(v.ej.indexOf('Remo')>=0?'grupo':'entreno')+'-640.webp" alt=""><button class="play" data-demo-play><span>▶</span></button>')+'</div>'+
+     '<p class="suave" style="font-size:.85rem;margin:.7rem 0 .4rem">Respuestas rápidas</p><div class="rapidas">'+RAPIDAS.map(function(r){return '<button data-rapida="'+v.id+'|'+r+'" aria-pressed="'+((v.rapida||[]).indexOf(r)>=0)+'">'+r+'</button>'}).join('')+'</div>'+
+     '<div class="acciones" style="margin-top:.7rem"><button class="btn linea peq" data-grabavoz="'+v.id+'">'+(b.voz?'↻ Repetir nota de voz':'● Grabar nota de voz')+'</button><button class="btn peq" data-corrige="'+v.id+'" '+((v.rapida&&v.rapida.length)||b.voz?'':'disabled')+'>Enviar corrección</button></div>'+
+     (b.voz?'<div style="margin-top:.5rem">'+nota(v)+'</div>':'')+'</div>'});
+  h+='<p class="suave" style="font-size:.85rem">Corregidos esta semana: '+hechos.length+'. Tiempo medio por vídeo: unos 2 minutos.</p>'+
+   '<div class="privado">Los vídeos son privados: solo los veis tú y cada socia. Se borran solos a los 60 días.</div>';
+  return h;
+};
 /* ── Reproductor de rutina ───────────────────────────────────────── */
 var PL={k:null,i:0,t:0,run:false,iv:null};
 function abreRutina(k){var r=RUTINAS[k];PL={k:k,i:0,t:r.pasos[0][1],run:false,iv:null};pintaPlayer()}
@@ -618,6 +729,18 @@ document.addEventListener('click',function(ev){
   if(d.cierra!==undefined||b===$('#hoja')){return cierra()}
   if(d.ses!==undefined)return abreSesion(+d.ses);
   if(d.rutina)return abreRutina(d.rutina);
+  if(d.abre==='directo')return hojaDirecto();
+  if(d.abre==='grabar')return hojaGrabar();
+  if(d.abre==='correcciones')return hojaCorrecciones();
+  if(d.ej!==undefined){$$('#ej button').forEach(function(x){x.setAttribute('aria-pressed',x===b)});return}
+  if(d.apunta!==undefined){if(S.directo.apuntadas.indexOf('lucia')<0)S.directo.apuntadas.push('lucia');toast('Apuntada. Te avisamos 10 minutos antes.');guarda();return hojaDirecto()}
+  if(d.entra!==undefined){toast('En la app real se abre la sala de vídeo (Google Meet o Zoom).');return}
+  if(d.demoPlay!==undefined){toast('En la app real aquí se ve el vídeo.');return}
+  if(d.envia){var v={id:'v'+Date.now(),de:'lucia',ej:d.envia,dias:0,dur:+b.dataset.dur||20,estado:'pendiente'};BLOB[v.id]={video:VID.url};S.videos.push(v);VID={};cierra();toast('Enviado. Carmen te contesta en menos de 48 horas.');return pinta()}
+  if(d.voz)return reproduceVoz(d.voz);
+  if(d.rapida){var a2=d.rapida.split('|'),vv=S.videos.filter(function(x){return x.id===a2[0]})[0];vv.rapida=vv.rapida||[];var ix=vv.rapida.indexOf(a2[1]);ix>=0?vv.rapida.splice(ix,1):vv.rapida.push(a2[1]);return pinta()}
+  if(d.grabavoz)return grabaVoz(d.grabavoz,b);
+  if(d.corrige){var vc=S.videos.filter(function(x){return x.id===d.corrige})[0];vc.estado='corregido';vc.vista=false;if(!vc.texto&&!(BLOB[vc.id]||{}).voz){var tx=(vc.rapida||[]).join('. ');vc.texto=/[.!?]$/.test(tx)?tx:tx+'.'}toast('Corrección enviada a '+((S.gente[vc.de]||{}).nombre||'la socia')+'.');return pinta()}
   if(d.pl){if(d.pl==='play'){PL.run=!PL.run;clearInterval(PL.iv);if(PL.run)PL.iv=setInterval(tic,1000);return pintaPlayer()}
     if(d.pl==='next'){clearInterval(PL.iv);PL.run=false;var rr=RUTINAS[PL.k];if(PL.i<rr.pasos.length-1){PL.i++;PL.t=rr.pasos[PL.i][1];return pintaPlayer()}return termina()}
     if(d.pl==='salir')return cierra()}
@@ -645,6 +768,17 @@ document.addEventListener('click',function(ev){
     S.aprobadas.push(pr.clave);toast('Grupo creado. La app les presenta y les manda el enlace de WhatsApp.');return pinta()}
 });
 $('#hoja').addEventListener('click',function(e){if(e.target.id==='hoja')cierra()});
+var VID={};
+document.addEventListener('change',function(e){if(e.target.id!=='cam'||!e.target.files[0])return;
+  var f=e.target.files[0],url=URL.createObjectURL(f),ej=($('#ej [aria-pressed=true]')||{}).textContent||EJS[0];VID={url:url};
+  // vista previa al momento; la duración se completa cuando el vídeo la da (en webm grabado puede venir como «infinita»)
+  $('#prev').innerHTML='<div class="pantalla" style="max-height:16rem"><video src="'+url+'" controls playsinline preload="metadata"></video></div>'+
+   '<p class="suave" id="prev-dato" style="font-size:.85rem;margin:.5rem 0">'+esc(ej)+' · '+(f.size/1048576).toFixed(1)+' MB</p>'+
+   '<button class="btn" id="prev-env" data-envia="'+esc(ej)+'" data-dur="20">Enviar a Carmen</button>';
+  var v=$('#prev video');v.addEventListener('loadedmetadata',function(){var dur=v.duration;if(!isFinite(dur)||!dur)return;dur=Math.round(dur);
+    $('#prev-dato').textContent=ej+' · '+dur+' s · '+(f.size/1048576).toFixed(1)+' MB';var bt=$('#prev-env');bt.dataset.dur=dur;
+    if(dur>31){bt.disabled=true;bt.insertAdjacentHTML('beforebegin','<p class="alerta">Dura más de 30 segundos. Recórtalo o graba otro más corto.</p>')}});
+  v.addEventListener('error',function(){$('#prev-dato').textContent='No se ha podido leer el vídeo. Prueba a grabarlo de nuevo.'})});
 $('#reset').addEventListener('click',function(){S=semilla();try{localStorage.removeItem('siluetas-demo')}catch(e){}cierra();pinta();toast('Demo reiniciada.')});
 (function(){var h=location.hash.replace('#','').split('/');if(NAVS[h[0]]){S.rol=h[0];S.vista=h[1]&&NAVS[h[0]].some(function(x){return x[0]===h[1]})?h[1]:NAVS[h[0]][0][0]}})();   // #carmen, #socia, #nueva (o #carmen/propuestas)
 pinta();
