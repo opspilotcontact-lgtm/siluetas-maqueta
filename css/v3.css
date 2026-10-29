@@ -76,7 +76,7 @@ p{margin:0 0 1rem;max-width:62ch}
 /* ── Portada: la firma ─────────────────────────────── */
 .portada{padding:clamp(1.5rem,4vh,3rem) 0 clamp(2.5rem,5vh,3.5rem)}
 .firma{display:grid;grid-template-columns:1fr auto 1fr;align-items:center;gap:clamp(1rem,3vw,3rem);max-width:84rem;margin:0 auto;padding:0 clamp(1rem,3vw,2rem)}
-.firma h1{display:contents}
+.firma h1,.firma .firma-t{display:contents;margin:0}
 .lado{display:grid;gap:.9rem;font-size:clamp(2.5rem,5.6vw,5.4rem);line-height:.98;font-weight:780;letter-spacing:-.03em}
 .lado.izq{justify-items:end;text-align:right}
 .lado small{display:flex;align-items:center;gap:.7rem;font-size:clamp(.9rem,1.2vw,1.05rem);font-weight:600;letter-spacing:0;line-height:1.2}
@@ -244,6 +244,8 @@ p{margin:0 0 1rem;max-width:62ch}
   .js .sube{opacity:0;transform:translateY(14px);transition:opacity .7s var(--ease),transform .7s var(--ease)}
   .js .sube.visto{opacity:1;transform:none}
 }
+
+.h1-seo{font-size:clamp(1.15rem,2.2vw,1.45rem);font-weight:700;line-height:1.25;margin:0;max-width:40rem}
 
 /* ── v4 · MÓDULOS ─────────────────────────────────────────────────────────
    El sistema no cambia (mismos tokens, misma letra, el camino).

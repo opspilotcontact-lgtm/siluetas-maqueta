@@ -12,6 +12,7 @@ Datos reales: Figueras Wellness (precios), audios de Carmen del 30-sep
 Fotos: generadas con Gemini el 1-oct, provisionales e «ilustrativas».
 """
 import html
+import json
 import re
 import pathlib
 import shutil
@@ -332,14 +333,15 @@ def portada():
     cuerpo = f'''
 <section class="portada">
   <div class="firma">
-    <h1>
+    <p class="firma-t">
       <span class="lado izq">Tu silueta, por fuera<small>con las manos</small></span>
       <span class="sil" aria-hidden="true">{SIL}<span class="tapa"></span></span>
       <span class="lado der">y por dentro.<small>con el movimiento</small></span>
-    </h1>
+    </p>
   </div>
   <div class="bajo">
-    <p class="lead">Soy Mari Carmen. Hago masaje, maderoterapia y entrenamiento para mujeres en Córdoba, en mi sala o en tu casa. Y antes de nada, te escucho.</p>
+    <h1 class="h1-seo">Entrenadora personal para mujeres, maderoterapia y masajes en Córdoba</h1>
+    <p class="lead">Soy Mari Carmen. Entreno a mujeres a partir de los 30 y hago maderoterapia y masajes, en mi sala o en tu casa. La primera valoración es gratis.</p>
     <div class="acciones"><a class="btn" href="#empieza">Empieza por aquí</a><a class="btn linea" href="{wa('Hola Mari Carmen, quiero mi valoración gratuita')}">Pedir valoración gratis</a></div>
     <p class="dato">Lunes a viernes, de 10:00 a 20:00 · Córdoba capital</p>
   </div>
@@ -408,17 +410,18 @@ def portada():
 
 {semana(b, 'indiv', 'Arma tus 4 semanas conmigo.')}'''
     ld = ('<script type="application/ld+json">{"@context":"https://schema.org","@type":"HealthAndBeautyBusiness","name":"Siluetas de Mujer",'
-          '"founder":{"@type":"Person","name":"Mari Carmen Figueras"},"description":"Masaje, maderoterapia y entrenamiento para mujeres en Córdoba, en sala o a domicilio.",'
+          '"founder":{"@type":"Person","name":"Mari Carmen Figueras"},"description":"Entrenadora personal para mujeres desde los 30, maderoterapia y masajes en Córdoba, en sala o a domicilio.",'
           '"url":"https://siluetasdemujer.es/","image":"https://siluetasdemujer.es/img/fotos/maderoterapia-1200.webp","priceRange":"35-65 €","telephone":"+34646437371","areaServed":{"@type":"City","name":"Córdoba"},"address":{"@type":"PostalAddress","addressLocality":"Córdoba","addressCountry":"ES"},'
           '"openingHoursSpecification":[{"@type":"OpeningHoursSpecification","dayOfWeek":["Monday","Tuesday","Wednesday","Thursday","Friday"],"opens":"10:00","closes":"20:00"}]}</script>')
-    return pagina('', 'Siluetas de Mujer · Masaje, maderoterapia y entrenamiento para mujeres en Córdoba',
-                  'Mari Carmen Figueras: masaje, maderoterapia y entrenamiento para mujeres en Córdoba, en su sala o a domicilio. Valoración gratis y un plan hecho para ti.',
+    return pagina('', 'Entrenadora personal para mujeres y maderoterapia en Córdoba',
+                  'Entrenamiento personal para mujeres desde los 30, maderoterapia desde 40 € y masajes desde 35 € en Córdoba, en sala o a domicilio. Valoración gratis.',
                   cuerpo, extra_js=MAPA_JS, ld=ld)
 
 
 # ── Páginas de ayuda: UNA plantilla, sus objetos ───────────────────────────
 AYUDA = {
     'piernas-cansadas-retencion-cordoba': dict(
+        tema='las piernas cansadas', desc='Piernas cansadas y retención de líquidos en Córdoba: maderoterapia y drenaje para aliviarlas, y fuerza para que no vuelvan. Valoración gratis.',
         titulo='Piernas cansadas e hinchadas al final del día',
         seo='Piernas cansadas y retención de líquidos en Córdoba · Siluetas de Mujer',
         lead='Si los tobillos se marcan con el calcetín y por la tarde las piernas pesan el doble, no estás exagerando.',
@@ -436,8 +439,9 @@ AYUDA = {
         aviso='Si la hinchazón es de una sola pierna, duele, está caliente o aparece de golpe, ve antes a tu médico.',
         servicio=('maderoterapia-cordoba', 'La maderoterapia, con precios')),
     'celulitis-cordoba': dict(
+        tema='la celulitis', desc='Tratamiento de la celulitis en Córdoba con maderoterapia y entrenamiento: mejora el aspecto de la piel y la forma de la zona. Valoración gratis.',
         titulo='Celulitis: lo que la maderoterapia puede hacer, y lo que no',
-        seo='Celulitis en Córdoba: qué hace de verdad la maderoterapia · Siluetas de Mujer',
+        seo='Tratamiento de celulitis en Córdoba con maderoterapia · Siluetas',
         lead='Mejora el aspecto de la piel y la sensación de volumen. No la elimina. Lo que cambia la forma es el músculo de debajo.',
         foto='maderoterapia',
         charla=['Carmen, ¿la maderoterapia quita la celulitis?',
@@ -453,8 +457,9 @@ AYUDA = {
         aviso='No es para ti si estás embarazada, tienes varices importantes, has tenido una trombosis, tomas anticoagulantes o tienes heridas en la zona. Te pregunto siempre por tu salud.',
         servicio=('maderoterapia-cordoba', 'La maderoterapia, con precios')),
     'menopausia-fuerza-cordoba': dict(
+        tema='la menopausia', desc='Entrenamiento de fuerza para mujeres en la menopausia en Córdoba: menos barriga, más energía y huesos fuertes. Grupos de hasta 5. Valoración gratis.',
         titulo='Menopausia: el cuerpo cambia, y la fuerza es tu mejor aliada',
-        seo='Menopausia y entrenamiento de fuerza para mujeres en Córdoba · Siluetas de Mujer',
+        seo='Entrenamiento de fuerza en la menopausia en Córdoba · Siluetas',
         lead='La cintura que se ensancha, menos energía, la ropa que cae distinta. No lo estás haciendo peor: el cuerpo cambia. Y se puede hacer mucho.',
         foto='pesa',
         charla=['Carmen, como lo mismo de siempre y la barriga no deja de crecer.',
@@ -470,6 +475,7 @@ AYUDA = {
         aviso='Si tienes osteoporosis, artrosis o alguna lesión, lo hablamos en la valoración y, si hace falta, con tu médico o tu fisio.',
         servicio=('entrenamiento-personal-mujeres-cordoba', 'El entrenamiento')),
     'espalda-cuello-cargados-cordoba': dict(
+        tema='la espalda cargada', desc='Masaje de descarga en Córdoba para espalda y cuello cargados (35 €), y fuerza y movilidad para que la tensión no vuelva. Valoración gratis.',
         titulo='Espalda y cuello cargados',
         seo='Espalda y cuello cargados: masaje de descarga en Córdoba · Siluetas de Mujer',
         lead='Hombros subidos, un cuello que no gira y una espalda que avisa al final del día. Primero, soltar. Después, que no vuelva.',
@@ -487,8 +493,9 @@ AYUDA = {
         aviso='Si el dolor baja por el brazo o la pierna, notas hormigueo o viene de un golpe, ve antes a tu médico.',
         servicio=('masajes-cordoba', 'Los masajes, con precios')),
     'empezar-a-entrenar-cordoba': dict(
+        tema='empezar desde cero', desc='Empezar a entrenar sin estar en forma: entrenadora personal para mujeres en Córdoba, desde cero, en grupo de hasta 5 o en casa. Valoración gratis.',
         titulo='Quiero empezar a moverme, pero no estoy en forma',
-        seo='Empezar a entrenar sin estar en forma: entrenadora para mujeres en Córdoba · Siluetas de Mujer',
+        seo='Empezar a entrenar sin estar en forma en Córdoba · Siluetas de Mujer',
         lead='No hace falta. Empezamos desde donde estás hoy, no desde donde estabas hace veinte años.',
         foto='cuesta',
         charla=['Carmen, hace años que no hago nada de deporte.',
@@ -544,7 +551,7 @@ def ayuda(slug):
 </div></section>
 
 <section class="seccion"><div class="wrap">
-  <div class="tit-sec"><h2>Qué hacemos: por fuera y por dentro.</h2><p>Lo que cambia es cuánto pesa cada lado en tu caso.</p></div>
+  <div class="tit-sec"><h2>Qué hacemos con {a.get('tema', 'esto')}: por fuera y por dentro.</h2><p>Lo que cambia es cuánto pesa cada lado en tu caso.</p></div>
   <div class="balanza-xl" style="--p:{p}%">
     <div class="lado-b m"><span class="pc">{p}%</span></div><div class="lado-b v"><span class="pc">{100 - p}%</span></div>
     <div class="barra" aria-hidden="true"><i></i><i></i></div>
@@ -568,7 +575,7 @@ def ayuda(slug):
   <div class="tit-sec"><h2 style="font-size:1.6rem">Otras cosas en las que te ayudo</h2></div>
   <ul class="otras-ay">{otras}</ul>
 </div></section>'''
-    return pagina(b, a['seo'], a['lead'], cuerpo)
+    return pagina(b, a['seo'], a.get('desc', a['lead']), cuerpo)
 
 
 # ── Servicios ───────────────────────────────────────────────────────────────
@@ -593,8 +600,8 @@ def madero():
 <div class="wrap cabeza">
   <div>
     <p class="miga"><a href="{b}">Inicio</a> · Con las manos</p>
-    <h1>Maderoterapia en Córdoba, explicada sin humo</h1>
-    <p class="lead">Trabajo con mis manos y mis maderas sobre piernas, glúteos, abdomen y, si quieres, brazos. Para que te notes ligera y mejore el aspecto de tu piel, sin promesas raras.</p>
+    <h1>Maderoterapia en Córdoba</h1>
+    <p class="lead">Maderoterapia corporal en piernas, glúteos, abdomen y brazos para la retención, la celulitis y la piel. Sesión de 45 a 65 €; con bono, desde 40 €.</p>
     <div class="cifras-xl"><div><b>Gratis</b><span>la valoración</span></div><div><b>45–65 €</b><span>la sesión, según la zona</span></div><div><b>40 €</b><span>desde, con bono de 10</span></div></div>
     <div class="acciones" style="margin-top:1.8rem"><a class="btn" href="{wa('Hola Mari Carmen, quiero mi valoración gratuita de maderoterapia')}">Pedir mi valoración gratuita</a><a class="btn linea" href="#precios">Precios y bonos</a></div>
   </div>
@@ -602,12 +609,12 @@ def madero():
 </div>
 
 <section class="seccion"><div class="wrap">
-  <div class="tit-sec"><h2>Tres maderas principales. Y muchas más técnicas.</h2><p>Manual y no invasiva: sin máquinas ni productos químicos. Estas tres son las piezas que más uso, pero no las únicas: según la zona y lo que necesite cada una, combino otras técnicas y otras piezas.</p></div>
+  <div class="tit-sec"><h2>Qué es la maderoterapia: las maderas que uso.</h2><p>Manual y no invasiva: sin máquinas ni productos químicos. Estas tres son las piezas que más uso, pero no las únicas: según la zona y lo que necesite cada una, combino otras técnicas y otras piezas.</p></div>
   <div class="lamina">{lam}</div>
 </div></section>
 
 <section class="seccion"><div class="wrap">
-  <div class="tit-sec"><h2>Te lo digo antes de que reserves.</h2></div>
+  <div class="tit-sec"><h2>Para qué sirve la maderoterapia, y para qué no.</h2></div>
   <div class="sino">
     <div class="si"><h3>Lo que vas a notar</h3><ul>
       <li><span><b>Piel más suave</b><span>con mejor textura, con constancia.</span></span></li>
@@ -623,7 +630,7 @@ def madero():
 </div></section>
 
 <section class="seccion"><div class="wrap">
-  <div class="tit-sec"><h2>Así es tu sesión.</h2><p>Siempre en este orden. Lo que dura depende de las zonas que trabajemos, en la sala o en tu casa.</p></div>
+  <div class="tit-sec"><h2>Cómo es una sesión de maderoterapia.</h2><p>Siempre en este orden. Lo que dura depende de las zonas que trabajemos, en la sala o en tu casa.</p></div>
   <div class="regla" style="--cols:5fr 9fr 4fr 30fr 6fr">
     <div class="regla-barra" aria-hidden="true"><span style="background:#16323F">Hablamos</span><span style="background:#B8295F">Drenaje</span><span style="background:#16323F">Aceite</span><span style="background:#D93A7A">Trabajo por zonas</span><span style="background:#16323F">Cierre</span></div>
   </div>
@@ -637,13 +644,13 @@ def madero():
 </div></section>
 
 <section class="seccion"><div class="wrap">
-  <div class="tit-sec"><h2>Así se reparte un bono de 10.</h2><p>Un ciclo seguido y, después, mantenimiento. En la valoración te digo cuántas para tu caso.</p></div>
+  <div class="tit-sec"><h2>Cuántas sesiones de maderoterapia: el bono de 10.</h2><p>Un ciclo seguido y, después, mantenimiento. En la valoración te digo cuántas para tu caso.</p></div>
   <div class="calendario" aria-label="Ejemplo: 8 sesiones en 4 semanas, 2 más en las semanas 5 y 7, y mantenimiento cada 15 días">{cal}</div>
   <div class="leyenda"><span>● Ciclo inicial: 1 o 2 por semana</span><span>◉ Hacia la 3.ª o 4.ª se empieza a notar</span><span>○ Mantenimiento: cada 15 días o una vez al mes</span></div>
 </div></section>
 
 <section class="seccion" id="precios"><div class="wrap">
-  <div class="tit-sec"><h2>Cuánto cuesta.</h2><p>Cuantas más sesiones, menos te cuesta cada una.</p></div>
+  <div class="tit-sec"><h2>Precio de la maderoterapia en Córdoba.</h2><p>Cuantas más sesiones, menos te cuesta cada una.</p></div>
   <div class="precios-col">
     <div class="recibo">
       <div class="cab-r"><span>Maderoterapia · por sesión</span><img src="{b}img/silueta.svg" alt="" width="16" height="24"></div>
@@ -669,7 +676,7 @@ def madero():
 {banda_regalo(b)}
 
 <section class="seccion"><div class="wrap dos-col">
-  <div class="tit-sec"><h2>Para quién no es.</h2><p>Antes de empezar siempre te pregunto por tu salud. Si tienes dudas, consúltalo con tu médico.</p></div>
+  <div class="tit-sec"><h2>Contraindicaciones de la maderoterapia.</h2><p>Antes de empezar siempre te pregunto por tu salud. Si tienes dudas, consúltalo con tu médico.</p></div>
   <ul class="notas"><li>Si estás embarazada.</li><li>Si tienes cáncer activo o estás en tratamiento.</li><li>Si tienes varices severas o has tenido una trombosis.</li>
     <li>Si tienes alguna enfermedad de la piel en la zona.</li><li>Si tienes problemas de coagulación o tomas anticoagulantes.</li></ul>
 </div></section>
@@ -677,7 +684,9 @@ def madero():
 <section class="seccion"><div class="wrap dos-col">
   <div class="tit-sec"><h2>Lo que me preguntáis.</h2></div>
   <div class="faq">
-    <details><summary>¿Duele?</summary><p>No debería. Puedes notar presión en las zonas más cargadas. Uso la presión que requiere cada zona: aunque aguantes más, no la subo si no es efectivo. Tiene que sentirse como un trabajo profundo, no como un castigo.</p></details>
+    <details><summary>¿Cuántas sesiones de maderoterapia necesito?</summary><p>Hacia la 3.ª o 4.ª sesión se empieza a notar. Un ciclo habitual son 10 sesiones (1 o 2 por semana) y después mantenimiento cada 15 días o una vez al mes. En la valoración te digo cuántas en tu caso.</p></details>
+    <details><summary>¿La maderoterapia quita la celulitis?</summary><p>Mejora mucho su aspecto y la sensación de la piel con constancia. Eliminarla, no. Lo que cambia la forma de la zona es el músculo: por eso lo combino con <a href="../entrenamiento-personal-mujeres-cordoba/">entrenamiento</a>.</p></details>
+    <details><summary>¿Duele la maderoterapia?</summary><p>No debería. Puedes notar presión en las zonas más cargadas. Uso la presión que requiere cada zona: aunque aguantes más, no la subo si no es efectivo. Tiene que sentirse como un trabajo profundo, no como un castigo.</p></details>
     <details><summary>¿Cuánto dura una sesión?</summary><p>Depende de las zonas: por eso el precio va de 45 a 65 €. En la valoración te digo cuánto dura la tuya y cuánto cuesta, antes de empezar.</p></details>
     <details><summary>¿Puedo combinarla con ejercicio?</summary><p>Es lo ideal. La madera trabaja la piel y la retención; el músculo de debajo, que es lo que da forma, lo construye el movimiento. El entrenamiento también lo llevo yo.</p></details>
     <details><summary>¿Tengo que hacer algo antes o después?</summary><p>Antes, bebe agua y ven con la piel limpia, sin cremas. Después, sigue hidratándote y, si puedes, date un paseíto.</p></details>
@@ -698,7 +707,7 @@ def madero():
   r.addEventListener('input',pinta);pinta()})();'''
     ld = ('<script type="application/ld+json">{"@context":"https://schema.org","@type":"Service","name":"Maderoterapia en Córdoba","provider":{"@type":"HealthAndBeautyBusiness","name":"Siluetas de Mujer","telephone":"+34646437371"},'
           '"areaServed":{"@type":"City","name":"Córdoba"},"offers":[{"@type":"AggregateOffer","name":"Sesión de maderoterapia","lowPrice":"45","highPrice":"65","priceCurrency":"EUR"},{"@type":"Offer","name":"Valoración","price":"0","priceCurrency":"EUR"}]}</script>')
-    return pagina(b, 'Maderoterapia en Córdoba · precios y bonos · Siluetas de Mujer',
+    return pagina(b, 'Maderoterapia en Córdoba desde 40 € · Siluetas de Mujer',
                   'Maderoterapia en Córdoba con rodillo, copa sueca y tabla. Sesión de 45 a 65 € según la zona; con bono, desde 40 € la sesión. Valoración gratis.',
                   cuerpo, 'maderoterapia-cordoba', js, ld)
 
@@ -712,8 +721,8 @@ def entreno():
 <div class="wrap cabeza">
   <div>
     <p class="miga"><a href="{b}">Inicio</a> · Con el movimiento</p>
-    <h1>Entrenadora personal para mujeres en Córdoba</h1>
-    <p class="lead">Entreno a mujeres que quieren sentirse fuertes, sobre todo a partir de los 40: en grupos pequeños, a solas conmigo o en tu propia casa.</p>
+    <h1>Entrenadora personal para mujeres de más de 30 en Córdoba</h1>
+    <p class="lead">Entrenamiento de fuerza para mujeres de 30, 40, 50 años o más: en grupo de hasta 5, 1 a 1 o en tu casa. Primero te mido, después entrenas.</p>
     <div class="cifras-xl"><div><b>5</b><span>mujeres como máximo</span></div><div><b>2</b><span>días de fuerza a la semana</span></div><div><b>0 €</b><span>la valoración</span></div></div>
     <div class="acciones" style="margin-top:1.8rem"><a class="btn" href="{wa('Hola Mari Carmen, quiero mi valoración gratuita para entrenar')}">Pedir mi valoración gratuita</a><a class="btn linea" href="#formatos">Grupo, 1 a 1 o en casa</a></div>
   </div>
@@ -721,7 +730,7 @@ def entreno():
 </div>
 
 <section class="seccion"><div class="wrap">
-  <div class="tit-sec"><h2>No entrenamos para un espejo. Entrenamos para tu vida.</h2></div>
+  <div class="tit-sec"><h2>Para qué entrenamos: tu día a día.</h2></div>
   <ul class="logros">
     <li>Subir la Cuesta del Bailío <span>sin pararte.</span></li>
     <li>Ir a los Patios en mayo <span>sin que te duelan las rodillas.</span></li>
@@ -732,7 +741,7 @@ def entreno():
 </div></section>
 
 <section class="seccion" id="formatos"><div class="wrap">
-  <div class="tit-sec"><h2>Tres formas de entrenar conmigo.</h2><p>La misma forma de trabajar y la misma app. Cambia cuánta atención tienes y dónde entrenas.</p></div>
+  <div class="tit-sec"><h2>Entrenamiento personal en grupo reducido, 1 a 1 o a domicilio.</h2><p>La misma forma de trabajar y la misma app. Cambia cuánta atención tienes y dónde entrenas.</p></div>
   <div class="formatos">
     <div class="formato"><span class="gente" aria-hidden="true">{GENTE * 5}</span><span class="big">Hasta 5</span><h3>Grupo reducido, en la sala</h3><p>Si te motiva entrenar con otras y quieres una rutina fija. Te corrijo a ti, no a una fila.</p></div>
     <div class="formato"><span class="gente" aria-hidden="true"><i class="yo"></i>{GENTE}</span><span class="big">1 a 1</span><h3>Solo tú, en la sala</h3><p>Si empiezas con una lesión o quieres ir a tu ritmo.</p></div>
@@ -741,7 +750,7 @@ def entreno():
 </div></section>
 
 <section class="seccion"><div class="wrap">
-  <div class="tit-sec"><h2>Una sesión, 50 minutos.</h2><p>Una estructura que se repite, para que sepas a qué vienes. Lo que cambia es la carga, poco a poco.</p></div>
+  <div class="tit-sec"><h2>Cómo es una sesión de entrenamiento (50 minutos).</h2><p>Una estructura que se repite, para que sepas a qué vienes. Lo que cambia es la carga, poco a poco.</p></div>
   <div class="regla" style="--cols:8fr 27fr 10fr 5fr">
     <div class="regla-barra" aria-hidden="true"><span style="background:#16323F">Soltar</span><span style="background:#16A39A">Fuerza</span><span style="background:#0A6F69">Equilibrio y juego</span><span style="background:#16323F">Bajar</span></div>
     <div class="regla-escala" aria-hidden="true"><span>0'</span><span>8'</span><span>35'</span><span>45'</span></div>
@@ -755,7 +764,7 @@ def entreno():
 </div></section>
 
 <section class="seccion"><div class="wrap dos-col">
-  <div class="tit-sec"><h2>El primer día no entrenas: te mido.</h2><p>Así, dentro de unas semanas, lo que ha cambiado es un número y no una impresión. Y la valoración es gratis.</p>
+  <div class="tit-sec"><h2>Valoración gratis: el primer día te mido.</h2><p>Así, dentro de unas semanas, lo que ha cambiado es un número y no una impresión. Y la valoración es gratis.</p>
     {foto('entreno', b, '4/3')}</div>
   <div class="ficha">
     <div class="cab-r"><span>Valoración · Siluetas de Mujer</span><span>Día 1</span></div>
@@ -770,7 +779,7 @@ def entreno():
 </div></section>
 
 <section class="seccion"><div class="wrap dos-col">
-  <div class="tit-sec"><h2>Y entre clase y clase, tu app.</h2><p>Tus números cada vez que repetimos las pruebas, lo que toca hoy si no vienes, y sesiones cortas de yoga y movilidad para los días de descanso.</p></div>
+  <div class="tit-sec"><h2>Tu app de entrenamiento entre clases.</h2><p>Tus números cada vez que repetimos las pruebas, lo que toca hoy si no vienes, y sesiones cortas de yoga y movilidad para los días de descanso.</p></div>
   <div class="movil" aria-label="Ejemplo de pantalla de la app">
     <div class="top"><span>Siluetas</span><span>Semana 6</span></div>
     <p class="tit-m">Tus medidas</p>
@@ -784,6 +793,8 @@ def entreno():
 <section class="seccion"><div class="wrap dos-col">
   <div class="tit-sec"><h2>Lo que me preguntáis.</h2></div>
   <div class="faq">
+    <details><summary>¿Cuánto cuesta una entrenadora personal en Córdoba?</summary><p>Conmigo, el entrenamiento 1 a 1 en la sala es 30 € la sesión; en grupo reducido sale más barato. A domicilio depende de la zona. La valoración es gratis: <a href="#reserva">calcula tus 4 semanas</a>.</p></details>
+    <details><summary>¿Es solo para mujeres de más de 40?</summary><p>No. Entreno a mujeres desde los 30: a los 30 se construye la base de fuerza que te sostiene a los 50. Cada plan se ajusta a tu edad y a tu momento.</p></details>
     <details><summary>¿Tengo que estar en forma para empezar?</summary><p>No, tranquila. El primer día te mido y ajusto cada ejercicio a lo que puedes hacer hoy, no a lo que hacías hace años.</p></details>
     <details><summary>Tengo artrosis, osteoporosis o dolor de espalda. ¿Puedo?</summary><p>En la mayoría de casos, la fuerza bien adaptada ayuda. Lo hablamos en la valoración y, si hace falta, con tu médico o tu fisio.</p></details>
     <details><summary>¿Me voy a poner «grande»?</summary><p>No. Lo que vas a notar es firmeza, fuerza y que la ropa te cae distinta.</p></details>
@@ -793,8 +804,8 @@ def entreno():
 </div></section>
 {pasos()}
 {semana(b, 'grupo')}'''
-    return pagina(b, 'Entrenadora personal para mujeres en Córdoba · Siluetas de Mujer',
-                  'Entrenamiento de fuerza para mujeres a partir de los 40 en Córdoba: grupos de hasta 5, 1 a 1 o en tu casa. Valoración gratis y app con tus medidas.',
+    return pagina(b, 'Entrenadora personal para mujeres +30 en Córdoba · Siluetas',
+                  'Entrenamiento personal para mujeres de más de 30 en Córdoba: grupo de hasta 5, 1 a 1 (30 €) o a domicilio. Valoración gratis y app con tu progreso.',
                   cuerpo, 'entrenamiento-personal-mujeres-cordoba')
 
 
@@ -808,7 +819,7 @@ def masajes():
 <div class="wrap cabeza">
   <div>
     <p class="miga"><a href="{b}">Inicio</a> · Con las manos</p>
-    <h1>Masajes en Córdoba para la tensión que se acumula</h1>
+    <h1>Masajes en Córdoba: descarga y tailandés</h1>
     <p class="lead">Dos masajes de 60 minutos, muy distintos entre sí: uno en camilla y con aceite, el otro en colchoneta y vestida. Si dudas cuál es el tuyo, te ayudo a elegir. En la sala o en tu casa (a domicilio, pregúntame el precio).</p>
     <div class="cifras-xl"><div><b>35 €</b><span>descarga · 60 min</span></div><div><b>40 €</b><span>tailandés · 60 min</span></div></div>
     <div class="acciones" style="margin-top:1.8rem"><a class="btn" href="{wa('Hola Mari Carmen, quiero reservar un masaje')}">Reservar un masaje</a><a class="btn linea" href="#elijo">¿Cuál elijo?</a></div>
@@ -817,7 +828,7 @@ def masajes():
 </div>
 
 <section class="seccion"><div class="wrap">
-  <div class="tit-sec"><h2>Dos masajes, muy distintos.</h2><p>Los dos duran 60 minutos. Cambia cómo se hacen y para qué sirven.</p></div>
+  <div class="tit-sec"><h2>Masaje de descarga (35 €) y masaje tailandés (40 €).</h2><p>Los dos duran 60 minutos. Cambia cómo se hacen y para qué sirven.</p></div>
   <div class="sino">
     <div class="si"><h3>Masaje de descarga · 35 €</h3><p class="suave">Para la espalda que se carga, los hombros subidos y las piernas que llegan pesadas al final de la semana.</p><ul>
       <li><span><b>En camilla</b><span>y con aceite natural.</span></span></li>
@@ -831,7 +842,7 @@ def masajes():
 </div></section>
 
 <section class="seccion" id="elijo"><div class="wrap dos-col">
-  <div class="tit-sec"><h2>¿Cuál elijo?</h2><p>Según lo que buscas. Si dudas, escríbeme y te oriento.</p></div>
+  <div class="tit-sec"><h2>¿Qué masaje elijo?</h2><p>Según lo que buscas. Si dudas, escríbeme y te oriento.</p></div>
   <table class="matriz"><thead><tr><th>Si buscas…</th><th>Tailandés</th><th>Descarga</th><th>Madero­terapia</th></tr></thead><tbody>{tabla}</tbody></table>
 </div></section>
 
@@ -846,7 +857,7 @@ def masajes():
 </section>
 {pasos()}
 {semana(b, 'indiv')}'''
-    return pagina(b, 'Masajes en Córdoba: descarga y tailandés · Siluetas de Mujer',
+    return pagina(b, 'Masajes en Córdoba desde 35 €: descarga y tailandés · Siluetas',
                   'Masaje de descarga (35 €) y masaje tailandés (40 €) en Córdoba, 60 minutos, en sala. También a domicilio, con precio según la zona.',
                   cuerpo, 'masajes-cordoba')
 
@@ -1022,6 +1033,13 @@ def sello_seo(ruta, txt):
              f'<meta property="og:description" content="{d}">\n<meta property="og:image" content="{SITIO}img/fotos/maderoterapia-1200.webp">\n<meta name="twitter:card" content="summary_large_image">')
     if ruta.startswith(('aviso-legal', 'privacidad')):
         txt = txt.replace('<meta name="robots" content="index, follow">', '<meta name="robots" content="noindex, follow">')
+    # Preguntas frecuentes → FAQPage (las mismas que se ven en la página)
+    qs = re.findall(r'<details><summary>(.*?)</summary><p>(.*?)</p></details>', txt, re.S)
+    if qs:
+        limpio = lambda s: html.unescape(re.sub(r'<[^>]+>', '', s)).strip()
+        faq = {"@context": "https://schema.org", "@type": "FAQPage", "mainEntity": [
+            {"@type": "Question", "name": limpio(q), "acceptedAnswer": {"@type": "Answer", "text": limpio(r)}} for q, r in qs]}
+        extra += '\n<script type="application/ld+json">' + json.dumps(faq, ensure_ascii=False) + '</script>'
     return txt.replace('<link rel="icon"', extra + '\n<link rel="icon"', 1)
 
 
